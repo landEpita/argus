@@ -29,7 +29,7 @@ sur fixture, son endpoint et sa couche ou son panneau.
 - [x] Logs JSON avec `request_id`, métriques Prometheus (fournisseurs, HTTP, cache), `/system/ready`
 - [x] Tests end-to-end Playwright, et suite de tests sur Postgres et Redis réels en CI
 - [x] Interface des watchlists : surveiller un avion ou un navire depuis la carte (livrée en phase 2a)
-- [ ] Règles d'alerte : prévues en phase 6
+- [x] Règles d'alerte (faites en phase 6)
 
 ## Phase 2a : carte OSINT ✅
 - [x] adsb.lol en repli d'OpenSky (rayon de 250 NM), vols militaires (GEV, WM)
@@ -96,7 +96,7 @@ sur fixture, son endpoint et sa couche ou son panneau.
 - [ ] Crypto : on-chain
 - [x] Énergie : stocks US hebdomadaires (brut, SPR, essence, distillats, gaz), comparés à la même semaine des 5 années précédentes (EIA, `DEMO_KEY` ou clé gratuite)
 - [ ] Fear & Greed actions (CNN renvoie 418 aux clients non navigateurs : chercher une autre source)
-- [ ] Analyse ancrée d'un pari Polymarket, qui peut refuser de conclure (avec la phase 5)
+- [x] Analyse ancrée d'un pari Polymarket, qui peut refuser de conclure (faite en phase 5b)
 
 ## Phase 5a : assistant ✅
 - [x] Modèles via LiteLLM : choisis dans l'app (modèle, clé, base URL), stockés côté serveur, clé jamais renvoyée ; `.env` pour les valeurs par défaut et les replis (OX, WM)
@@ -111,13 +111,14 @@ sur fixture, son endpoint et sa couche ou son panneau.
 - [x] Suivi du coût et de l'usage : chaque appel (tokens, coût estimé par LiteLLM, 0 pour les modèles locaux), résumé sur 30 jours
 - [x] Serveur MCP (streamable HTTP, `/mcp`, lecture seule, localhost) exposant les outils de l'assistant (OX, WM, OBB)
 - [x] Voix : dictée et lecture des réponses par le navigateur (GEV)
-- [ ] Notes ancrées pour les pays et les régions ; brief du matin (avec la phase 6)
+- [x] Brief du matin : le digest quotidien de la phase 6
+- [ ] Notes ancrées pour les pays et les régions (rédigées par le modèle ; aujourd'hui composées sans IA)
 
-## Phase 6 : alertes et diffusion 🚧
+## Phase 6 : alertes et diffusion ✅
 - [x] Règles d'alerte (8 types : avion surveillé en vol, séisme, alerte de catastrophe, mot-clé dans les news, variation d'un prix, indice pays, convergence, digest quotidien), évaluées toutes les 2 min en tâche de fond, dédupliquées par fait (WM, OX)
 - [x] Canaux : dans l'app (fil lu / non lu, compteur dans l'en-tête), notifications du navigateur (app ouverte), webhook JSON, Discord, bot Telegram, e-mail SMTP ; secrets côté serveur, échecs de livraison affichés (WM, OX)
 - [x] Digest quotidien : chiffres calculés par Argus, prose du modèle vérifiée, sinon gabarit (WM)
 - [x] Heures calmes (fuseau de l'utilisateur, alertes critiques qui passent si voulu) : les canaux attendent, puis reçoivent un résumé ; l'app montre tout
 - [x] Digest hebdomadaire (jour et heure au choix)
 - [x] Web Push (app fermée) : clé VAPID générée une fois et gardée en base, service worker, « Receive alerts on this device »
-- [ ] Application de bureau Tauri (WM, OBB)
+- [ ] Application de bureau Tauri (WM, OBB) : non retenue pour l'instant ; Chrome peut installer Argus comme une app, et Web Push notifie app fermée

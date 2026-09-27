@@ -8,7 +8,7 @@ Argus réunit en un seul endroit les fonctionnalités de cinq projets open sourc
 projets est dans [`../rapport.md`](../rapport.md) ; ce qui a été repris et dans quel ordre
 est décrit dans [docs/ROADMAP.md](docs/ROADMAP.md).
 
-> **État : phase 6 en cours (alertes).**
+> **État : phases 0 à 6 terminées.**
 >
 > - Règles d'alerte dans Watch : avion surveillé en vol, séisme, alerte rouge, mot-clé dans les
 >   news, prix qui bouge, indice pays, convergence, digest quotidien ;
