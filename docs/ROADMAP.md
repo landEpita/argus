@@ -117,6 +117,7 @@ sur fixture, son endpoint et sa couche ou son panneau.
 - [x] Règles d'alerte (8 types : avion surveillé en vol, séisme, alerte de catastrophe, mot-clé dans les news, variation d'un prix, indice pays, convergence, digest quotidien), évaluées toutes les 2 min en tâche de fond, dédupliquées par fait (WM, OX)
 - [x] Canaux : dans l'app (fil lu / non lu, compteur dans l'en-tête), notifications du navigateur (app ouverte), webhook JSON, Discord, bot Telegram, e-mail SMTP ; secrets côté serveur, échecs de livraison affichés (WM, OX)
 - [x] Digest quotidien : chiffres calculés par Argus, prose du modèle vérifiée, sinon gabarit (WM)
-- [ ] Heures calmes, digest hebdomadaire
-- [ ] Web Push (app fermée, VAPID)
+- [x] Heures calmes (fuseau de l'utilisateur, alertes critiques qui passent si voulu) : les canaux attendent, puis reçoivent un résumé ; l'app montre tout
+- [x] Digest hebdomadaire (jour et heure au choix)
+- [x] Web Push (app fermée) : clé VAPID générée une fois et gardée en base, service worker, « Receive alerts on this device »
 - [ ] Application de bureau Tauri (WM, OBB)

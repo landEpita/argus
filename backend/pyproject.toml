@@ -22,6 +22,7 @@ dependencies = [
     "beautifulsoup4>=4.12",
     "litellm>=1.60",
     "mcp>=1.9",
+    "pywebpush>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -92,5 +93,5 @@ mypy_path = "src"
 packages = ["argus"]
 
 [[tool.mypy.overrides]]
-module = ["sgp4.*", "feedparser.*"]
+module = ["sgp4.*", "feedparser.*", "pywebpush.*", "py_vapid.*"]
 ignore_missing_imports = true

@@ -17,8 +17,9 @@ import type {
   ChannelKindInfo,
   RuleKind,
 } from "@/lib/api/types";
-import { formatRelative, formatUtc } from "@/lib/time/relative";
+import { formatRelative } from "@/lib/time/relative";
 import { AlertRow } from "./AlertRow";
+import { DeliverySettings } from "./DeliverySettings";
 
 interface Props {
   api: ApiClient;
@@ -229,8 +230,10 @@ export function AlertsPanel({ api, onOpenAlert, onChanged }: Props) {
                     value={values[f.name] ?? f.initial}
                     onChange={(e) => setValues({ ...values, [f.name]: e.target.value })}
                   >
-                    {f.options?.map((o) => (
-                      <option key={o}>{o}</option>
+                    {f.options?.map((o, i) => (
+                      <option key={o} value={o}>
+                        {f.optionLabels?.[i] ?? o}
+                      </option>
                     ))}
                   </select>
                 ) : (
@@ -389,12 +392,14 @@ export function AlertsPanel({ api, onOpenAlert, onChanged }: Props) {
                 setChannelConfig({});
               }}
             >
-              {channelKinds.map((k) => (
-                <option key={k.kind} value={k.kind} disabled={!k.available}>
-                  {k.kind}
-                  {k.available ? "" : " (not configured on the server)"}
-                </option>
-              ))}
+              {channelKinds
+                .filter((k) => k.kind !== "web_push")
+                .map((k) => (
+                  <option key={k.kind} value={k.kind} disabled={!k.available}>
+                    {k.kind}
+                    {k.available ? "" : " (not configured on the server)"}
+                  </option>
+                ))}
             </select>
             <input
               className="input"
@@ -423,23 +428,22 @@ export function AlertsPanel({ api, onOpenAlert, onChanged }: Props) {
         </form>
       </div>
 
+      <DeliverySettings api={api} channels={channels} onChannelsChanged={() => void reload()} />
       <div className="hint">
         {notify === "unsupported" ? (
           "This browser cannot show notifications."
         ) : notify === "granted" ? (
-          "● Browser notifications are on while Argus is open."
+          "● Notifications are allowed in this browser."
         ) : (
           <button
             type="button"
             className="btn btn-s"
             onClick={() => void Notification.requestPermission().then(setNotify)}
           >
-            Enable browser notifications
+            Allow notifications while Argus is open
           </button>
         )}{" "}
-        <span className="dim" title={formatUtc(new Date().toISOString())}>
-          Web Push (with Argus closed) and the desktop app are planned.
-        </span>
+        <span className="dim">The desktop app is planned.</span>
       </div>
     </section>
   );

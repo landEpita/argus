@@ -133,6 +133,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/alerts/push/key": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Push Key
+         * @description The server's VAPID public key. 409 when Web Push is off.
+         */
+        get: operations["push_key_api_v1_alerts_push_key_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/alerts/read": {
         parameters: {
             query?: never;
@@ -181,6 +201,27 @@ export interface paths {
         post?: never;
         /** Delete Rule */
         delete: operations["delete_rule_api_v1_alerts_rules__rule_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Settings */
+        get: operations["get_settings_api_v1_alerts_settings_get"];
+        /**
+         * Put Settings
+         * @description Quiet hours: channels wait (critical alerts can still pass); the app shows everything.
+         */
+        put: operations["put_settings_api_v1_alerts_settings_put"];
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1156,6 +1197,58 @@ export interface components {
             /** Url */
             url: string | null;
         };
+        /**
+         * AlertSettings
+         * @description Per owner. In quiet hours, channels are held (the app still shows everything).
+         */
+        "AlertSettings-Input": {
+            /**
+             * Critical Breaks Quiet
+             * @default true
+             */
+            critical_breaks_quiet?: boolean;
+            /**
+             * Quiet End
+             * @description Local time, e.g. 07:00
+             */
+            quiet_end?: string | null;
+            /**
+             * Quiet Start
+             * @description Local time, e.g. 22:00
+             */
+            quiet_start?: string | null;
+            /**
+             * Timezone
+             * @default UTC
+             */
+            timezone?: string;
+        };
+        /**
+         * AlertSettings
+         * @description Per owner. In quiet hours, channels are held (the app still shows everything).
+         */
+        "AlertSettings-Output": {
+            /**
+             * Critical Breaks Quiet
+             * @default true
+             */
+            critical_breaks_quiet: boolean;
+            /**
+             * Quiet End
+             * @description Local time, e.g. 07:00
+             */
+            quiet_end: string | null;
+            /**
+             * Quiet Start
+             * @description Local time, e.g. 22:00
+             */
+            quiet_start: string | null;
+            /**
+             * Timezone
+             * @default UTC
+             */
+            timezone: string;
+        };
         /** AnswerOut */
         AnswerOut: {
             /** Conclusive */
@@ -1344,7 +1437,7 @@ export interface components {
          * ChannelKind
          * @enum {string}
          */
-        ChannelKind: "webhook" | "discord" | "telegram" | "email";
+        ChannelKind: "webhook" | "discord" | "telegram" | "email" | "web_push";
         /** ChannelKindOut */
         ChannelKindOut: {
             /** Available */
@@ -1601,6 +1694,12 @@ export interface components {
             channel_name: string;
             /** Error */
             error: string | null;
+            /**
+             * Held
+             * @description Held for quiet hours; sent in a summary after
+             * @default false
+             */
+            held: boolean;
             /** Ok */
             ok: boolean;
         };
@@ -2224,6 +2323,14 @@ export interface components {
             /** Telegram Channels */
             telegram_channels: string[] | null;
             viewport: components["schemas"]["Viewport"] | null;
+        };
+        /** PushKeyOut */
+        PushKeyOut: {
+            /**
+             * Public Key
+             * @description applicationServerKey for PushManager.subscribe
+             */
+            public_key: string;
         };
         /** Quote */
         Quote: {
@@ -3172,6 +3279,26 @@ export interface operations {
             };
         };
     };
+    push_key_api_v1_alerts_push_key_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PushKeyOut"];
+                };
+            };
+        };
+    };
     mark_read_api_v1_alerts_read_post: {
         parameters: {
             query?: never;
@@ -3310,6 +3437,59 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_settings_api_v1_alerts_settings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertSettings-Output"];
+                };
+            };
+        };
+    };
+    put_settings_api_v1_alerts_settings_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertSettings-Input"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertSettings-Output"];
+                };
             };
             /** @description Validation Error */
             422: {

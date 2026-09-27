@@ -7,6 +7,8 @@ import type {
   AlertFeed,
   AlertRule,
   AlertRuleDraft,
+  AlertSettings,
+  AlertSettingsInput,
   Answer,
   AskInput,
   AssetDetail,
@@ -133,6 +135,9 @@ export interface ApiClient {
   alerts(unreadOnly?: boolean, signal?: AbortSignal): Promise<AlertFeed>;
   markAlertsRead(ids?: string[]): Promise<AlertFeed>;
   evaluateAlerts(): Promise<Evaluation>;
+  alertSettings(signal?: AbortSignal): Promise<AlertSettings>;
+  saveAlertSettings(body: AlertSettingsInput): Promise<AlertSettings>;
+  pushKey(): Promise<{ public_key: string }>;
   vessels(params: { bbox?: BBox }, signal?: AbortSignal): Promise<VesselCollection>;
   satellites(group: SatelliteGroup, signal?: AbortSignal): Promise<SatelliteCollection>;
   feeds(signal?: AbortSignal): Promise<FeedInfo[]>;
@@ -299,6 +304,9 @@ export function createApiClient(baseUrl = "", fetchImpl: FetchLike = fetch): Api
     markAlertsRead: (ids) =>
       request<AlertFeed>("POST", "/alerts/read", { body: { ids: ids ?? null } }),
     evaluateAlerts: () => request<Evaluation>("POST", "/alerts/evaluate", {}),
+    alertSettings: (signal) => request<AlertSettings>("GET", "/alerts/settings", { signal }),
+    saveAlertSettings: (body) => request<AlertSettings>("PUT", "/alerts/settings", { body }),
+    pushKey: () => request<{ public_key: string }>("GET", "/alerts/push/key", {}),
     search: (q, signal) =>
       request<SearchResults>("GET", "/assistant/search", { query: { q }, signal }),
     vessels: ({ bbox }, signal) =>

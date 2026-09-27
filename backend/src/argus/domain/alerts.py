@@ -11,9 +11,10 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, time
 from enum import StrEnum
 from typing import Annotated, Any, Protocol
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import AfterValidator, BaseModel, Field, field_validator
 
@@ -114,6 +115,20 @@ class ConvergenceParams(BaseModel):
 
 class DigestParams(BaseModel):
     hour_utc: int = Field(default=7, ge=0, le=23)
+    frequency: str = Field(default="daily", pattern=r"^(daily|weekly)$")
+    weekday: int = Field(default=0, ge=0, le=6, description="Weekly: 0 = Monday")
+
+
+def digest_key(p: DigestParams, now: datetime) -> str | None:
+    """The period's key when a digest is due now, else None (not yet, or not today)."""
+    if now.hour < p.hour_utc:
+        return None
+    if p.frequency == "weekly":
+        if now.weekday() != p.weekday:
+            return None
+        year, week, _ = now.isocalendar()
+        return f"digest:{year}-W{week:02d}"
+    return f"digest:{now.date().isoformat()}"
 
 
 PARAMS: dict[RuleKind, type[BaseModel]] = {
@@ -162,6 +177,7 @@ class ChannelKind(StrEnum):
     DISCORD = "discord"
     TELEGRAM = "telegram"
     EMAIL = "email"
+    WEB_PUSH = "web_push"
 
 
 class WebhookConfig(BaseModel):
@@ -183,7 +199,16 @@ class EmailConfig(BaseModel):
     to: str = Field(pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$", max_length=200)
 
 
+class WebPushConfig(BaseModel):
+    """A browser's push subscription (PushSubscription.toJSON())."""
+
+    endpoint: str = Field(pattern=r"^https://\S+$", max_length=1000)
+    p256dh: str = Field(pattern=r"^[\w-]{40,}$", max_length=200)
+    auth: str = Field(pattern=r"^[\w-]{10,}$", max_length=100)
+
+
 CHANNEL_CONFIG: dict[ChannelKind, type[BaseModel]] = {
+    ChannelKind.WEB_PUSH: WebPushConfig,
     ChannelKind.WEBHOOK: WebhookConfig,
     ChannelKind.DISCORD: DiscordConfig,
     ChannelKind.TELEGRAM: TelegramConfig,
@@ -216,7 +241,7 @@ class Channel(ChannelDraft):
             return f"chat {c.get('chat_id', '?')}"
         if self.kind is ChannelKind.EMAIL:
             return c.get("to", "?")
-        url = c.get("url", "")
+        url = c.get("url") or c.get("endpoint", "")
         return url.split("/")[2] if url.count("/") >= 2 else "?"
 
 
@@ -225,6 +250,7 @@ class Delivery(DomainModel):
     channel_name: str
     ok: bool
     error: str | None = None
+    held: bool = Field(default=False, description="Held for quiet hours; sent in a summary after")
 
 
 class Candidate(DomainModel):
@@ -406,16 +432,13 @@ def watched_aircraft(p: AircraftParams, s: Snapshot) -> list[Candidate]:
 
 
 def digest(p: DigestParams, s: Snapshot) -> list[Candidate]:
-    if s.digest is None or s.now.hour < p.hour_utc:
+    key = digest_key(p, s.now)
+    if s.digest is None or key is None:
         return []
     text, _facts = s.digest
+    title = "Weekly digest" if p.frequency == "weekly" else "Daily digest"
     return [
-        Candidate(
-            key=f"digest:{s.now.date().isoformat()}",
-            title="Daily digest",
-            detail=text,
-            source="Argus (figures computed by Argus)",
-        )
+        Candidate(key=key, title=title, detail=text, source="Argus (figures computed by Argus)")
     ]
 
 
@@ -437,9 +460,48 @@ def evaluate(rule: Rule, snapshot: Snapshot) -> list[Candidate]:
 
 def digest_due(rules: Sequence[Rule], now: datetime) -> bool:
     return any(
-        r.enabled and r.kind is RuleKind.DAILY_DIGEST and now.hour >= r.params.get("hour_utc", 7)
+        r.enabled
+        and r.kind is RuleKind.DAILY_DIGEST
+        and digest_key(DigestParams.model_validate(r.params), now) is not None
         for r in rules
     )
+
+
+# ── Quiet hours ────────────────────────────────────────────────────────────
+
+
+def _zone(name: str) -> str:
+    try:
+        ZoneInfo(name)
+    except (ZoneInfoNotFoundError, ValueError) as exc:
+        raise ValueError(f"unknown time zone {name!r}") from exc
+    return name
+
+
+class AlertSettings(DomainModel):
+    """Per owner. In quiet hours, channels are held (the app still shows everything)."""
+
+    timezone: Annotated[str, AfterValidator(_zone)] = "UTC"
+    quiet_start: time | None = Field(default=None, description="Local time, e.g. 22:00")
+    quiet_end: time | None = Field(default=None, description="Local time, e.g. 07:00")
+    critical_breaks_quiet: bool = True
+
+
+def in_quiet_hours(settings: AlertSettings, now: datetime) -> bool:
+    start, end = settings.quiet_start, settings.quiet_end
+    if start is None or end is None or start == end:
+        return False
+    local = now.astimezone(ZoneInfo(settings.timezone)).time().replace(tzinfo=None)
+    if start < end:
+        return start <= local < end
+    return local >= start or local < end  # spans midnight, e.g. 22:00 -> 07:00
+
+
+def holds(settings: AlertSettings, severity: Severity, now: datetime) -> bool:
+    """Whether channel delivery waits for the end of quiet hours."""
+    if not in_quiet_hours(settings, now):
+        return False
+    return not (settings.critical_breaks_quiet and severity is Severity.CRITICAL)
 
 
 # ── Ports ──────────────────────────────────────────────────────────────────
@@ -458,6 +520,12 @@ class AlertRepository(Protocol):
     async def alerts(self, owner: str, limit: int, unread_only: bool) -> list[Alert]: ...
     async def unread(self, owner: str) -> int: ...
     async def mark_read(self, owner: str, ids: Sequence[str] | None) -> int: ...
+    async def held(self, owner: str, since: datetime) -> list[Alert]: ...
+    async def set_deliveries(
+        self, owner: str, alert_id: str, deliveries: Sequence[Delivery]
+    ) -> None: ...
+    async def settings(self, owner: str) -> AlertSettings: ...
+    async def save_settings(self, owner: str, settings: AlertSettings) -> None: ...
 
 
 class Notifier(Protocol):

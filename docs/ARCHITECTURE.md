@@ -117,6 +117,11 @@
 - Livraison : webhook (JSON), Discord, bot Telegram, SMTP. Les secrets (URL, token) restent
   dans `alert_channels` et ne sont jamais renvoyés ; chaque alerte garde le résultat de chaque
   livraison.
+- Heures calmes (`alert_settings`, fuseau IANA) : pendant la plage, les livraisons sont marquées
+  « held » ; au premier tour après la fin, chaque canal reçoit un seul résumé. Les alertes
+  critiques peuvent passer. L'app montre tout, toujours.
+- Web Push : la paire de clés VAPID est générée au premier usage et gardée dans
+  `server_secrets` ; `public/sw.js` affiche la notification et rouvre Argus au clic.
 
 ### Renseignement (`services/news.py`, `services/telegram.py`, `services/cyber.py`)
 

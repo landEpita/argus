@@ -95,6 +95,9 @@ class Settings(BaseSettings):
     smtp_password: SecretStr | None = None
     smtp_from: str | None = None
     smtp_starttls: bool = True
+    # Web Push: the VAPID key is generated once and kept in the database.
+    web_push_enabled: bool = True
+    web_push_subject: str = "mailto:argus@localhost"
 
     # ── Infrastructure & imagery ──
     overpass_enabled: bool = True

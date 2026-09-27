@@ -9,7 +9,7 @@ from __future__ import annotations
 import asyncio
 import smtplib
 from email.message import EmailMessage
-from typing import Any
+from typing import Any, Protocol
 
 from argus.domain.alerts import Alert, Channel, ChannelKind
 from argus.infra.http import HttpClient
@@ -106,18 +106,36 @@ class SmtpNotifier:
             raise ProviderUnavailableError("smtp", type(exc).__name__) from exc
 
 
+class ChannelNotifier(Protocol):
+    async def send(self, channel: Channel, alert: Alert) -> None: ...
+
+
 class Dispatcher:
     """Routes each channel kind to its notifier; e-mail only when SMTP is configured."""
 
-    def __init__(self, http: HttpNotifier, email: SmtpNotifier | None) -> None:
+    def __init__(
+        self,
+        http: HttpNotifier,
+        email: SmtpNotifier | None,
+        push: ChannelNotifier | None = None,
+    ) -> None:
         self._http = http
         self._email = email
+        self._push = push
 
     def supports(self, kind: ChannelKind) -> bool:
-        return kind is not ChannelKind.EMAIL or self._email is not None
+        if kind is ChannelKind.EMAIL:
+            return self._email is not None
+        if kind is ChannelKind.WEB_PUSH:
+            return self._push is not None
+        return True
 
     async def send(self, channel: Channel, alert: Alert) -> None:
-        if channel.kind is ChannelKind.EMAIL:
+        if channel.kind is ChannelKind.WEB_PUSH:
+            if self._push is None:
+                raise ProviderResponseError("web-push", "Web Push is off on the server")
+            await self._push.send(channel, alert)
+        elif channel.kind is ChannelKind.EMAIL:
             if self._email is None:
                 raise ProviderResponseError(
                     "smtp", "e-mail is not configured on the server (ARGUS_SMTP_*)"

@@ -224,8 +224,8 @@ nocturnes de la veille. Prévus 🔜 : animation, vent, cônes de cyclones.
     zone, une alerte rouge touche un pays suivi, un mot-clé sort dans les actualités, un
     ticker bouge de plus de X % ;
   - **canaux** ✅ : notification dans l'app, notification du navigateur (app ouverte), e-mail,
-    Telegram, Discord, webhook ; Web Push avec l'app fermée 🔜 ;
-  - **mode digest** quotidien ✅ ; **heures calmes** et digest hebdomadaire 🔜.
+    Telegram, Discord, webhook, Web Push avec l'app fermée ✅ ;
+  - **mode digest** quotidien et hebdomadaire ✅ ; **heures calmes** ✅.
 - **Fil d'alertes** ✅ : chronologie des alertes déclenchées, avec lu/non lu et un lien vers
   l'objet sur la carte (onglet Alerts du panneau « Right now », compteur dans l'en-tête).
 

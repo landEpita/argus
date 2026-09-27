@@ -10,7 +10,7 @@ from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from argus.domain.alerts import Alert, Channel, Delivery, Rule
+from argus.domain.alerts import Alert, AlertSettings, Channel, Delivery, Rule
 from argus.domain.errors import ConflictError
 from argus.domain.llm import ModelUsage, StoredLlmSettings, UsageRecord
 from argus.domain.preferences import Preferences, StoredPreferences
@@ -21,9 +21,11 @@ from argus.infra.db.tables import (
     AlertChannelRow,
     AlertRow,
     AlertRuleRow,
+    AlertSettingsRow,
     AssistantSettingsRow,
     LlmUsageRow,
     PreferencesRow,
+    ServerSecretRow,
     SignalSnapshotRow,
     WatchlistItemRow,
     WatchlistRow,
@@ -402,6 +404,42 @@ class SqlAlertRepository:
             stmt = select(func.count()).where(AlertRow.owner_id == owner, AlertRow.read.is_(False))
             return int(await session.scalar(stmt) or 0)
 
+    async def held(self, owner: str, since: datetime) -> list[Alert]:
+        """Recent alerts with a delivery waiting for the end of quiet hours."""
+        stmt = (
+            select(AlertRow)
+            .where(AlertRow.owner_id == owner, AlertRow.at >= since)
+            .order_by(AlertRow.at)
+        )
+        async with self._db.transaction() as session:
+            rows = (await session.scalars(stmt)).all()
+            ids = [r.id for r in rows if any(d.get("held") for d in r.deliveries)]
+        found = {a.id: a for a in await self.alerts(owner, 500, False)}
+        return [found[i] for i in ids if i in found]
+
+    async def set_deliveries(
+        self, owner: str, alert_id: str, deliveries: Sequence[Delivery]
+    ) -> None:
+        async with self._db.transaction() as session:
+            row = await session.get(AlertRow, alert_id)
+            if row is not None and row.owner_id == owner:
+                row.deliveries = [d.model_dump() for d in deliveries]
+
+    async def settings(self, owner: str) -> AlertSettings:
+        async with self._db.transaction() as session:
+            row = await session.get(AlertSettingsRow, owner)
+            return AlertSettings.model_validate(row.data) if row else AlertSettings()
+
+    async def save_settings(self, owner: str, settings: AlertSettings) -> None:
+        data = settings.model_dump(mode="json")
+        async with self._db.transaction() as session:
+            row = await session.get(AlertSettingsRow, owner)
+            if row is None:
+                session.add(AlertSettingsRow(owner_id=owner, data=data))
+            else:
+                row.data = data
+                row.updated_at = utcnow()
+
     async def mark_read(self, owner: str, ids: Sequence[str] | None) -> int:
         stmt = update(AlertRow).where(AlertRow.owner_id == owner, AlertRow.read.is_(False))
         if ids is not None:
@@ -409,3 +447,21 @@ class SqlAlertRepository:
         async with self._db.transaction() as session:
             result = await session.execute(stmt.values(read=True))
             return int(getattr(result, "rowcount", 0) or 0)
+
+
+class SqlSecretStore:
+    def __init__(self, db: Database) -> None:
+        self._db = db
+
+    async def get(self, name: str) -> str | None:
+        async with self._db.transaction() as session:
+            row = await session.get(ServerSecretRow, name)
+            return row.value if row else None
+
+    async def put(self, name: str, value: str) -> None:
+        async with self._db.transaction() as session:
+            row = await session.get(ServerSecretRow, name)
+            if row is None:
+                session.add(ServerSecretRow(name=name, value=value))
+            else:
+                row.value = value

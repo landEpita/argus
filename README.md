@@ -12,8 +12,9 @@ est décrit dans [docs/ROADMAP.md](docs/ROADMAP.md).
 >
 > - Règles d'alerte dans Watch : avion surveillé en vol, séisme, alerte rouge, mot-clé dans les
 >   news, prix qui bouge, indice pays, convergence, digest quotidien ;
-> - livraison dans l'app (compteur, notifications du navigateur), webhook, Discord, bot
->   Telegram, e-mail (SMTP à configurer dans `.env`).
+> - livraison dans l'app (compteur, notifications du navigateur), Web Push (Argus fermé),
+>   webhook, Discord, bot Telegram, e-mail (SMTP à configurer dans `.env`) ;
+> - heures calmes (résumé à la fin), digest quotidien ou hebdomadaire.
 >
 > Phase 5b :
 >

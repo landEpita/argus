@@ -338,6 +338,98 @@
         "title": "Alert",
         "type": "object"
       },
+      "AlertSettings-Input": {
+        "description": "Per owner. In quiet hours, channels are held (the app still shows everything).",
+        "properties": {
+          "critical_breaks_quiet": {
+            "default": true,
+            "title": "Critical Breaks Quiet",
+            "type": "boolean"
+          },
+          "quiet_end": {
+            "anyOf": [
+              {
+                "format": "time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Local time, e.g. 07:00",
+            "title": "Quiet End"
+          },
+          "quiet_start": {
+            "anyOf": [
+              {
+                "format": "time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Local time, e.g. 22:00",
+            "title": "Quiet Start"
+          },
+          "timezone": {
+            "default": "UTC",
+            "title": "Timezone",
+            "type": "string"
+          }
+        },
+        "title": "AlertSettings",
+        "type": "object"
+      },
+      "AlertSettings-Output": {
+        "description": "Per owner. In quiet hours, channels are held (the app still shows everything).",
+        "properties": {
+          "critical_breaks_quiet": {
+            "default": true,
+            "title": "Critical Breaks Quiet",
+            "type": "boolean"
+          },
+          "quiet_end": {
+            "anyOf": [
+              {
+                "format": "time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Local time, e.g. 07:00",
+            "title": "Quiet End"
+          },
+          "quiet_start": {
+            "anyOf": [
+              {
+                "format": "time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Local time, e.g. 22:00",
+            "title": "Quiet Start"
+          },
+          "timezone": {
+            "default": "UTC",
+            "title": "Timezone",
+            "type": "string"
+          }
+        },
+        "required": [
+          "timezone",
+          "quiet_start",
+          "quiet_end",
+          "critical_breaks_quiet"
+        ],
+        "title": "AlertSettings",
+        "type": "object"
+      },
       "AnswerOut": {
         "properties": {
           "conclusive": {
@@ -852,7 +944,8 @@
           "webhook",
           "discord",
           "telegram",
-          "email"
+          "email",
+          "web_push"
         ],
         "title": "ChannelKind",
         "type": "string"
@@ -1597,6 +1690,12 @@
             ],
             "title": "Error"
           },
+          "held": {
+            "default": false,
+            "description": "Held for quiet hours; sent in a summary after",
+            "title": "Held",
+            "type": "boolean"
+          },
           "ok": {
             "title": "Ok",
             "type": "boolean"
@@ -1606,7 +1705,8 @@
           "channel_id",
           "channel_name",
           "ok",
-          "error"
+          "error",
+          "held"
         ],
         "title": "Delivery",
         "type": "object"
@@ -3327,6 +3427,20 @@
           "telegram_channels"
         ],
         "title": "Preferences",
+        "type": "object"
+      },
+      "PushKeyOut": {
+        "properties": {
+          "public_key": {
+            "description": "applicationServerKey for PushManager.subscribe",
+            "title": "Public Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "public_key"
+        ],
+        "title": "PushKeyOut",
         "type": "object"
       },
       "Quote": {
@@ -5529,6 +5643,28 @@
         ]
       }
     },
+    "/api/v1/alerts/push/key": {
+      "get": {
+        "description": "The server's VAPID public key. 409 when Web Push is off.",
+        "operationId": "push_key_api_v1_alerts_push_key_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushKeyOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Push Key",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
     "/api/v1/alerts/read": {
       "post": {
         "operationId": "mark_read_api_v1_alerts_read_post",
@@ -5714,6 +5850,67 @@
           }
         },
         "summary": "Update Rule",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/alerts/settings": {
+      "get": {
+        "operationId": "get_settings_api_v1_alerts_settings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertSettings-Output"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Settings",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "put": {
+        "description": "Quiet hours: channels wait (critical alerts can still pass); the app shows everything.",
+        "operationId": "put_settings_api_v1_alerts_settings_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertSettings-Input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertSettings-Output"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Settings",
         "tags": [
           "alerts"
         ]

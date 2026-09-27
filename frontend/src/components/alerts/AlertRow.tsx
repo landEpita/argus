@@ -7,7 +7,8 @@ const GLYPH: Record<AlertItem["severity"], string> = { critical: "■", warning:
 
 /** One fired alert: severity glyph, title, where it came from, whether it was delivered. */
 export function AlertRow({ alert, onOpen }: { alert: AlertItem; onOpen(alert: AlertItem): void }) {
-  const failed = alert.deliveries.filter((d) => !d.ok);
+  const failed = alert.deliveries.filter((d) => !d.ok && !d.held);
+  const held = alert.deliveries.filter((d) => d.held);
   return (
     <button type="button" className="list-button alert-row" onClick={() => onOpen(alert)}>
       <span>
@@ -19,6 +20,12 @@ export function AlertRow({ alert, onOpen }: { alert: AlertItem; onOpen(alert: Al
         {alert.unverified && <span className="badge-unverified"> Unverified</span>}
         <span className="sub muted" style={{ display: "block", fontSize: 12 }}>
           {alert.rule_name} · {alert.source}
+          {held.length > 0 && (
+            <span className="dim">
+              {" "}
+              · held for quiet hours ({held.map((d) => d.channel_name).join(", ")})
+            </span>
+          )}
           {failed.length > 0 && (
             <span
               className="notice-warn"

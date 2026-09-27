@@ -48,6 +48,7 @@ from argus.adapters.launchlibrary import LaunchLibraryFetcher
 from argus.adapters.llm.embeddings import LiteLLMEmbedder
 from argus.adapters.llm.litellm import LiteLLMFetcher
 from argus.adapters.notify.channels import Dispatcher, HttpNotifier, SmtpNotifier
+from argus.adapters.notify.webpush import VapidKeys, WebPushNotifier
 from argus.adapters.opensky import OpenSkyAircraftFetcher, OpenSkyAuth, OpenSkyTrackFetcher
 from argus.adapters.overpass import MIRRORS, OverpassFacilityFetcher
 from argus.adapters.rainviewer import RainViewerRadarFetcher
@@ -106,6 +107,7 @@ from argus.infra.db.repositories import (
     SqlAlertRepository,
     SqlLlmSettingsRepository,
     SqlPreferencesRepository,
+    SqlSecretStore,
     SqlSignalHistoryRepository,
     SqlUsageRepository,
     SqlWatchlistRepository,
@@ -179,6 +181,7 @@ class Container:
     search: SearchService
     prediction: PredictionAnalyst
     alerts: AlertsService
+    vapid: VapidKeys
     watchlists: WatchlistService
     preferences: PreferencesService
     # Dependencies the app cannot serve without; probed by /system/ready.
@@ -571,10 +574,12 @@ def build_container(
         if settings.smtp_host and settings.smtp_from
         else None
     )
+    vapid = VapidKeys(SqlSecretStore(db))
+    push = WebPushNotifier(vapid, settings.web_push_subject) if settings.web_push_enabled else None
     alerts = AlertsService(
         alert_repo,
         _AlertFeeds(events, news, finance, analysis, aviation, notes),
-        Dispatcher(HttpNotifier(http), smtp),
+        Dispatcher(HttpNotifier(http), smtp, push),
         clock,
     )
     if settings.alerts_enabled:
@@ -603,6 +608,7 @@ def build_container(
         assistant_settings=llm_settings,
         notes=notes,
         alerts=alerts,
+        vapid=vapid,
         watchlists=WatchlistService(SqlWatchlistRepository(db)),
         preferences=preferences,
         search=search,

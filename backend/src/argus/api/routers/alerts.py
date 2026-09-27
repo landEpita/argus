@@ -5,10 +5,11 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Query, Response
 from pydantic import BaseModel, Field
 
-from argus.api.deps import AlertsDep, OwnerDep
+from argus.api.deps import AlertsDep, OwnerDep, VapidDep
 from argus.domain.alerts import (
     PARAMS,
     Alert,
+    AlertSettings,
     Channel,
     ChannelDraft,
     ChannelKind,
@@ -17,6 +18,7 @@ from argus.domain.alerts import (
     RuleDraft,
     RuleKind,
 )
+from argus.domain.errors import ConflictError
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])
 
@@ -63,6 +65,29 @@ def kinds() -> list[RuleKindOut]:
     return [RuleKindOut(kind=k, params=m.model_json_schema()) for k, m in PARAMS.items()]
 
 
+class PushKeyOut(BaseModel):
+    public_key: str = Field(description="applicationServerKey for PushManager.subscribe")
+
+
+@router.get("/push/key", response_model=PushKeyOut)
+async def push_key(alerts: AlertsDep, vapid: VapidDep) -> PushKeyOut:
+    """The server's VAPID public key. 409 when Web Push is off."""
+    if not alerts.supports(ChannelKind.WEB_PUSH):
+        raise ConflictError("Web Push is off on the server (ARGUS_WEB_PUSH_ENABLED)")
+    return PushKeyOut(public_key=await vapid.public_key())
+
+
+@router.get("/settings", response_model=AlertSettings)
+async def get_settings(alerts: AlertsDep, owner: OwnerDep) -> AlertSettings:
+    return await alerts.settings(owner)
+
+
+@router.put("/settings", response_model=AlertSettings)
+async def put_settings(body: AlertSettings, alerts: AlertsDep, owner: OwnerDep) -> AlertSettings:
+    """Quiet hours: channels wait (critical alerts can still pass); the app shows everything."""
+    return await alerts.save_settings(owner, body)
+
+
 @router.get("/rules", response_model=list[Rule])
 async def rules(alerts: AlertsDep, owner: OwnerDep) -> list[Rule]:
     return await alerts.rules(owner)
@@ -90,7 +115,11 @@ def channel_kinds(alerts: AlertsDep) -> list[ChannelKindOut]:
         ChannelKindOut(
             kind=k,
             available=alerts.supports(k),
-            why=None if alerts.supports(k) else "set ARGUS_SMTP_HOST and ARGUS_SMTP_FROM",
+            why=None
+            if alerts.supports(k)
+            else "set ARGUS_WEB_PUSH_ENABLED=true"
+            if k is ChannelKind.WEB_PUSH
+            else "set ARGUS_SMTP_HOST and ARGUS_SMTP_FROM",
         )
         for k in ChannelKind
     ]

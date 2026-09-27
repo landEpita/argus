@@ -196,3 +196,34 @@ async def test_the_digest_and_the_loop(service: Env) -> None:
     assert (digest.title, digest.detail) == ("Daily digest", "Brent -8.59 %.")
     await loop.start()
     await loop.stop()
+
+
+async def test_quiet_hours_hold_then_summarise(database: Database) -> None:
+    from datetime import time
+
+    from argus.domain.alerts import AlertSettings
+
+    clock = FakeWallClock(datetime(2026, 9, 27, 23, 0, tzinfo=UTC))  # 23:00 UTC
+    feeds, sender, repo = Feeds(), Sender(), SqlAlertRepository(database)
+    alerts = AlertsService(repo, feeds, sender, clock)
+    await alerts.save_settings("alice", AlertSettings(quiet_start=time(22), quiet_end=time(7)))
+    hook = await alerts.create_channel("alice", WEBHOOK)
+    await alerts.create_rule(
+        "alice",
+        RuleDraft(
+            name="q", kind=RuleKind.EARTHQUAKE, params={"min_magnitude": 6}, channels=(hook.id,)
+        ),
+    )
+    [fired] = (await alerts.evaluate("alice")).fired
+    assert fired.deliveries[0].held is True
+    assert sender.sent == []  # nothing left during the night
+    assert (await alerts.settings("alice")).quiet_end == time(7)
+
+    clock.now = datetime(2026, 9, 28, 7, 5, tzinfo=UTC)  # quiet hours are over
+    await alerts.evaluate("alice")
+    assert sender.sent == [("hook", "1 alert(s) during quiet hours")]
+    [stored] = await alerts.alerts("alice")
+    assert stored.deliveries[0].held is False
+    assert stored.deliveries[0].ok is True
+    await alerts.evaluate("alice")
+    assert len(sender.sent) == 1  # summarised once

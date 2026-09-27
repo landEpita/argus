@@ -81,3 +81,25 @@ async def test_a_channel_test_reports_the_failure(client: httpx.AsyncClient) -> 
     result = (await client.post(f"/api/v1/alerts/channels/{channel['id']}/test")).json()
     assert result["channel_name"] == "hook"
     assert isinstance(result["ok"], bool)
+
+
+async def test_quiet_hours_settings(client: httpx.AsyncClient) -> None:
+    assert (await client.get("/api/v1/alerts/settings")).json() == {
+        "timezone": "UTC", "quiet_start": None, "quiet_end": None, "critical_breaks_quiet": True,
+    }  # fmt: skip
+    saved = await client.put(
+        "/api/v1/alerts/settings",
+        json={"timezone": "Europe/Paris", "quiet_start": "22:00", "quiet_end": "07:00"},
+    )
+    assert saved.json()["quiet_start"] == "22:00:00"
+    assert (await client.get("/api/v1/alerts/settings")).json()["timezone"] == "Europe/Paris"
+    bad = await client.put("/api/v1/alerts/settings", json={"timezone": "Mars/Olympus"})
+    assert bad.status_code == 422
+
+
+async def test_the_push_key_is_stable(client: httpx.AsyncClient) -> None:
+    first = (await client.get("/api/v1/alerts/push/key")).json()["public_key"]
+    assert len(first) == 87
+    assert (await client.get("/api/v1/alerts/push/key")).json()["public_key"] == first
+    kinds = {k["kind"]: k for k in (await client.get("/api/v1/alerts/channels/kinds")).json()}
+    assert kinds["web_push"]["available"] is True

@@ -40,6 +40,12 @@ export class FakeApi {
   rules: Record<string, unknown>[] = [];
   channels: Record<string, unknown>[] = [];
   alertItems: Record<string, unknown>[] = [];
+  alertSettings: Record<string, unknown> = {
+    timezone: "UTC",
+    quiet_start: null,
+    quiet_end: null,
+    critical_breaks_quiet: true,
+  };
 
   constructor(private scenario: ApiScenario) {}
 
@@ -258,6 +264,21 @@ export class FakeApi {
         return route.fulfill({ json: ANSWER });
       }
       if (path === "/alerts/kinds") return route.fulfill({ json: [] });
+      if (path === "/alerts/settings" && method === "GET") {
+        return route.fulfill({ json: this.alertSettings });
+      }
+      if (path === "/alerts/settings" && method === "PUT") {
+        const body = request.postDataJSON();
+        this.alertSettings = {
+          ...body,
+          quiet_start: body.quiet_start ? `${body.quiet_start.slice(0, 5)}:00` : null,
+          quiet_end: body.quiet_end ? `${body.quiet_end.slice(0, 5)}:00` : null,
+        };
+        return route.fulfill({ json: this.alertSettings });
+      }
+      if (path === "/alerts/push/key") {
+        return route.fulfill({ json: { public_key: "B".padEnd(87, "A") } });
+      }
       if (path === "/alerts/channels/kinds") {
         return route.fulfill({
           json: [

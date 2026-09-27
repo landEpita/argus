@@ -25,7 +25,7 @@ describe("alert rules", () => {
       min_level: "orange",
       countries: [],
     });
-    expect(paramsFrom("daily_digest", { hour_utc: "" })).toEqual({});
+    expect(paramsFrom("daily_digest", { hour_utc: "", frequency: "", weekday: "" })).toEqual({});
   });
 
   it("reads each rule as a sentence, with where it goes", () => {
@@ -40,6 +40,16 @@ describe("alert rules", () => {
       "Any watched instrument moves more than 3 % → in-app only",
     );
     expect(RULE_KINDS.daily_digest.when({ hour_utc: 7 })).toBe("Every day after 07:00 UTC");
+    expect(RULE_KINDS.daily_digest.when({ hour_utc: 8, frequency: "weekly", weekday: 0 })).toBe(
+      "Every Monday after 08:00 UTC",
+    );
+    expect(
+      paramsFrom("daily_digest", { frequency: "weekly", weekday: "4", hour_utc: "7" }),
+    ).toEqual({
+      frequency: "weekly",
+      weekday: 4,
+      hour_utc: 7,
+    });
     expect(RULE_KINDS.convergence.when({ min_verified_kinds: 2 })).toBe(
       "2+ verified kinds of signal converge",
     );

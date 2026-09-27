@@ -6,6 +6,7 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 
+from argus.adapters.notify.webpush import VapidKeys
 from argus.container import Container
 from argus.infra.health import HealthRegistry
 from argus.providers.registry import ProviderRegistry
@@ -127,6 +128,10 @@ def get_alerts(container: ContainerDep) -> AlertsService:
     return container.alerts
 
 
+def get_vapid(container: ContainerDep) -> VapidKeys:
+    return container.vapid
+
+
 def get_health(container: ContainerDep) -> HealthRegistry:
     return container.health
 
@@ -157,3 +162,4 @@ NotesDep = Annotated[NotesService, Depends(get_notes)]
 SearchDep = Annotated[SearchService, Depends(get_search)]
 PredictionAnalystDep = Annotated[PredictionAnalyst, Depends(get_prediction_analyst)]
 AlertsDep = Annotated[AlertsService, Depends(get_alerts)]
+VapidDep = Annotated[VapidKeys, Depends(get_vapid)]

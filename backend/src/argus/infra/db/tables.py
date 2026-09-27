@@ -175,3 +175,21 @@ class AlertRow(Base):
     unverified: Mapped[bool] = mapped_column(Boolean, default=False)
     read: Mapped[bool] = mapped_column(Boolean, default=False)
     deliveries: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list)
+
+
+class AlertSettingsRow(Base):
+    __tablename__ = "alert_settings"
+
+    owner_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    data: Mapped[dict[str, Any]] = mapped_column(JSON)
+    updated_at: Mapped[datetime] = mapped_column(default=utcnow)
+
+
+class ServerSecretRow(Base):
+    """Secrets the server generates for itself (the Web Push VAPID key)."""
+
+    __tablename__ = "server_secrets"
+
+    name: Mapped[str] = mapped_column(String(60), primary_key=True)
+    value: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)

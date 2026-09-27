@@ -7,6 +7,8 @@ export interface Field {
   type: "number" | "list" | "select";
   placeholder?: string;
   options?: readonly string[];
+  /** Shown instead of the option values (e.g. weekday names). */
+  optionLabels?: readonly string[];
   initial: string;
   /** Lists: how items are written ("TW, JP"). */
   help?: string;
@@ -31,6 +33,16 @@ const inCountries = (p: Record<string, unknown>) => {
   const list = (p.countries as string[] | undefined) ?? [];
   return list.length ? ` in ${list.join(", ")}` : "";
 };
+
+export const WEEKDAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+] as const;
 
 export const RULE_KINDS: Record<RuleKind, KindInfo> = {
   earthquake: {
@@ -122,9 +134,31 @@ export const RULE_KINDS: Record<RuleKind, KindInfo> = {
     ],
   },
   daily_digest: {
-    label: "Daily digest",
-    when: (p) => `Every day after ${String(p.hour_utc ?? 7).padStart(2, "0")}:00 UTC`,
-    fields: [{ name: "hour_utc", label: "Hour (UTC)", type: "number", initial: "7" }],
+    label: "Digest",
+    when: (p) => {
+      const at = `${String(p.hour_utc ?? 7).padStart(2, "0")}:00 UTC`;
+      return p.frequency === "weekly"
+        ? `Every ${WEEKDAYS[Number(p.weekday ?? 0)]} after ${at}`
+        : `Every day after ${at}`;
+    },
+    fields: [
+      {
+        name: "frequency",
+        label: "Frequency",
+        type: "select",
+        options: ["daily", "weekly"],
+        initial: "daily",
+      },
+      {
+        name: "weekday",
+        label: "Weekday (weekly)",
+        type: "select",
+        options: ["0", "1", "2", "3", "4", "5", "6"],
+        optionLabels: WEEKDAYS,
+        initial: "0",
+      },
+      { name: "hour_utc", label: "Hour (UTC)", type: "number", initial: "7" },
+    ],
   },
 };
 
@@ -139,6 +173,7 @@ export const CHANNEL_FIELDS: Record<
     { name: "chat_id", label: "Chat id", secret: false },
   ],
   email: [{ name: "to", label: "Address", secret: false }],
+  web_push: [], // subscribed from the browser, not typed in
 };
 
 export function initialValues(kind: RuleKind): Record<string, string> {
@@ -161,7 +196,7 @@ export function paramsFrom(
         .map((v) => v.trim())
         .filter(Boolean);
     } else if (raw) {
-      out[f.name] = raw;
+      out[f.name] = f.options?.every((o) => /^\d+$/.test(o)) ? Number(raw) : raw;
     }
   }
   return out;

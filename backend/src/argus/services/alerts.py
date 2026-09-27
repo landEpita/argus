@@ -15,7 +15,9 @@ import logging
 import uuid
 from collections.abc import Awaitable, Callable, Sequence
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import Protocol
+from zoneinfo import ZoneInfo
 
 from argus.domain.alerts import (
     MAX_CHANNELS_PER_OWNER,
@@ -23,6 +25,7 @@ from argus.domain.alerts import (
     AircraftParams,
     Alert,
     AlertRepository,
+    AlertSettings,
     Channel,
     ChannelDraft,
     ChannelKind,
@@ -32,7 +35,10 @@ from argus.domain.alerts import (
     RuleKind,
     Severity,
     Snapshot,
+    digest_due,
     evaluate,
+    holds,
+    in_quiet_hours,
     parse_params,
 )
 from argus.domain.aviation import AircraftTrack
@@ -47,6 +53,7 @@ from argus.providers.errors import AllProvidersFailedError, NoProviderError, Pro
 
 logger = logging.getLogger(__name__)
 
+HELD_FOR_HOURS = 36  # quiet hours never last longer than a night and a day
 MAX_NEW_PER_RULE = 10  # a new keyword rule must not flood the channels with the backlog
 WINDOW_HOURS = 2
 
@@ -177,8 +184,10 @@ class AlertsService:
     async def evaluate(self, owner: str) -> Evaluation:
         async with self._lock:  # the loop and a manual "check now" never overlap
             rules = [r for r in await self._repo.rules(owner) if r.enabled]
-            snapshot, skipped = await self._snapshot(owner, rules)
+            settings = await self._repo.settings(owner)
             channels = {c.id: c for c in await self._repo.channels(owner)}
+            await self._flush_held(owner, settings, channels)
+            snapshot, skipped = await self._snapshot(owner, rules)
             fired: list[Alert] = []
             for rule in rules:
                 if _needs(rule.kind) in skipped:
@@ -193,8 +202,9 @@ class AlertsService:
                         **candidate.model_dump(), id=uuid.uuid4().hex, rule_id=rule.id,
                         rule_name=rule.name, at=snapshot.now,
                     )  # fmt: skip
+                    wait = holds(settings, alert.severity, snapshot.now)
                     deliveries = [
-                        await self._deliver(channels[cid], alert)
+                        _held(channels[cid]) if wait else await self._deliver(channels[cid], alert)
                         for cid in rule.channels
                         if cid in channels
                     ]
@@ -207,6 +217,51 @@ class AlertsService:
                         owner, rule.model_copy(update={"last_fired_at": snapshot.now})
                     )
             return Evaluation(fired, sorted(skipped))
+
+    # ── Quiet hours ────────────────────────────────────────────────────────
+
+    async def settings(self, owner: str) -> AlertSettings:
+        return await self._repo.settings(owner)
+
+    async def save_settings(self, owner: str, settings: AlertSettings) -> AlertSettings:
+        await self._repo.save_settings(owner, settings)
+        return settings
+
+    async def _flush_held(
+        self, owner: str, settings: AlertSettings, channels: dict[str, Channel]
+    ) -> None:
+        """After quiet hours: one summary per channel for what was held."""
+        now = self._clock.utcnow()
+        if in_quiet_hours(settings, now):
+            return
+        held = await self._repo.held(owner, now - timedelta(hours=HELD_FOR_HOURS))
+        if not held:
+            return
+        per_channel: dict[str, list[Alert]] = {}
+        for alert in held:
+            for d in alert.deliveries:
+                if d.held:
+                    per_channel.setdefault(d.channel_id, []).append(alert)
+        results: dict[str, Delivery] = {}
+        for channel_id, alerts in per_channel.items():
+            channel = channels.get(channel_id)
+            if channel is None:
+                continue
+            lines = [
+                f"{a.at.astimezone(ZoneInfo(settings.timezone)):%H:%M} {a.title}"
+                for a in alerts[:20]
+            ]
+            more = len(alerts) - len(lines)
+            summary = Alert(
+                id="summary", key="summary", rule_id="summary", rule_name="Quiet hours",
+                at=now, title=f"{len(alerts)} alert(s) during quiet hours",
+                detail="\n".join(lines) + (f"\n… and {more} more" if more > 0 else ""),
+                source="Argus", severity=Severity.INFO,
+            )  # fmt: skip
+            results[channel_id] = await self._deliver(channel, summary)
+        for alert in held:
+            updated = [results.get(d.channel_id, d) if d.held else d for d in alert.deliveries]
+            await self._repo.set_deliveries(owner, alert.id, updated)
 
     async def _deliver(self, channel: Channel, alert: Alert) -> Delivery:
         try:
@@ -235,10 +290,7 @@ class AlertsService:
                 return None
 
         f = self._feeds
-        digest_due = any(
-            r.kind is RuleKind.DAILY_DIGEST and now.hour >= int(r.params.get("hour_utc", 7))
-            for r in rules
-        )
+        due = digest_due(rules, now)
         # Started together, awaited one by one: concurrent and still typed.
         quakes = asyncio.create_task(
             attempt(
@@ -258,7 +310,7 @@ class AlertsService:
         cells = asyncio.create_task(
             attempt("convergences", RuleKind.CONVERGENCE in kinds, f.convergences)
         )
-        digest = asyncio.create_task(attempt("digest", digest_due, lambda: f.digest(owner)))
+        digest = asyncio.create_task(attempt("digest", due, lambda: f.digest(owner)))
 
         wanted: set[str] = set()
         for r in rules:
@@ -296,6 +348,10 @@ _NEEDS = {
     RuleKind.DAILY_DIGEST: "digest",
     RuleKind.WATCHED_AIRCRAFT: "tracks",
 }
+
+
+def _held(channel: Channel) -> Delivery:
+    return Delivery(channel_id=channel.id, channel_name=channel.name, ok=False, held=True)
 
 
 def _needs(kind: RuleKind) -> str:

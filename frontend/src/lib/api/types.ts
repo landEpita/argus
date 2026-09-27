@@ -118,3 +118,5 @@ export type AlertItem = Schemas["Alert"];
 export type AlertFeed = Schemas["FeedOut"];
 export type Evaluation = Schemas["EvaluationOut"];
 export type Delivery = Schemas["Delivery"];
+export type AlertSettings = Schemas["AlertSettings-Output"];
+export type AlertSettingsInput = Schemas["AlertSettings-Input"];

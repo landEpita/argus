@@ -180,3 +180,40 @@ def test_the_digest_fires_once_after_its_hour() -> None:
     early = NOW.replace(hour=6)
     assert evaluate(r, Snapshot(now=early, digest=("x", []))) == []
     assert evaluate(r, Snapshot(now=NOW)) == []
+
+
+def test_weekly_digest_is_keyed_by_iso_week() -> None:
+    from argus.domain.alerts import DigestParams, digest_key
+
+    monday = datetime(2026, 9, 28, 8, tzinfo=UTC)
+    weekly = DigestParams(frequency="weekly", weekday=0, hour_utc=7)
+    assert digest_key(weekly, monday) == "digest:2026-W40"
+    assert digest_key(weekly, monday.replace(hour=6)) is None
+    assert digest_key(weekly, datetime(2026, 9, 29, 8, tzinfo=UTC)) is None  # Tuesday
+    assert digest_key(DigestParams(), monday) == "digest:2026-09-28"
+    r = rule(RuleKind.DAILY_DIGEST, frequency="weekly", weekday=0)
+    [c] = evaluate(r, Snapshot(now=monday, digest=("text", [])))
+    assert (c.title, c.key) == ("Weekly digest", "digest:2026-W40")
+
+
+def test_quiet_hours_in_the_owner_time_zone() -> None:
+    from datetime import time
+
+    from argus.domain.alerts import AlertSettings, holds, in_quiet_hours
+
+    night = AlertSettings(timezone="Europe/Paris", quiet_start=time(22), quiet_end=time(7))
+    # 21:30 UTC is 23:30 in Paris (CEST): quiet. 06:30 UTC is 08:30: not.
+    assert in_quiet_hours(night, datetime(2026, 9, 27, 21, 30, tzinfo=UTC)) is True
+    assert in_quiet_hours(night, datetime(2026, 9, 28, 4, 0, tzinfo=UTC)) is True
+    assert in_quiet_hours(night, datetime(2026, 9, 28, 6, 30, tzinfo=UTC)) is False
+    lunch = AlertSettings(quiet_start=time(12), quiet_end=time(14))
+    assert in_quiet_hours(lunch, datetime(2026, 9, 27, 13, tzinfo=UTC)) is True
+    assert in_quiet_hours(lunch, datetime(2026, 9, 27, 15, tzinfo=UTC)) is False
+    assert in_quiet_hours(AlertSettings(), NOW) is False
+    late = datetime(2026, 9, 27, 21, 30, tzinfo=UTC)
+    assert holds(night, Severity.WARNING, late) is True
+    assert holds(night, Severity.CRITICAL, late) is False  # critical still goes through
+    strict = night.model_copy(update={"critical_breaks_quiet": False})
+    assert holds(strict, Severity.CRITICAL, late) is True
+    with pytest.raises(ValidationError):
+        AlertSettings(timezone="Mars/Olympus")

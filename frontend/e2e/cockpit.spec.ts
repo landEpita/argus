@@ -247,3 +247,29 @@ test("fired alerts show in the header and open on the map", async ({ page, api }
   });
   await expect.poll(() => api.alertItems[0]?.read).toBe(true);
 });
+
+test("quiet hours are set in the viewer's time zone", async ({ page, api }) => {
+  await page.goto("/#watch");
+  const form = page.getByRole("form", { name: "Quiet hours" });
+  await form.getByLabel("Quiet from").fill("22:00");
+  await form.getByLabel("to", { exact: true }).fill("07:00");
+  await form.getByLabel("Time zone").selectOption("Europe/Paris");
+  await form.getByRole("button", { name: "Save" }).click();
+  await expect(page.getByText(/Quiet 22:00–07:00 \(Europe\/Paris\)/)).toBeVisible();
+  expect(api.alertSettings).toMatchObject({ timezone: "Europe/Paris", quiet_start: "22:00:00" });
+  await expect(
+    page.getByRole("button", { name: "Receive alerts on this device (Web Push)" }),
+  ).toBeVisible();
+});
+
+test("a weekly digest reads as such", async ({ page }) => {
+  await page.goto("/#watch");
+  const panel = page.getByRole("region", { name: "Rules and activity" });
+  await panel.getByRole("button", { name: "New rule" }).click();
+  const form = panel.getByRole("form", { name: "New rule" });
+  await form.getByLabel("When").selectOption("daily_digest");
+  await form.getByLabel("Frequency").selectOption("weekly");
+  await form.getByLabel("Weekday (weekly)").selectOption({ label: "Friday" });
+  await form.getByRole("button", { name: "Create rule" }).click();
+  await expect(panel).toContainText("Every Friday after 07:00 UTC → in-app only");
+});
