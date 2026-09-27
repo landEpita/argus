@@ -24,7 +24,7 @@ ALL_ON = {
 async def test_keyless_providers_are_registered_in_fallback_order() -> None:
     container = build_container(offline_settings(**ALL_ON), http=StubHttp())
     assert container.registry.capabilities() == {
-        "aviation.aircraft_states": ["opensky", "adsblol"],
+        "aviation.aircraft_states": ["adsblol", "opensky"],
         "aviation.aircraft_track": ["adsblol", "opensky"],
         "aviation.military_aircraft": ["adsblol"],
         "events.earthquakes": ["usgs"],

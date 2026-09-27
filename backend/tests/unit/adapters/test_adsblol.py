@@ -6,10 +6,9 @@ from typing import Any
 import pytest
 
 from argus.adapters.adsblol import AdsbLolAircraftFetcher, AdsbLolMilitaryFetcher
-from argus.adapters.adsblol.fetchers import covering_circle, haversine_nm
 from argus.adapters.readsb import parse_aircraft
 from argus.domain.aviation import AircraftQuery
-from argus.domain.geo import BoundingBox
+from argus.domain.geo import BoundingBox, covering_circle, haversine_nm
 from argus.providers.errors import ProviderResponseError, UnsupportedQueryError
 from tests.fakes import StubHttp
 

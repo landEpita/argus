@@ -2,6 +2,27 @@ import type { Aircraft, AircraftTrack } from "@/lib/api/types";
 import { collection, pointFeature, WATCH_HIGHLIGHT, watchKey } from "./features";
 import type { FeatureLayer, LayerFeatures } from "./types";
 
+/** The flights layer says when it is not showing everything, live. */
+export function coverageNote(page: {
+  coverage?: "box" | "world" | "regional";
+  stale_age_s?: number | null;
+  circle?: [number, number, number] | null;
+}): { note: string; warn: boolean } | null {
+  if (page.coverage === "regional" && page.circle) {
+    return {
+      note: `Only ${page.circle[2]} NM around the centre of the view (OpenSky unavailable)`,
+      warn: true,
+    };
+  }
+  if (page.stale_age_s != null) {
+    const min = Math.round(page.stale_age_s / 60);
+    return { note: `Snapshot from ${min} min ago (OpenSky quota reached)`, warn: true };
+  }
+  if (page.coverage === "world")
+    return { note: "Worldwide snapshot, refreshed every few minutes", warn: false };
+  return null;
+}
+
 export function aircraftToFeatures(aircraft: readonly Aircraft[]): LayerFeatures {
   return collection(
     aircraft.map((a) =>
@@ -39,8 +60,10 @@ export const aircraftLayer: FeatureLayer = {
     highlight: WATCH_HIGHLIGHT,
   },
   async load({ api, bbox, signal }) {
-    const { items } = await api.aircraft({ bbox }, signal);
-    return aircraftToFeatures(items);
+    const page = await api.aircraft({ bbox }, signal);
+    const features = aircraftToFeatures(page.items);
+    const note = coverageNote(page);
+    return note ? { ...features, meta: note } : features;
   },
 };
 

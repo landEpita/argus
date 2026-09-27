@@ -225,7 +225,10 @@ def _register_providers(
         )
     if settings.adsblol_enabled:
         registry.register(
-            AIRCRAFT_STATES, AdsbLolAircraftFetcher(http, settings.adsblol_base_url), priority=20
+            # Fresh and quota-free for views up to 250 NM; wider views fall through to OpenSky.
+            AIRCRAFT_STATES,
+            AdsbLolAircraftFetcher(http, settings.adsblol_base_url),
+            priority=5,
         )
         registry.register(
             MILITARY_AIRCRAFT, AdsbLolMilitaryFetcher(http, settings.adsblol_base_url), priority=10
@@ -519,6 +522,7 @@ def build_container(
         cache,
         settings.aircraft_cache_ttl_s,
         military_ttl_s=settings.military_cache_ttl_s,
+        world_ttl_s=settings.aircraft_world_ttl_s,
     )
     events = EventsService(registry, cache)
     maritime = MaritimeService(registry)

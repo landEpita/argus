@@ -155,9 +155,45 @@
       },
       "AircraftCollection": {
         "properties": {
+          "circle": {
+            "anyOf": [
+              {
+                "maxItems": 3,
+                "minItems": 3,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "(lat, lon, radius NM) of the regional circle",
+            "title": "Circle"
+          },
           "count": {
             "title": "Count",
             "type": "integer"
+          },
+          "coverage": {
+            "default": "box",
+            "description": "regional: only a circle around the centre of the view",
+            "enum": [
+              "box",
+              "world",
+              "regional"
+            ],
+            "title": "Coverage",
+            "type": "string"
           },
           "items": {
             "items": {
@@ -165,6 +201,18 @@
             },
             "title": "Items",
             "type": "array"
+          },
+          "stale_age_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when served from an older worldwide snapshot",
+            "title": "Stale Age S"
           }
         },
         "required": [

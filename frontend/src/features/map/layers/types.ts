@@ -17,7 +17,10 @@ export interface LayerContext {
   signal: AbortSignal;
 }
 
-export type LayerFeatures = FeatureCollection<Geometry, Record<string, unknown>>;
+export type LayerFeatures = FeatureCollection<Geometry, Record<string, unknown>> & {
+  /** How complete or fresh the data is, when the source says it is partial. */
+  meta?: { note: string; warn?: boolean };
+};
 
 /** Tile overlay description, renderer-neutral. */
 export interface RasterData {

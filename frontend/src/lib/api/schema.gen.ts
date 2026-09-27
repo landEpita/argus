@@ -1125,10 +1125,31 @@ export interface components {
         };
         /** AircraftCollection */
         AircraftCollection: {
+            /**
+             * Circle
+             * @description (lat, lon, radius NM) of the regional circle
+             */
+            circle?: [
+                number,
+                number,
+                number
+            ] | null;
             /** Count */
             count: number;
+            /**
+             * Coverage
+             * @description regional: only a circle around the centre of the view
+             * @default box
+             * @enum {string}
+             */
+            coverage?: "box" | "world" | "regional";
             /** Items */
             items: components["schemas"]["Aircraft"][];
+            /**
+             * Stale Age S
+             * @description Set when served from an older worldwide snapshot
+             */
+            stale_age_s?: number | null;
         };
         /** AircraftTrack */
         AircraftTrack: {

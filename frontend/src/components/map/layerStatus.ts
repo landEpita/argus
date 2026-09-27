@@ -41,6 +41,14 @@ export function layerStatus(
         isRasterData(update.data) && update.data.validAt
           ? ` · image of ${update.data.validAt.slice(11, 16)} UTC`
           : "";
+      const meta = isRasterData(update.data) ? undefined : update.data.meta;
+      if (meta) {
+        return {
+          text: `${meta.warn ? "▲ " : ""}${meta.note} · ${age}`,
+          tone: meta.warn ? "warn" : "normal",
+          count,
+        };
+      }
       return { text: `Updated ${age}${valid}`, tone: "normal", count };
     }
     case "error":

@@ -84,3 +84,18 @@ describe("militaryLayer.load", () => {
     expect(militaryLayer.watchable).toBe("aircraft");
   });
 });
+
+describe("flight coverage", async () => {
+  const { coverageNote } = await import("./aircraft");
+  it("says when flights are partial or old", () => {
+    expect(coverageNote({ coverage: "box" })).toBeNull();
+    expect(coverageNote({ coverage: "world", stale_age_s: 720 })).toEqual({
+      note: "Snapshot from 12 min ago (OpenSky quota reached)",
+      warn: true,
+    });
+    expect(coverageNote({ coverage: "regional", circle: [47.5, 10, 250] })?.note).toBe(
+      "Only 250 NM around the centre of the view (OpenSky unavailable)",
+    );
+    expect(coverageNote({ coverage: "world" })?.warn).toBe(false);
+  });
+});

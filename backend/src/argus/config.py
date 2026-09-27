@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     adsblol_enabled: bool = True
     adsblol_base_url: str = "https://api.adsb.lol"
     aircraft_cache_ttl_s: float = Field(default=15.0, ge=0)
+    # One worldwide OpenSky snapshot serves every zoomed-out view. Anonymous OpenSky allows
+    # ~100 world snapshots a day (400 credits): keep this high without an OpenSky account.
+    aircraft_world_ttl_s: float = Field(default=300.0, ge=10)
     military_cache_ttl_s: float = Field(default=30.0, ge=0)
 
     # ── Events (no key needed unless noted) ──
