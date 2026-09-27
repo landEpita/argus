@@ -24,6 +24,7 @@ from argus.api.routers import (
     imagery,
     infrastructure,
     intel,
+    live,
     maritime,
     preferences,
     space,
@@ -81,6 +82,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
     api.include_router(events.router)
     api.include_router(infrastructure.router)
     api.include_router(cameras.router)
+    api.include_router(live.router)
     api.include_router(imagery.router)
     api.include_router(intel.router)
     api.include_router(intel.countries_router)

@@ -53,6 +53,12 @@ sur fixture, son endpoint et sa couche ou son panneau.
 - [x] Avions sur les vues larges : instantané mondial partagé, dernière valeur connue datée, repli régional adsb.lol étiqueté
 - [x] Caméras ouvertes (Londres, Finlande, Colombie-Britannique, Nouvelle-Galles du Sud, Delaware) : cône d'orientation quand l'opérateur la donne, image, clip ou flux HLS en direct dans l'inspecteur (GEV). Ontario 511 exige désormais une clé : non branché
 
+## Direct et presse élargie ✅
+- [x] Espace « Live » : mur de 4 lecteurs, 32 chaînes d'info (flux HLS du diffuseur d'abord, puis YouTube), passage automatique au flux suivant si un HLS échoue (WM)
+- [x] Webcams urbaines (YouTube), aussi placées sur la carte (couche « City webcams ») (WM)
+- [x] 47 sources de presse (au lieu de 15), chacune lue en direct avant inclusion ; propriété (publique, privée, d'État) affichée
+- [ ] Non repris : BBC News et ZDF (flux refusés hors de leur pays), RT (interdite de diffusion dans l'UE) : pas de contournement
+
 ## Reporté (bloqué par un accès)
 - [ ] Israël (OREF) : l'API est géo-bloquée hors d'Israël (403)
 - [ ] UCDP et ACLED : les API exigent un jeton ; à brancher avec une réponse réelle enregistrée

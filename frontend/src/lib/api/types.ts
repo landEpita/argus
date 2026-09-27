@@ -50,6 +50,9 @@ export type LandingPoint = Schemas["LandingPoint"];
 export type CableNetwork = Schemas["CableNetwork"];
 export type Camera = Schemas["Camera"];
 export type CameraCollection = Schemas["CameraCollection"];
+export type LiveChannel = Schemas["Channel"];
+export type Stream = Schemas["Stream"];
+export type Webcam = Schemas["Webcam"];
 
 export type RasterLayer = Schemas["RasterLayer"];
 

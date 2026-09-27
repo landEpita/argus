@@ -1789,3 +1789,72 @@ button.story-title {
 .sev-info {
   color: var(--muted);
 }
+
+/* Live space */
+.live-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 16px;
+  align-items: start;
+}
+.live-wall {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.live-tile {
+  padding: 10px;
+}
+.live-tile-active {
+  outline: 1px solid var(--accent, #f97316);
+}
+.live-tile-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.live-tile-head .list-button {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  font-size: 13px;
+}
+.live-tile-head .list-button .dim {
+  font-size: 11px;
+}
+.live-empty {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+.stream-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+.live-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 12px 12px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.live-list li .list-button {
+  padding: 7px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.06));
+}
+.live-list li .list-button[aria-current="true"] span:first-child {
+  color: var(--accent, #f97316);
+}
+.live-list li .list-button .dim {
+  font-size: 11px;
+  text-align: right;
+}
+@media (max-width: 900px) {
+  .live-layout,
+  .live-wall {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

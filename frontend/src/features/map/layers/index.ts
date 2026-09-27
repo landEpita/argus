@@ -1,6 +1,6 @@
 import { aircraftLayer, militaryLayer } from "./aircraft";
 import { convergenceLayer, countryIndexLayer } from "./analysis";
-import { camerasLayer } from "./cameras";
+import { camerasLayer, webcamsLayer } from "./cameras";
 import { chokepointLayer } from "./chokepoints";
 import { eventLayers } from "./events";
 import { imageryLayers } from "./imagery";
@@ -18,6 +18,7 @@ export const layerRegistry = createLayerRegistry([
   ...eventLayers,
   ...infrastructureLayers,
   camerasLayer,
+  webcamsLayer,
   chokepointLayer,
   countryIndexLayer,
   convergenceLayer,

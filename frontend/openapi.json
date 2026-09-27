@@ -1090,6 +1090,55 @@
         "title": "Candle",
         "type": "object"
       },
+      "Channel": {
+        "properties": {
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ISO2 of the owning state or HQ",
+            "title": "Country"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "language": {
+            "description": "ISO 639-1",
+            "title": "Language",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ownership": {
+            "$ref": "#/components/schemas/Ownership"
+          },
+          "streams": {
+            "items": {
+              "$ref": "#/components/schemas/Stream"
+            },
+            "title": "Streams",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "country",
+          "language",
+          "ownership",
+          "streams"
+        ],
+        "title": "Channel",
+        "type": "object"
+      },
       "ChannelDraft": {
         "properties": {
           "config": {
@@ -4738,6 +4787,38 @@
         "title": "StorySource",
         "type": "object"
       },
+      "Stream": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/StreamKind"
+          },
+          "page": {
+            "description": "Where to watch it at the source",
+            "title": "Page",
+            "type": "string"
+          },
+          "url": {
+            "description": "What the player loads: an .m3u8, or a YouTube embed URL",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "url",
+          "page"
+        ],
+        "title": "Stream",
+        "type": "object"
+      },
+      "StreamKind": {
+        "enum": [
+          "hls",
+          "youtube"
+        ],
+        "title": "StreamKind",
+        "type": "string"
+      },
       "Technicals": {
         "properties": {
           "as_of": {
@@ -5509,6 +5590,44 @@
           "name"
         ],
         "title": "WatchlistDraft",
+        "type": "object"
+      },
+      "Webcam": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeoPoint"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None for views from orbit"
+          },
+          "streams": {
+            "items": {
+              "$ref": "#/components/schemas/Stream"
+            },
+            "title": "Streams",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "position",
+          "streams"
+        ],
+        "title": "Webcam",
         "type": "object"
       },
       "YieldCurve": {
@@ -7363,6 +7482,58 @@
         "summary": "Telegram",
         "tags": [
           "intel"
+        ]
+      }
+    },
+    "/api/v1/live/channels": {
+      "get": {
+        "description": "Live TV news channels, each with its streams in order of preference.",
+        "operationId": "list_channels_api_v1_live_channels_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Channel"
+                  },
+                  "title": "Response List Channels Api V1 Live Channels Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Channels",
+        "tags": [
+          "live"
+        ]
+      }
+    },
+    "/api/v1/live/webcams": {
+      "get": {
+        "description": "Live city webcams (YouTube), placed where they film.",
+        "operationId": "list_webcams_api_v1_live_webcams_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Webcam"
+                  },
+                  "title": "Response List Webcams Api V1 Live Webcams Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Webcams",
+        "tags": [
+          "live"
         ]
       }
     },

@@ -1,5 +1,5 @@
 import type { Feature, Polygon } from "geojson";
-import type { Camera, CameraCollection } from "@/lib/api/types";
+import type { Camera, CameraCollection, Webcam } from "@/lib/api/types";
 import { pointFeature } from "./features";
 import type { FeatureLayer, LayerFeatures } from "./types";
 
@@ -97,5 +97,36 @@ export const camerasLayer: FeatureLayer = {
   style: { color: "#facc15", radius: 4, geometry: "cones" },
   async load({ api, bbox, signal }) {
     return camerasToFeatures(await api.cameras(bbox, signal));
+  },
+};
+
+export function webcamsToFeatures(webcams: readonly Webcam[]): LayerFeatures {
+  const features: LayerFeatures["features"] = [];
+  for (const w of webcams) {
+    const [first] = w.streams;
+    if (!w.position || !first) continue;
+    features.push(
+      pointFeature(`webcam:${w.id}`, w.position.lon, w.position.lat, {
+        title: w.name,
+        feed: first.kind,
+        media_url: first.url,
+        url: first.page,
+        source: first.kind === "youtube" ? "YouTube" : "Broadcaster",
+      }),
+    );
+  }
+  return { type: "FeatureCollection", features };
+}
+
+export const webcamsLayer: FeatureLayer = {
+  id: "city-webcams",
+  label: "City webcams",
+  group: "infrastructure",
+  refreshMs: 86_400_000,
+  defaultEnabled: false,
+  note: "Live city views on YouTube, placed where they film. The Live space shows them as a wall.",
+  style: { color: "#fb7185", radius: 5 },
+  async load({ api, signal }) {
+    return webcamsToFeatures(await api.webcams(signal));
   },
 };

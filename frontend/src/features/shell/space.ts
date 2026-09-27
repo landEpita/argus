@@ -1,9 +1,10 @@
 /** The cockpit's top-level spaces. The URL hash carries the current one (#markets). */
-export const SPACES = ["map", "watch", "markets", "countries", "sources"] as const;
+export const SPACES = ["map", "live", "watch", "markets", "countries", "sources"] as const;
 export type Space = (typeof SPACES)[number];
 
 export const SPACE_LABELS: Record<Space, string> = {
   map: "Map",
+  live: "Live",
   watch: "Watch",
   markets: "Markets",
   countries: "Countries",

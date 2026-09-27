@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export type MediaKind = "image" | "video" | "hls";
+export type MediaKind = "image" | "video" | "hls" | "youtube";
 
 interface Props {
   kind: MediaKind;
@@ -12,6 +12,8 @@ interface Props {
   still?: string | null;
   /** How often a still is re-fetched, in ms. */
   refreshMs?: number;
+  /** Called instead of showing the failure, e.g. to move on to another stream. */
+  onFail?: () => void;
 }
 
 /** Cache-busting URL for a still the operator overwrites in place. */
@@ -25,7 +27,7 @@ export function refreshed(url: string, at: number): string {
  * which is only downloaded when a stream is opened. Give it a `key` of the
  * URL so switching feeds starts from a clean state.
  */
-export function LiveMedia({ kind, url, title, still, refreshMs = 60_000 }: Props) {
+export function LiveMedia({ kind, url, title, still, refreshMs = 60_000, onFail }: Props) {
   const video = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
   const [at, setAt] = useState(() => Date.now());
@@ -67,7 +69,12 @@ export function LiveMedia({ kind, url, title, still, refreshMs = 60_000 }: Props
     };
   }, [kind, url]);
 
+  useEffect(() => {
+    if (failed) onFail?.();
+  }, [failed, onFail]);
+
   if (failed) {
+    if (onFail) return null;
     return (
       <p className="note notice-warn">
         The stream did not load here.{" "}
@@ -76,6 +83,18 @@ export function LiveMedia({ kind, url, title, still, refreshMs = 60_000 }: Props
         </a>
         .
       </p>
+    );
+  }
+  if (kind === "youtube") {
+    return (
+      <iframe
+        className="live-media"
+        src={url}
+        title={title}
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+        referrerPolicy="strict-origin-when-cross-origin"
+        sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+      />
     );
   }
   if (kind === "image") {

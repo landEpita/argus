@@ -65,6 +65,7 @@
 | `infrastructure.facilities` | 3 miroirs Overpass | — | 24 h par tuile de 5° + 7 j de dernière valeur connue | au-delà de 16 tuiles, 422 `zoom_in` |
 | `infrastructure.submarine_cables` | TeleGeography | — | 24 h + 7 j | CC BY-NC-SA : attribution affichée |
 | `cameras.<réseau>` | TfL, Fintraffic, DriveBC, Transport for NSW, DelDOT | — | 6 h + 7 j par réseau | seuls les réseaux qui recoupent la vue sont lus ; un réseau injoignable est listé dans `unavailable`. L'orientation n'est affichée que si l'opérateur la donne (jamais devinée) ; images et flux sont chargés par le navigateur chez l'opérateur, URL épinglées à son domaine |
+| — (catalogue statique) | chaînes TV et webcams `/live/*` | — | — | `domain/live_video.py` ; le navigateur lit les flux chez le diffuseur, Argus ne vérifie pas qu'ils sont à l'antenne |
 | `imagery.weather_radar` | RainViewer | — | 5 min | les couches NASA GIBS sont calculées localement (URL déterministes) |
 | `events.internet-outages` | IODA | — | 10 min | chute de signal au niveau d'un pays, placée au centroïde ; la cause n'est pas connue |
 | `cyber.exploited_vulnerabilities` | CISA KEV | — | 6 h + 7 j | |

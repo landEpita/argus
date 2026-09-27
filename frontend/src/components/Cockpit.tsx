@@ -9,6 +9,7 @@ import { RegionBar } from "@/components/map/RegionBar";
 import { RightNowPanel, type RightNowTab } from "@/components/map/RightNowPanel";
 import { MarketsPage } from "@/components/markets/MarketsPage";
 import { CountriesPage } from "@/components/pages/CountriesPage";
+import { LivePage } from "@/components/pages/LivePage";
 import { SourcesPage } from "@/components/pages/SourcesPage";
 import { type Presence, WatchPage } from "@/components/pages/WatchPage";
 import { CommandPalette } from "@/components/shell/CommandPalette";
@@ -490,6 +491,14 @@ export function Cockpit({ api, store, watch, initial }: Props) {
         </>
       )}
 
+      {route.space === "live" && (
+        <LivePage
+          api={api}
+          tab={route.param}
+          onTab={(t) => route.go("live", t)}
+          onOpenMap={(lat, lon) => focusPoint(lat, lon, undefined, 12)}
+        />
+      )}
       {route.space === "markets" && (
         <MarketsPage
           api={api}

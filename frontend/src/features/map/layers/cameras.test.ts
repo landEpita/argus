@@ -9,6 +9,7 @@ import {
   destination,
   facingLabel,
   viewCone,
+  webcamsToFeatures,
 } from "./cameras";
 
 const page: CameraCollection = {
@@ -75,5 +76,19 @@ describe("open cameras", () => {
       signal: new AbortController().signal,
     });
     expect(data.features).toHaveLength(3);
+  });
+
+  it("places webcams that have a place, and plays their first stream", () => {
+    const { features } = webcamsToFeatures([
+      {
+        id: "paris",
+        name: "Paris",
+        position: { lat: 48.86, lon: 2.29 },
+        streams: [{ kind: "youtube", url: "https://www.youtube-nocookie.com/embed/x", page: "p" }],
+      },
+      { id: "iss", name: "ISS", position: null, streams: [] },
+    ]);
+    expect(features).toHaveLength(1);
+    expect(features[0]?.properties).toMatchObject({ feed: "youtube", source: "YouTube" });
   });
 });

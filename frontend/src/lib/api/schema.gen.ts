@@ -742,6 +742,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/live/channels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Channels
+         * @description Live TV news channels, each with its streams in order of preference.
+         */
+        get: operations["list_channels_api_v1_live_channels_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/live/webcams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Webcams
+         * @description Live city webcams (YouTube), placed where they film.
+         */
+        get: operations["list_webcams_api_v1_live_webcams_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/macro/calendar": {
         parameters: {
             query?: never;
@@ -1531,6 +1571,26 @@ export interface components {
              * @description None when the feed has none (FX)
              */
             volume: number | null;
+        };
+        /** Channel */
+        Channel: {
+            /**
+             * Country
+             * @description ISO2 of the owning state or HQ
+             */
+            country: string | null;
+            /** Id */
+            id: string;
+            /**
+             * Language
+             * @description ISO 639-1
+             */
+            language: string;
+            /** Name */
+            name: string;
+            ownership: components["schemas"]["Ownership"];
+            /** Streams */
+            streams: components["schemas"]["Stream"][];
         };
         /** ChannelDraft */
         ChannelDraft: {
@@ -2889,6 +2949,25 @@ export interface components {
             /** Tier */
             tier: number;
         };
+        /** Stream */
+        Stream: {
+            kind: components["schemas"]["StreamKind"];
+            /**
+             * Page
+             * @description Where to watch it at the source
+             */
+            page: string;
+            /**
+             * Url
+             * @description What the player loads: an .m3u8, or a YouTube embed URL
+             */
+            url: string;
+        };
+        /**
+         * StreamKind
+         * @enum {string}
+         */
+        StreamKind: "hls" | "youtube";
         /** Technicals */
         Technicals: {
             /**
@@ -3158,6 +3237,17 @@ export interface components {
             items?: components["schemas"]["WatchItem-Input"][];
             /** Name */
             name: string;
+        };
+        /** Webcam */
+        Webcam: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** @description None for views from orbit */
+            position: components["schemas"]["GeoPoint"] | null;
+            /** Streams */
+            streams: components["schemas"]["Stream"][];
         };
         /** YieldCurve */
         YieldCurve: {
@@ -4371,6 +4461,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_channels_api_v1_live_channels_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Channel"][];
+                };
+            };
+        };
+    };
+    list_webcams_api_v1_live_webcams_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Webcam"][];
                 };
             };
         };

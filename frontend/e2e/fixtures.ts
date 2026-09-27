@@ -17,6 +17,20 @@ const OFFLINE_STYLE = {
   layers: [{ id: "background", type: "background", paint: { "background-color": "#101010" } }],
 };
 
+const youtube = (id: string) => ({
+  kind: "youtube",
+  url: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1`,
+  page: `https://www.youtube.com/watch?v=${id}`,
+});
+export const LIVE_CHANNELS = ["bloomberg", "sky", "dw", "france24", "nhk-world"].map((id) => ({
+  id,
+  name: id.toUpperCase(),
+  country: "GB",
+  language: "en",
+  ownership: "public",
+  streams: [youtube(`${id.padEnd(11, "x").slice(0, 11)}`)],
+}));
+
 const CAPABILITY_DISABLED = (capability: string) => ({
   status: 503,
   json: { error: "capability_disabled", capability },
@@ -75,6 +89,8 @@ export class FakeApi {
       if (path === "/aviation/aircraft") {
         return route.fulfill({ json: { count: s.aircraft?.length ?? 0, items: s.aircraft ?? [] } });
       }
+      if (path === "/live/channels") return route.fulfill({ json: LIVE_CHANNELS });
+      if (path === "/live/webcams") return route.fulfill({ json: [] });
       if (path === "/cameras") {
         const items = s.cameras ?? [];
         return route.fulfill({
