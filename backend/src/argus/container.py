@@ -47,6 +47,7 @@ from argus.adapters.ioda import IodaOutageFetcher
 from argus.adapters.launchlibrary import LaunchLibraryFetcher
 from argus.adapters.llm.embeddings import LiteLLMEmbedder
 from argus.adapters.llm.litellm import LiteLLMFetcher
+from argus.adapters.notify.channels import Dispatcher, HttpNotifier, SmtpNotifier
 from argus.adapters.opensky import OpenSkyAircraftFetcher, OpenSkyAuth, OpenSkyTrackFetcher
 from argus.adapters.overpass import MIRRORS, OverpassFacilityFetcher
 from argus.adapters.rainviewer import RainViewerRadarFetcher
@@ -56,9 +57,15 @@ from argus.adapters.telegram import TelegramPreviewReader
 from argus.adapters.ukraine_alerts import UkraineAlertsFetcher
 from argus.adapters.usgs import UsgsEarthquakeFetcher
 from argus.config import Settings
-from argus.domain.aviation import AIRCRAFT_STATES, AIRCRAFT_TRACK, MILITARY_AIRCRAFT, AircraftQuery
+from argus.domain.aviation import (
+    AIRCRAFT_STATES,
+    AIRCRAFT_TRACK,
+    MILITARY_AIRCRAFT,
+    AircraftQuery,
+    AircraftTrack,
+)
 from argus.domain.chokepoints import CHOKEPOINT_TRAFFIC
-from argus.domain.convergence import SignalKind, SignalPoint
+from argus.domain.convergence import Convergence, SignalKind, SignalPoint
 from argus.domain.cyber import EXPLOITED_VULNERABILITIES
 from argus.domain.energy import ENERGY_SERIES
 from argus.domain.events import (
@@ -85,15 +92,18 @@ from argus.domain.markets import (
     PREDICTION_MARKETS,
     PRICE_HISTORY,
     QUOTE,
+    Quote,
 )
 from argus.domain.news import Story
 from argus.domain.news_sources import DEFAULT_SOURCES
+from argus.domain.signal_index import CountrySignal
 from argus.domain.space import ORBITAL_ELEMENTS
 from argus.domain.telegram import TelegramPost
 from argus.infra.cache import CACHE_SCHEMA_VERSION, Cache, InMemoryTTLCache, RedisCache
 from argus.infra.clock import SystemWallClock
 from argus.infra.db import Database
 from argus.infra.db.repositories import (
+    SqlAlertRepository,
     SqlLlmSettingsRepository,
     SqlPreferencesRepository,
     SqlSignalHistoryRepository,
@@ -103,8 +113,10 @@ from argus.infra.db.repositories import (
 from argus.infra.health import HealthRegistry
 from argus.infra.http import HttpClient, HttpxClient
 from argus.infra.metrics import Metrics
+from argus.providers.errors import AllProvidersFailedError, NoProviderError, ProviderError
 from argus.providers.observers import HealthObserver, MetricsObserver
 from argus.providers.registry import ProviderRegistry
+from argus.services.alerts import AlertLoop, AlertsService
 from argus.services.analysis import EVENT_LIMIT, AnalysisService
 from argus.services.assistant.agent import AssistantService
 from argus.services.assistant.notes import NotesService
@@ -166,6 +178,7 @@ class Container:
     notes: NotesService
     search: SearchService
     prediction: PredictionAnalyst
+    alerts: AlertsService
     watchlists: WatchlistService
     preferences: PreferencesService
     # Dependencies the app cannot serve without; probed by /system/ready.
@@ -300,6 +313,62 @@ def _register_finance(settings: Settings, registry: ProviderRegistry, http: Http
         registry.register(ECONOMIC_CALENDAR, ForexFactoryCalendarFetcher(http), priority=10)
     if settings.portwatch_enabled:
         registry.register(CHOKEPOINT_TRAFFIC, PortWatchFetcher(http), priority=10)
+
+
+class _AlertFeeds:
+    """What alert rules read, from the real services."""
+
+    def __init__(
+        self,
+        events: EventsService,
+        news: NewsService,
+        finance: FinanceService,
+        analysis: AnalysisService,
+        aviation: AviationService,
+        notes: NotesService,
+    ) -> None:
+        self._events, self._news, self._finance = events, news, finance
+        self._analysis, self._aviation, self._notes = analysis, aviation, notes
+
+    async def earthquakes(self, hours: float) -> list[GeoEvent]:
+        page = await self._events.events(
+            EventFeed.EARTHQUAKES, window=timedelta(hours=hours), bbox=None, limit=EVENT_LIMIT
+        )
+        return page.items
+
+    async def disasters(self, hours: float) -> list[GeoEvent]:
+        page = await self._events.events(
+            EventFeed.DISASTER_ALERTS, window=timedelta(hours=hours), bbox=None, limit=EVENT_LIMIT
+        )
+        return page.items
+
+    async def stories(self, hours: float) -> list[Story]:
+        return (await self._news.stories(window=timedelta(hours=hours), limit=500)).items
+
+    async def quotes(self) -> list[Quote]:
+        return (await self._finance.quotes()).items
+
+    async def signals(self) -> list[CountrySignal]:
+        return (await self._analysis.country_signals()).items
+
+    async def convergences(self) -> list[Convergence]:
+        return (await self._analysis.convergence()).items
+
+    async def track(self, icao24: str) -> AircraftTrack | None:
+        try:
+            return await self._aviation.track(icao24)
+        except (ProviderError, NoProviderError, AllProvidersFailedError):
+            return None
+
+    async def digest(self, owner: str) -> tuple[str, list[str]]:
+        extra: list[str] = []
+        try:
+            top = (await self._analysis.country_signals()).items[:3]
+            extra += [f"{c.name} signal index {c.score:.0f}" for c in top]
+        except (NoProviderError, AllProvidersFailedError):
+            pass
+        note = await self._notes.digest(owner, extra)
+        return note.text, note.facts
 
 
 class _RecentStories:
@@ -488,6 +557,29 @@ def build_container(
         usage,
     )  # fmt: skip
 
+    notes = NotesService(assistant, finance, clock)
+    alert_repo = SqlAlertRepository(db)
+    smtp = (
+        SmtpNotifier(
+            settings.smtp_host,
+            settings.smtp_port,
+            settings.smtp_from,
+            settings.smtp_user,
+            settings.smtp_password.get_secret_value() if settings.smtp_password else None,
+            settings.smtp_starttls,
+        )
+        if settings.smtp_host and settings.smtp_from
+        else None
+    )
+    alerts = AlertsService(
+        alert_repo,
+        _AlertFeeds(events, news, finance, analysis, aviation, notes),
+        Dispatcher(HttpNotifier(http), smtp),
+        clock,
+    )
+    if settings.alerts_enabled:
+        background.append(AlertLoop(alerts, alert_repo, settings.alerts_interval_s))
+
     return Container(
         settings=settings,
         http=http,
@@ -509,7 +601,8 @@ def build_container(
         finance=finance,
         assistant=assistant,
         assistant_settings=llm_settings,
-        notes=NotesService(assistant, finance, clock),
+        notes=notes,
+        alerts=alerts,
         watchlists=WatchlistService(SqlWatchlistRepository(db)),
         preferences=preferences,
         search=search,

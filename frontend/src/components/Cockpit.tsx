@@ -6,7 +6,7 @@ import { Inspector } from "@/components/map/Inspector";
 import { LayersDrawer } from "@/components/map/LayersDrawer";
 import { MapFooter } from "@/components/map/MapFooter";
 import { RegionBar } from "@/components/map/RegionBar";
-import { RightNowPanel } from "@/components/map/RightNowPanel";
+import { RightNowPanel, type RightNowTab } from "@/components/map/RightNowPanel";
 import { MarketsPage } from "@/components/markets/MarketsPage";
 import { CountriesPage } from "@/components/pages/CountriesPage";
 import { SourcesPage } from "@/components/pages/SourcesPage";
@@ -18,6 +18,8 @@ import { useHashRoute } from "@/components/shell/useHashRoute";
 import { useNow } from "@/components/shell/useNow";
 import { contextOf } from "@/features/assistant/chat";
 import { CountryDirectory, EMPTY_DIRECTORY } from "@/features/intel/countries";
+import { PollingResource } from "@/features/intel/resource";
+import { useResource } from "@/features/intel/useResource";
 import { layerRegistry } from "@/features/map/layers";
 import { trackToFeatures } from "@/features/map/layers/aircraft";
 import { watchKey } from "@/features/map/layers/features";
@@ -32,7 +34,14 @@ import type { Command } from "@/features/shell/palette";
 import { SPACE_LABELS, SPACES } from "@/features/shell/space";
 import type { WatchStore } from "@/features/watch/store";
 import type { ApiClient } from "@/lib/api/client";
-import type { Health, MapFocus, Preferences, WatchKind } from "@/lib/api/types";
+import type {
+  AlertFeed,
+  AlertItem,
+  Health,
+  MapFocus,
+  Preferences,
+  WatchKind,
+} from "@/lib/api/types";
 
 const DEFAULT_POSITION = { center: { lat: 30, lon: 20 }, zoom: 2 };
 const KNOWN_LAYERS = new Set(layerRegistry.all().map((l) => l.id));
@@ -71,6 +80,30 @@ export function Cockpit({ api, store, watch, initial }: Props) {
   const [askAvailable, setAskAvailable] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [question, setQuestion] = useState<Question | null>(null);
+  const [leftTab, setLeftTab] = useState<RightNowTab>("situations");
+
+  // Unread alerts: the header count, and browser notifications for new ones.
+  const alertsResource = useMemo(
+    () => new PollingResource<AlertFeed>((s) => api.alerts(true, s), 60_000),
+    [api],
+  );
+  const unreadFeed = useResource(alertsResource);
+  const notified = useRef<Set<string> | null>(null);
+  useEffect(() => {
+    const items = unreadFeed.data?.items;
+    if (!items) return;
+    if (notified.current === null) {
+      notified.current = new Set(items.map((a) => a.id)); // the backlog is not news
+      return;
+    }
+    for (const a of items) {
+      if (notified.current.has(a.id)) continue;
+      notified.current.add(a.id);
+      if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+        new Notification(a.title, { body: `${a.rule_name} · ${a.source}`, tag: a.id });
+      }
+    }
+  }, [unreadFeed.data]);
   const initialEnabled = useRef(enabled);
   const initialProjection = useRef(projection);
   const initialPosition = useRef(initial.viewport ?? DEFAULT_POSITION);
@@ -206,6 +239,24 @@ export function Cockpit({ api, store, watch, initial }: Props) {
     [setLayer, focusPoint, focusCountry, route],
   );
 
+  const openAlert = useCallback(
+    (alert: AlertItem) => {
+      void api.markAlertsRead([alert.id]).then(() => alertsResource.refresh());
+      if (alert.lat !== null && alert.lon !== null) {
+        applyFocus({
+          lat: alert.lat,
+          lon: alert.lon,
+          zoom: 6,
+          country: null,
+          layers: alert.layer ? [alert.layer] : [],
+        });
+      } else if (alert.url && /^https?:\/\//.test(alert.url)) {
+        window.open(alert.url, "_blank", "noopener,noreferrer");
+      }
+    },
+    [api, alertsResource, applyFocus],
+  );
+
   const focusSituation = useCallback(
     (s: Situation) => {
       setFocused(s.id);
@@ -339,6 +390,12 @@ export function Cockpit({ api, store, watch, initial }: Props) {
         unreachable={unreachable}
         askAvailable={askAvailable}
         onAsk={() => (askAvailable ? setAssistantOpen((o) => !o) : route.go("sources"))}
+        unread={unreadFeed.data?.unread ?? 0}
+        onAlerts={() => {
+          route.go("map");
+          setLeftOpen(true);
+          setLeftTab("alerts");
+        }}
       />
 
       {onMap && (
@@ -354,6 +411,11 @@ export function Cockpit({ api, store, watch, initial }: Props) {
               onFocusCountry={(iso2) => focusCountry(iso2)}
               onOpenMarkets={() => route.go("markets")}
               onClose={() => setLeftOpen(false)}
+              tab={leftTab}
+              onTab={setLeftTab}
+              unread={unreadFeed.data?.unread ?? 0}
+              onOpenAlert={openAlert}
+              onManageAlerts={() => route.go("watch")}
             />
           ) : (
             <button type="button" className="reopen btn glass" onClick={() => setLeftOpen(true)}>
@@ -459,6 +521,8 @@ export function Cockpit({ api, store, watch, initial }: Props) {
           onOpenMap={(lat, lon) => focusPoint(lat, lon, undefined, 7)}
           onOpenAsset={(s) => route.go("markets", s)}
           onOpenCountry={(iso2) => route.go("countries", iso2)}
+          onOpenAlert={openAlert}
+          onAlertsChanged={() => void alertsResource.refresh()}
         />
       )}
       {route.space === "sources" && (

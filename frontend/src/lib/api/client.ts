@@ -2,6 +2,11 @@ import { type BBox, bboxToParam } from "@/lib/geo";
 import type {
   AircraftCollection,
   AircraftTrack,
+  AlertChannel,
+  AlertChannelDraft,
+  AlertFeed,
+  AlertRule,
+  AlertRuleDraft,
   Answer,
   AskInput,
   AssetDetail,
@@ -11,13 +16,16 @@ import type {
   CableNetwork,
   CalendarEvent,
   Capabilities,
+  ChannelKindInfo,
   ChokepointTraffic,
   ConvergenceCollection,
   CountryDetail,
   CountryInfo,
   CountrySignalCollection,
   CryptoAsset,
+  Delivery,
   EnergyBoard,
+  Evaluation,
   EventCollection,
   EventFeed,
   FacilityCollection,
@@ -113,6 +121,18 @@ export interface ApiClient {
   usage(days: number, signal?: AbortSignal): Promise<Usage>;
   analysePrediction(marketId: string, signal?: AbortSignal): Promise<PredictionReading>;
   search(q: string, signal?: AbortSignal): Promise<SearchResults>;
+  alertRules(signal?: AbortSignal): Promise<AlertRule[]>;
+  createAlertRule(draft: AlertRuleDraft): Promise<AlertRule>;
+  updateAlertRule(id: string, draft: AlertRuleDraft): Promise<AlertRule>;
+  deleteAlertRule(id: string): Promise<void>;
+  alertChannels(signal?: AbortSignal): Promise<AlertChannel[]>;
+  alertChannelKinds(signal?: AbortSignal): Promise<ChannelKindInfo[]>;
+  createAlertChannel(draft: AlertChannelDraft): Promise<AlertChannel>;
+  deleteAlertChannel(id: string): Promise<void>;
+  testAlertChannel(id: string): Promise<Delivery>;
+  alerts(unreadOnly?: boolean, signal?: AbortSignal): Promise<AlertFeed>;
+  markAlertsRead(ids?: string[]): Promise<AlertFeed>;
+  evaluateAlerts(): Promise<Evaluation>;
   vessels(params: { bbox?: BBox }, signal?: AbortSignal): Promise<VesselCollection>;
   satellites(group: SatelliteGroup, signal?: AbortSignal): Promise<SatelliteCollection>;
   feeds(signal?: AbortSignal): Promise<FeedInfo[]>;
@@ -258,6 +278,27 @@ export function createApiClient(baseUrl = "", fetchImpl: FetchLike = fetch): Api
         body: { market_id: marketId },
         signal,
       }),
+    alertRules: (signal) => request<AlertRule[]>("GET", "/alerts/rules", { signal }),
+    createAlertRule: (body) => request<AlertRule>("POST", "/alerts/rules", { body }),
+    updateAlertRule: (id, body) =>
+      request<AlertRule>("PUT", `/alerts/rules/${encodeURIComponent(id)}`, { body }),
+    deleteAlertRule: (id) => request<void>("DELETE", `/alerts/rules/${encodeURIComponent(id)}`),
+    alertChannels: (signal) => request<AlertChannel[]>("GET", "/alerts/channels", { signal }),
+    alertChannelKinds: (signal) =>
+      request<ChannelKindInfo[]>("GET", "/alerts/channels/kinds", { signal }),
+    createAlertChannel: (body) => request<AlertChannel>("POST", "/alerts/channels", { body }),
+    deleteAlertChannel: (id) =>
+      request<void>("DELETE", `/alerts/channels/${encodeURIComponent(id)}`),
+    testAlertChannel: (id) =>
+      request<Delivery>("POST", `/alerts/channels/${encodeURIComponent(id)}/test`, {}),
+    alerts: (unreadOnly, signal) =>
+      request<AlertFeed>("GET", "/alerts", {
+        query: unreadOnly ? { unread_only: "true" } : {},
+        signal,
+      }),
+    markAlertsRead: (ids) =>
+      request<AlertFeed>("POST", "/alerts/read", { body: { ids: ids ?? null } }),
+    evaluateAlerts: () => request<Evaluation>("POST", "/alerts/evaluate", {}),
     search: (q, signal) =>
       request<SearchResults>("GET", "/assistant/search", { query: { q }, signal }),
     vessels: ({ bbox }, signal) =>

@@ -1,18 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { AlertsFeed } from "@/components/alerts/AlertsFeed";
 import { CyberPanel } from "@/components/intel/CyberPanel";
 import { NewsPanel } from "@/components/intel/NewsPanel";
 import { TelegramPanel } from "@/components/intel/TelegramPanel";
 import type { CountryDirectory } from "@/features/intel/countries";
 import type { Situation } from "@/features/map/situations";
 import type { ApiClient } from "@/lib/api/client";
+import type { AlertItem } from "@/lib/api/types";
 import { MiniMarkets } from "./MiniMarkets";
 import { SituationsList } from "./SituationsList";
 
-type Tab = "situations" | "news" | "telegram" | "cyber" | "markets";
+export type RightNowTab = "situations" | "alerts" | "news" | "telegram" | "cyber" | "markets";
+type Tab = RightNowTab;
 const TABS: { id: Tab; label: string }[] = [
   { id: "situations", label: "Situations" },
+  { id: "alerts", label: "Alerts" },
   { id: "news", label: "News" },
   { id: "telegram", label: "Telegram" },
   { id: "cyber", label: "Cyber" },
@@ -29,12 +32,16 @@ interface Props {
   onFocusCountry(iso2: string): void;
   onOpenMarkets(): void;
   onClose(): void;
+  tab: Tab;
+  onTab(tab: Tab): void;
+  unread: number;
+  onOpenAlert(alert: AlertItem): void;
+  onManageAlerts(): void;
 }
 
 /** The left panel of the map. Only the open tab polls its source. */
 export function RightNowPanel(props: Props) {
-  const [tab, setTab] = useState<Tab>("situations");
-  const { api, countries } = props;
+  const { api, countries, tab } = props;
   return (
     <aside className="side-card rightnow glass" aria-label="Right now">
       <div className="card-head">
@@ -53,9 +60,10 @@ export function RightNowPanel(props: Props) {
             type="button"
             role="tab"
             aria-selected={tab === t.id}
-            onClick={() => setTab(t.id)}
+            onClick={() => props.onTab(t.id)}
           >
             {t.label}
+            {t.id === "alerts" && props.unread > 0 ? ` · ${props.unread}` : ""}
           </button>
         ))}
       </div>
@@ -67,6 +75,9 @@ export function RightNowPanel(props: Props) {
             focused={props.focused}
             onFocus={props.onFocusSituation}
           />
+        )}
+        {tab === "alerts" && (
+          <AlertsFeed api={api} onOpen={props.onOpenAlert} onManage={props.onManageAlerts} />
         )}
         {tab === "news" && (
           <NewsPanel api={api} countries={countries} onFocusCountry={props.onFocusCountry} />

@@ -9,6 +9,7 @@ from fastapi import Depends, Request
 from argus.container import Container
 from argus.infra.health import HealthRegistry
 from argus.providers.registry import ProviderRegistry
+from argus.services.alerts import AlertsService
 from argus.services.analysis import AnalysisService
 from argus.services.assistant.agent import AssistantService
 from argus.services.assistant.notes import NotesService
@@ -122,6 +123,10 @@ def get_search(container: ContainerDep) -> SearchService:
     return container.search
 
 
+def get_alerts(container: ContainerDep) -> AlertsService:
+    return container.alerts
+
+
 def get_health(container: ContainerDep) -> HealthRegistry:
     return container.health
 
@@ -151,3 +156,4 @@ AssistantSettingsDep = Annotated[AssistantSettingsService, Depends(get_assistant
 NotesDep = Annotated[NotesService, Depends(get_notes)]
 SearchDep = Annotated[SearchService, Depends(get_search)]
 PredictionAnalystDep = Annotated[PredictionAnalyst, Depends(get_prediction_analyst)]
+AlertsDep = Annotated[AlertsService, Depends(get_alerts)]

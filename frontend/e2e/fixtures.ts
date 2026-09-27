@@ -37,6 +37,9 @@ export interface ApiScenario {
 export class FakeApi {
   readonly requests: Request[] = [];
   watchlists: Watchlist[] = [];
+  rules: Record<string, unknown>[] = [];
+  channels: Record<string, unknown>[] = [];
+  alertItems: Record<string, unknown>[] = [];
 
   constructor(private scenario: ApiScenario) {}
 
@@ -253,6 +256,71 @@ export class FakeApi {
       if (path === "/assistant/ask") {
         if (!s.assistant) return route.fulfill(CAPABILITY_DISABLED("llm.completion"));
         return route.fulfill({ json: ANSWER });
+      }
+      if (path === "/alerts/kinds") return route.fulfill({ json: [] });
+      if (path === "/alerts/channels/kinds") {
+        return route.fulfill({
+          json: [
+            { kind: "webhook", available: true, why: null },
+            { kind: "discord", available: true, why: null },
+            { kind: "telegram", available: true, why: null },
+            { kind: "email", available: false, why: "set ARGUS_SMTP_HOST and ARGUS_SMTP_FROM" },
+          ],
+        });
+      }
+      if (path === "/alerts/rules" && method === "GET") return route.fulfill({ json: this.rules });
+      if (path === "/alerts/rules" && method === "POST") {
+        const rule = {
+          ...request.postDataJSON(),
+          id: `r${this.rules.length + 1}`,
+          created_at: NOW,
+          last_fired_at: null,
+        };
+        this.rules.push(rule);
+        return route.fulfill({ status: 201, json: rule });
+      }
+      if (path.startsWith("/alerts/rules/") && method === "PUT") {
+        const id = path.split("/")[3];
+        const rule = { ...this.rules.find((r) => r.id === id), ...request.postDataJSON() };
+        this.rules = this.rules.map((r) => (r.id === id ? rule : r));
+        return route.fulfill({ json: rule });
+      }
+      if (path === "/alerts/channels" && method === "GET")
+        return route.fulfill({ json: this.channels });
+      if (path === "/alerts/channels" && method === "POST") {
+        const body = request.postDataJSON();
+        const channel = {
+          id: `c${this.channels.length + 1}`,
+          name: body.name,
+          kind: body.kind,
+          hint: "discord.com",
+        };
+        this.channels.push(channel);
+        return route.fulfill({ status: 201, json: channel });
+      }
+      if (path.startsWith("/alerts/channels/") && path.endsWith("/test")) {
+        return route.fulfill({
+          json: { channel_id: "c1", channel_name: "ops", ok: true, error: null },
+        });
+      }
+      if (path === "/alerts" && method === "GET") {
+        const unreadOnly = new URL(request.url()).searchParams.get("unread_only") === "true";
+        const items = unreadOnly ? this.alertItems.filter((a) => !a.read) : this.alertItems;
+        return route.fulfill({
+          json: { unread: this.alertItems.filter((a) => !a.read).length, items },
+        });
+      }
+      if (path === "/alerts/read") {
+        const ids: string[] | null = request.postDataJSON().ids;
+        this.alertItems = this.alertItems.map((a) =>
+          ids === null || ids.includes(a.id as string) ? { ...a, read: true } : a,
+        );
+        return route.fulfill({
+          json: { unread: this.alertItems.filter((a) => !a.read).length, items: this.alertItems },
+        });
+      }
+      if (path === "/alerts/evaluate") {
+        return route.fulfill({ json: { fired: [], skipped: ["earthquakes"] } });
       }
       if (path === "/assistant/usage") {
         return route.fulfill({
@@ -761,4 +829,23 @@ export const MARKET = {
   end_date: null,
   url: "https://polymarket.com/event/x",
   source: "polymarket",
+};
+
+export const QUAKE_ALERT = {
+  id: "a1",
+  key: "eq:1",
+  rule_id: "r1",
+  rule_name: "Big quakes",
+  at: NOW,
+  title: "M 6.4 · Hualien, Taiwan",
+  detail: "",
+  severity: "critical",
+  source: "USGS",
+  url: null,
+  lat: 23.9,
+  lon: 121.6,
+  layer: "earthquakes",
+  unverified: false,
+  read: false,
+  deliveries: [{ channel_id: "c1", channel_name: "ops", ok: false, error: "[discord] HTTP 404" }],
 };

@@ -14,6 +14,7 @@ from argus.api.errors import install_error_handlers
 from argus.api.mcp import build_mcp, mcp_routes
 from argus.api.middleware import RequestContextMiddleware
 from argus.api.routers import (
+    alerts,
     analysis,
     assistant,
     aviation,
@@ -86,6 +87,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
     api.include_router(watchlists.router)
     api.include_router(preferences.router)
     api.include_router(assistant.router)
+    api.include_router(alerts.router)
     app.include_router(api)
     app.include_router(system.metrics_router)
     if mcp is not None:

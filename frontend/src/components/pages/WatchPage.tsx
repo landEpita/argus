@@ -1,12 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { AlertsPanel } from "@/components/alerts/AlertsPanel";
 import { Segmented } from "@/components/shell/Segmented";
 import type { CountryDirectory } from "@/features/intel/countries";
 import { formatChange, quoteLabel } from "@/features/markets/format";
 import { normaliseWatch, WATCH_KIND_LABELS, WATCH_PLACEHOLDERS } from "@/features/watch/normalise";
 import type { ApiClient } from "@/lib/api/client";
 import type {
+  AlertItem,
   CountrySignalCollection,
   QuoteBoard,
   WatchItem,
@@ -32,6 +34,8 @@ interface Props {
   onOpenMap(lat: number, lon: number): void;
   onOpenAsset(symbol: string): void;
   onOpenCountry(iso2: string): void;
+  onOpenAlert(alert: AlertItem): void;
+  onAlertsChanged(): void;
 }
 
 const KINDS: WatchKind[] = ["aircraft", "vessel", "ticker", "country", "keyword"];
@@ -204,7 +208,7 @@ export function WatchPage(props: Props) {
         <div className="page-head">
           <div>
             <h1>Watch</h1>
-            <p>What you follow, and what it is doing now.</p>
+            <p>What you follow, what it is doing now, and what should wake you up.</p>
           </div>
           <span className="muted">{lists ? `${lists.length} / 50 lists` : ""}</span>
         </div>
@@ -397,18 +401,11 @@ export function WatchPage(props: Props) {
             )}
           </section>
 
-          <section className="card card-pad" aria-labelledby="watch-rules">
-            <div className="card-title">
-              <h2 id="watch-rules">Rules & activity</h2>
-              <span className="soon">phase 6</span>
-            </div>
-            <p className="notice">
-              Alert rules — “a watched aircraft appears”, “earthquake above M 6”, “a ticker moves
-              more than 3 %” — and their delivery (in-app, browser, e-mail, Telegram, webhook)
-              arrive in phase 6. Until then, statuses here are what the feeds show right now;
-              nothing runs in the background.
-            </p>
-          </section>
+          <AlertsPanel
+            api={api}
+            onOpenAlert={props.onOpenAlert}
+            onChanged={props.onAlertsChanged}
+          />
         </div>
       </div>
     </main>

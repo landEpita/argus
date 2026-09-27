@@ -59,6 +59,16 @@ class HttpClient(Protocol):
         timeout_s: float | None = None,
     ) -> Any: ...
 
+    async def post_json(
+        self,
+        url: str,
+        *,
+        provider: str,
+        body: Any,
+        headers: Mapping[str, str] | None = None,
+        timeout_s: float | None = None,
+    ) -> Any: ...
+
     async def aclose(self) -> None: ...
 
 
@@ -154,6 +164,35 @@ class HttpxClient:
             return response.json()
         except ValueError as exc:
             raise ProviderResponseError(provider, "invalid JSON") from exc
+
+    async def post_json(
+        self,
+        url: str,
+        *,
+        provider: str,
+        body: Any,
+        headers: Mapping[str, str] | None = None,
+        timeout_s: float | None = None,
+    ) -> Any:
+        """JSON POST (webhooks, bots). Returns the JSON reply, or None when there is none."""
+        timeout = httpx.USE_CLIENT_DEFAULT if timeout_s is None else httpx.Timeout(timeout_s)
+        try:
+            response = await self._client.post(
+                url, json=body, headers=dict(headers or {}), timeout=timeout
+            )
+        except httpx.TimeoutException as exc:
+            raise ProviderUnavailableError(provider, "timeout") from exc
+        except httpx.TransportError as exc:
+            raise ProviderUnavailableError(
+                provider, f"transport error: {type(exc).__name__}"
+            ) from exc
+        _check_status(provider, response.status_code, response.headers)
+        if not response.content:
+            return None
+        try:
+            return response.json()
+        except ValueError:
+            return None
 
     async def aclose(self) -> None:
         await self._client.aclose()

@@ -41,6 +41,7 @@ class StubHttp:
         self.payload = payload
         self.error = error
         self.calls: list[tuple[str, dict[str, str]]] = []
+        self.posts: list[tuple[str, Any]] = []
         self.closed = False
 
     async def get_json(
@@ -82,6 +83,20 @@ class StubHttp:
         timeout_s: float | None = None,
     ) -> Any:
         self.calls.append((url, dict(data)))
+        if self.error is not None:
+            raise self.error
+        return self.payload(url) if callable(self.payload) else self.payload
+
+    async def post_json(
+        self,
+        url: str,
+        *,
+        provider: str,
+        body: Any,
+        headers: Mapping[str, str] | None = None,
+        timeout_s: float | None = None,
+    ) -> Any:
+        self.posts.append((url, body))
         if self.error is not None:
             raise self.error
         return self.payload(url) if callable(self.payload) else self.payload

@@ -105,6 +105,19 @@
 - `notes.py` : note de marché. Les faits sont calculés en Python ; le modèle rédige, et si son
   texte contient un chiffre absent des faits, on affiche un gabarit construit à partir des faits.
 
+### Alertes (`domain/alerts.py`, `services/alerts.py`, `adapters/notify/`)
+
+- Une règle = un type, des paramètres validés par type, des canaux. Chaque type est une fonction
+  pure `(paramètres, instantané) → candidats` ; chaque candidat a une clé de déduplication
+  (`eq:<id>`, `tk:<symbole>:<jour>:<sens>`…), si bien qu'un même fait ne se déclenche qu'une fois
+  par règle (contrainte unique en base).
+- `AlertLoop` évalue toutes les 2 minutes. L'instantané ne lit que ce dont les règles actives
+  ont besoin ; une source en panne fait sauter les règles concernées pour ce tour (« skipped »),
+  sans rien inventer. Au plus 10 nouvelles alertes par règle et par tour.
+- Livraison : webhook (JSON), Discord, bot Telegram, SMTP. Les secrets (URL, token) restent
+  dans `alert_channels` et ne sont jamais renvoyés ; chaque alerte garde le résultat de chaque
+  livraison.
+
 ### Renseignement (`services/news.py`, `services/telegram.py`, `services/cyber.py`)
 
 - **News.** Les sources ne sont pas interchangeables : ce ne sont pas des fournisseurs d'une

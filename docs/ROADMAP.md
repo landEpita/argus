@@ -113,7 +113,10 @@ sur fixture, son endpoint et sa couche ou son panneau.
 - [x] Voix : dictée et lecture des réponses par le navigateur (GEV)
 - [ ] Notes ancrées pour les pays et les régions ; brief du matin (avec la phase 6)
 
-## Phase 6 : alertes et diffusion
-- [ ] Règles d'alerte et canaux (Telegram, Discord, e-mail, webhook, Web Push) (WM, OX)
-- [ ] Digest quotidien (WM)
+## Phase 6 : alertes et diffusion 🚧
+- [x] Règles d'alerte (8 types : avion surveillé en vol, séisme, alerte de catastrophe, mot-clé dans les news, variation d'un prix, indice pays, convergence, digest quotidien), évaluées toutes les 2 min en tâche de fond, dédupliquées par fait (WM, OX)
+- [x] Canaux : dans l'app (fil lu / non lu, compteur dans l'en-tête), notifications du navigateur (app ouverte), webhook JSON, Discord, bot Telegram, e-mail SMTP ; secrets côté serveur, échecs de livraison affichés (WM, OX)
+- [x] Digest quotidien : chiffres calculés par Argus, prose du modèle vérifiée, sinon gabarit (WM)
+- [ ] Heures calmes, digest hebdomadaire
+- [ ] Web Push (app fermée, VAPID)
 - [ ] Application de bureau Tauri (WM, OBB)

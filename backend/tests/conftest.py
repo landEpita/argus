@@ -29,6 +29,7 @@ if POSTGRES_URL:
 PROVIDER_SWITCHES = (
     "opensky_enabled",
     "assistant_enabled",
+    "alerts_enabled",
     "liquidations_enabled",
     "eia_enabled",
     "adsblol_enabled",

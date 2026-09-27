@@ -6,10 +6,11 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 from uuid import UUID
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from argus.domain.alerts import Alert, Channel, Delivery, Rule
 from argus.domain.errors import ConflictError
 from argus.domain.llm import ModelUsage, StoredLlmSettings, UsageRecord
 from argus.domain.preferences import Preferences, StoredPreferences
@@ -17,6 +18,9 @@ from argus.domain.signal_index import Component, CountrySignal, HistoryPoint
 from argus.domain.watchlist import WatchItem, WatchKind, Watchlist, WatchlistDraft
 from argus.infra.db.database import Database
 from argus.infra.db.tables import (
+    AlertChannelRow,
+    AlertRow,
+    AlertRuleRow,
     AssistantSettingsRow,
     LlmUsageRow,
     PreferencesRow,
@@ -269,3 +273,139 @@ class SqlUsageRepository:
             )
             for m, n, i, o, c, u in rows
         ]  # fmt: skip
+
+
+class SqlAlertRepository:
+    def __init__(self, db: Database) -> None:
+        self._db = db
+
+    # ── Rules ──
+    async def rules(self, owner: str) -> list[Rule]:
+        async with self._db.transaction() as session:
+            rows = (
+                await session.scalars(
+                    select(AlertRuleRow)
+                    .where(AlertRuleRow.owner_id == owner)
+                    .order_by(AlertRuleRow.created_at)
+                )
+            ).all()
+            return [
+                Rule(
+                    id=r.id, name=r.name, kind=r.kind, params=r.params, channels=tuple(r.channels),
+                    enabled=r.enabled, created_at=_aware(r.created_at),
+                    last_fired_at=_aware(r.last_fired_at) if r.last_fired_at else None,
+                )
+                for r in rows
+            ]  # fmt: skip
+
+    async def owners(self) -> list[str]:
+        async with self._db.transaction() as session:
+            stmt = select(AlertRuleRow.owner_id).where(AlertRuleRow.enabled.is_(True)).distinct()
+            return list((await session.scalars(stmt)).all())
+
+    async def save_rule(self, owner: str, rule: Rule) -> Rule:
+        async with self._db.transaction() as session:
+            row = await session.get(AlertRuleRow, rule.id)
+            if row is None or row.owner_id != owner:
+                row = AlertRuleRow(id=rule.id, owner_id=owner)
+                session.add(row)
+            row.name, row.kind, row.params = rule.name, rule.kind.value, rule.params
+            row.channels, row.enabled = list(rule.channels), rule.enabled
+            row.created_at, row.last_fired_at = rule.created_at, rule.last_fired_at
+        return rule
+
+    async def delete_rule(self, owner: str, rule_id: str) -> bool:
+        async with self._db.transaction() as session:
+            row = await session.get(AlertRuleRow, rule_id)
+            if row is None or row.owner_id != owner:
+                return False
+            await session.delete(row)
+            return True
+
+    # ── Channels ──
+    async def channels(self, owner: str) -> list[Channel]:
+        async with self._db.transaction() as session:
+            rows = (
+                await session.scalars(
+                    select(AlertChannelRow)
+                    .where(AlertChannelRow.owner_id == owner)
+                    .order_by(AlertChannelRow.created_at)
+                )
+            ).all()
+            return [
+                Channel(
+                    id=r.id,
+                    name=r.name,
+                    kind=r.kind,
+                    config=r.config,
+                    created_at=_aware(r.created_at),
+                )
+                for r in rows
+            ]
+
+    async def save_channel(self, owner: str, channel: Channel) -> Channel:
+        async with self._db.transaction() as session:
+            row = await session.get(AlertChannelRow, channel.id)
+            if row is None or row.owner_id != owner:
+                row = AlertChannelRow(id=channel.id, owner_id=owner)
+                session.add(row)
+            row.name, row.kind, row.config = channel.name, channel.kind.value, channel.config
+            row.created_at = channel.created_at
+        return channel
+
+    async def delete_channel(self, owner: str, channel_id: str) -> bool:
+        async with self._db.transaction() as session:
+            row = await session.get(AlertChannelRow, channel_id)
+            if row is None or row.owner_id != owner:
+                return False
+            await session.delete(row)
+            return True
+
+    # ── Alerts ──
+    async def seen(self, owner: str, rule_id: str, key: str) -> bool:
+        async with self._db.transaction() as session:
+            stmt = select(func.count()).where(
+                AlertRow.owner_id == owner, AlertRow.rule_id == rule_id, AlertRow.dedupe_key == key
+            )
+            return bool(await session.scalar(stmt))
+
+    async def add_alert(self, owner: str, alert: Alert) -> None:
+        data = alert.model_dump(mode="json", exclude={"id", "key", "at", "deliveries"})
+        async with self._db.transaction() as session:
+            session.add(
+                AlertRow(
+                    id=alert.id, owner_id=owner, dedupe_key=alert.key, at=alert.at,
+                    deliveries=[d.model_dump() for d in alert.deliveries], **data,
+                )
+            )  # fmt: skip
+
+    async def alerts(self, owner: str, limit: int, unread_only: bool) -> list[Alert]:
+        stmt = select(AlertRow).where(AlertRow.owner_id == owner)
+        if unread_only:
+            stmt = stmt.where(AlertRow.read.is_(False))
+        stmt = stmt.order_by(AlertRow.at.desc()).limit(limit)
+        async with self._db.transaction() as session:
+            rows = (await session.scalars(stmt)).all()
+            return [
+                Alert(
+                    id=r.id, key=r.dedupe_key, rule_id=r.rule_id, rule_name=r.rule_name,
+                    at=_aware(r.at), title=r.title, detail=r.detail, severity=r.severity,
+                    source=r.source, url=r.url, lat=r.lat, lon=r.lon, layer=r.layer,
+                    unverified=r.unverified, read=r.read,
+                    deliveries=tuple(Delivery.model_validate(d) for d in r.deliveries),
+                )
+                for r in rows
+            ]  # fmt: skip
+
+    async def unread(self, owner: str) -> int:
+        async with self._db.transaction() as session:
+            stmt = select(func.count()).where(AlertRow.owner_id == owner, AlertRow.read.is_(False))
+            return int(await session.scalar(stmt) or 0)
+
+    async def mark_read(self, owner: str, ids: Sequence[str] | None) -> int:
+        stmt = update(AlertRow).where(AlertRow.owner_id == owner, AlertRow.read.is_(False))
+        if ids is not None:
+            stmt = stmt.where(AlertRow.id.in_(list(ids)))
+        async with self._db.transaction() as session:
+            result = await session.execute(stmt.values(read=True))
+            return int(getattr(result, "rowcount", 0) or 0)

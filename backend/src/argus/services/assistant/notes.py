@@ -8,6 +8,7 @@ note says which one the reader is seeing.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -63,6 +64,12 @@ async def market_facts(finance: FinanceService) -> list[str]:
     return facts
 
 
+DIGEST_SYSTEM = """You write a short daily digest (at most 5 sentences) for an analyst.
+Use ONLY the facts given, with their exact figures. Group market moves, then countries,
+then converging signals. Do not add numbers, forecasts or explanations; never claim that
+one fact caused another. Reply with the digest only."""
+
+
 class NotesService:
     def __init__(
         self, assistant: AssistantService, finance: FinanceService, clock: WallClock
@@ -72,19 +79,28 @@ class NotesService:
         self._clock = clock
 
     async def market(self, owner: str) -> Note:
-        facts = await market_facts(self._finance)
+        return await self._write(owner, await market_facts(self._finance), NOTE_SYSTEM, 160)
+
+    async def digest(self, owner: str, extra: Sequence[str] = ()) -> Note:
+        """The daily digest: market facts plus what the caller adds (signals, situations)."""
+        facts = [*await market_facts(self._finance), *extra]
+        return await self._write(owner, facts, DIGEST_SYSTEM, 320, purpose="digest")
+
+    async def _write(
+        self, owner: str, facts: list[str], system: str, max_tokens: int, purpose: str = "note"
+    ) -> Note:
         now = self._clock.utcnow()
-        template = "; ".join(facts) + "." if facts else "No market data right now."
+        template = "; ".join(facts) + "." if facts else "No data right now."
         if not facts or not await self._assistant.available(owner):
             return Note(template, facts, "template", now, [])
         completion = await self._assistant.complete(
             owner,
             CompletionQuery(
-                system=NOTE_SYSTEM,
+                system=system,
                 messages=(ChatMessage(role=Role.USER, content="Facts:\n- " + "\n- ".join(facts)),),
-                max_tokens=160,
+                max_tokens=max_tokens,
             ),
-            purpose="note",
+            purpose=purpose,
         )
         text = completion.text.strip()
         invented = ungrounded(text, facts)

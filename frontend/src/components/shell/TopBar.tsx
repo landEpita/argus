@@ -13,6 +13,8 @@ interface Props {
   unreachable: boolean;
   askAvailable: boolean;
   onAsk(): void;
+  unread: number;
+  onAlerts(): void;
 }
 
 function UtcClock() {
@@ -32,6 +34,8 @@ export function TopBar({
   unreachable,
   askAvailable,
   onAsk,
+  unread,
+  onAlerts,
 }: Props) {
   return (
     <header className="topbar glass">
@@ -61,13 +65,16 @@ export function TopBar({
       <div className="topbar-right">
         <HealthPill health={health} unreachable={unreachable} onClick={() => onSpace("sources")} />
         <UtcClock />
-        <button
-          type="button"
-          className="btn btn-ghost"
-          disabled
-          title="Alert rules arrive in phase 6"
-        >
-          Alerts <span className="soon">soon</span>
+        <button type="button" className="btn btn-ghost alerts-button" onClick={onAlerts}>
+          Alerts
+          {unread > 0 && (
+            <>
+              <span className="count-badge" aria-hidden="true">
+                {unread > 99 ? "99+" : unread}
+              </span>
+              <span className="sr-only">{unread} unread</span>
+            </>
+          )}
         </button>
         <button
           type="button"

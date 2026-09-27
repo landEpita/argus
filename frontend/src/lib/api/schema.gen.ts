@@ -4,6 +4,188 @@
  */
 
 export interface paths {
+    "/api/v1/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Feed */
+        get: operations["feed_api_v1_alerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/channels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Channels */
+        get: operations["channels_api_v1_alerts_channels_get"];
+        put?: never;
+        /**
+         * Create Channel
+         * @description The config (webhook URL, bot token) is stored server side and never returned.
+         */
+        post: operations["create_channel_api_v1_alerts_channels_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/channels/kinds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Channel Kinds */
+        get: operations["channel_kinds_api_v1_alerts_channels_kinds_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/channels/{channel_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Channel */
+        delete: operations["delete_channel_api_v1_alerts_channels__channel_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/channels/{channel_id}/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Test Channel */
+        post: operations["test_channel_api_v1_alerts_channels__channel_id__test_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/evaluate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Evaluate
+         * @description Check the rules now, instead of waiting for the next round.
+         */
+        post: operations["evaluate_api_v1_alerts_evaluate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/kinds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kinds
+         * @description What rules can watch, with each kind's parameters.
+         */
+        get: operations["kinds_api_v1_alerts_kinds_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark Read */
+        post: operations["mark_read_api_v1_alerts_read_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Rules */
+        get: operations["rules_api_v1_alerts_rules_get"];
+        put?: never;
+        /** Create Rule */
+        post: operations["create_rule_api_v1_alerts_rules_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/rules/{rule_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Rule */
+        put: operations["update_rule_api_v1_alerts_rules__rule_id__put"];
+        post?: never;
+        /** Delete Rule */
+        delete: operations["delete_rule_api_v1_alerts_rules__rule_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/analysis/convergence": {
         parameters: {
             query?: never;
@@ -918,6 +1100,62 @@ export interface components {
             /** Source */
             source: string;
         };
+        /** Alert */
+        Alert: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /**
+             * Deliveries
+             * @default []
+             */
+            deliveries: components["schemas"]["Delivery"][];
+            /**
+             * Detail
+             * @default
+             */
+            detail: string;
+            /** Id */
+            id: string;
+            /**
+             * Key
+             * @description Same fact, same key: fires once per rule
+             */
+            key: string;
+            /** Lat */
+            lat: number | null;
+            /**
+             * Layer
+             * @description Map layer that shows it
+             */
+            layer: string | null;
+            /** Lon */
+            lon: number | null;
+            /**
+             * Read
+             * @default false
+             */
+            read: boolean;
+            /** Rule Id */
+            rule_id: string;
+            /** Rule Name */
+            rule_name: string;
+            /** @default info */
+            severity: components["schemas"]["Severity"];
+            /** Source */
+            source: string;
+            /** Title */
+            title: string;
+            /**
+             * Unverified
+             * @default false
+             */
+            unverified: boolean;
+            /** Url */
+            url: string | null;
+        };
         /** AnswerOut */
         AnswerOut: {
             /** Conclusive */
@@ -1091,6 +1329,42 @@ export interface components {
              * @description None when the feed has none (FX)
              */
             volume: number | null;
+        };
+        /** ChannelDraft */
+        ChannelDraft: {
+            /** Config */
+            config: {
+                [key: string]: string;
+            };
+            kind: components["schemas"]["ChannelKind"];
+            /** Name */
+            name: string;
+        };
+        /**
+         * ChannelKind
+         * @enum {string}
+         */
+        ChannelKind: "webhook" | "discord" | "telegram" | "email";
+        /** ChannelKindOut */
+        ChannelKindOut: {
+            /** Available */
+            available: boolean;
+            kind: components["schemas"]["ChannelKind"];
+            /** Why */
+            why: string | null;
+        };
+        /** ChannelOut */
+        ChannelOut: {
+            /**
+             * Hint
+             * @description Where it goes; the secret itself is never returned
+             */
+            hint: string;
+            /** Id */
+            id: string;
+            kind: components["schemas"]["ChannelKind"];
+            /** Name */
+            name: string;
         };
         /** ChannelStatusOut */
         ChannelStatusOut: {
@@ -1319,6 +1593,17 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** Delivery */
+        Delivery: {
+            /** Channel Id */
+            channel_id: string;
+            /** Channel Name */
+            channel_name: string;
+            /** Error */
+            error: string | null;
+            /** Ok */
+            ok: boolean;
+        };
         /**
          * DocKind
          * @enum {string}
@@ -1389,6 +1674,16 @@ export interface components {
             vs_five_year_pct: number | null;
             /** Week Change */
             week_change: number | null;
+        };
+        /** EvaluationOut */
+        EvaluationOut: {
+            /** Fired */
+            fired: components["schemas"]["Alert"][];
+            /**
+             * Skipped
+             * @description Inputs that failed this round
+             */
+            skipped: string[];
         };
         /**
          * EventCategory
@@ -1485,6 +1780,13 @@ export interface components {
             feed: components["schemas"]["EventFeed"];
             /** Providers */
             providers: string[];
+        };
+        /** FeedOut */
+        FeedOut: {
+            /** Items */
+            items: components["schemas"]["Alert"][];
+            /** Unread */
+            unread: number;
         };
         /** FocusOut */
         FocusOut: {
@@ -2012,6 +2314,14 @@ export interface components {
              */
             valid_at: string | null;
         };
+        /** ReadIn */
+        ReadIn: {
+            /**
+             * Ids
+             * @description None: all
+             */
+            ids?: string[] | null;
+        };
         /** ReadinessOut */
         ReadinessOut: {
             /** Checks */
@@ -2031,6 +2341,71 @@ export interface components {
             period: string;
             /** Value */
             value: number;
+        };
+        /** Rule */
+        Rule: {
+            /**
+             * Channels
+             * @default []
+             */
+            channels: string[];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Enabled
+             * @default true
+             */
+            enabled: boolean;
+            /** Id */
+            id: string;
+            kind: components["schemas"]["RuleKind"];
+            /** Last Fired At */
+            last_fired_at: string | null;
+            /** Name */
+            name: string;
+            /** Params */
+            params: {
+                [key: string]: unknown;
+            };
+        };
+        /** RuleDraft */
+        RuleDraft: {
+            /**
+             * Channels
+             * @default []
+             */
+            channels?: string[];
+            /**
+             * Enabled
+             * @default true
+             */
+            enabled?: boolean;
+            kind: components["schemas"]["RuleKind"];
+            /** Name */
+            name: string;
+            /** Params */
+            params?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * RuleKind
+         * @enum {string}
+         */
+        RuleKind: "watched_aircraft" | "earthquake" | "disaster_alert" | "keyword" | "ticker_move" | "country_score" | "convergence" | "daily_digest";
+        /** RuleKindOut */
+        RuleKindOut: {
+            kind: components["schemas"]["RuleKind"];
+            /**
+             * Params
+             * @description Parameter schema (JSON Schema)
+             */
+            params: {
+                [key: string]: unknown;
+            };
         };
         /** SatelliteCollection */
         SatelliteCollection: {
@@ -2162,6 +2537,11 @@ export interface components {
              */
             source: "app" | "environment" | "none";
         };
+        /**
+         * Severity
+         * @enum {string}
+         */
+        Severity: "info" | "warning" | "critical";
         /**
          * ShipCategory
          * @enum {string}
@@ -2587,6 +2967,361 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    feed_api_v1_alerts_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                unread_only?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    channels_api_v1_alerts_channels_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChannelOut"][];
+                };
+            };
+        };
+    };
+    create_channel_api_v1_alerts_channels_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChannelDraft"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChannelOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    channel_kinds_api_v1_alerts_channels_kinds_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChannelKindOut"][];
+                };
+            };
+        };
+    };
+    delete_channel_api_v1_alerts_channels__channel_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                channel_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    test_channel_api_v1_alerts_channels__channel_id__test_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                channel_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Delivery"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evaluate_api_v1_alerts_evaluate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvaluationOut"];
+                };
+            };
+        };
+    };
+    kinds_api_v1_alerts_kinds_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuleKindOut"][];
+                };
+            };
+        };
+    };
+    mark_read_api_v1_alerts_read_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReadIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rules_api_v1_alerts_rules_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Rule"][];
+                };
+            };
+        };
+    };
+    create_rule_api_v1_alerts_rules_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RuleDraft"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Rule"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_rule_api_v1_alerts_rules__rule_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rule_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RuleDraft"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Rule"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_rule_api_v1_alerts_rules__rule_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rule_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     convergence_api_v1_analysis_convergence_get: {
         parameters: {
             query?: never;

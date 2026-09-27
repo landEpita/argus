@@ -8,7 +8,14 @@ Argus réunit en un seul endroit les fonctionnalités de cinq projets open sourc
 projets est dans [`../rapport.md`](../rapport.md) ; ce qui a été repris et dans quel ordre
 est décrit dans [docs/ROADMAP.md](docs/ROADMAP.md).
 
-> **État : phase 5b terminée (IA).**
+> **État : phase 6 en cours (alertes).**
+>
+> - Règles d'alerte dans Watch : avion surveillé en vol, séisme, alerte rouge, mot-clé dans les
+>   news, prix qui bouge, indice pays, convergence, digest quotidien ;
+> - livraison dans l'app (compteur, notifications du navigateur), webhook, Discord, bot
+>   Telegram, e-mail (SMTP à configurer dans `.env`).
+>
+> Phase 5b :
 >
 > - Recherche hybride (mots et sens) sur les news et vos chaînes Telegram ;
 > - « Show on map » après une réponse, analyse d'un pari Polymarket, dictée et lecture à voix

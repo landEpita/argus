@@ -85,6 +85,17 @@ class Settings(BaseSettings):
     # Semantic search (optional); uses the same key and base URL, e.g. ollama/nomic-embed-text.
     embedding_model: str | None = None
 
+    # ── Alerts ──
+    alerts_enabled: bool = True
+    alerts_interval_s: float = 120.0
+    # E-mail channel (any SMTP server); unset = the e-mail channel is unavailable.
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_user: str | None = None
+    smtp_password: SecretStr | None = None
+    smtp_from: str | None = None
+    smtp_starttls: bool = True
+
     # ── Infrastructure & imagery ──
     overpass_enabled: bool = True
     telegeography_enabled: bool = True

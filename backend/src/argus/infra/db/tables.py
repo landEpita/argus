@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import (
     JSON,
+    Boolean,
     DateTime,
     Float,
     ForeignKey,
@@ -15,6 +16,7 @@ from sqlalchemy import (
     Integer,
     MetaData,
     String,
+    Text,
     UniqueConstraint,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -118,3 +120,58 @@ class LlmUsageRow(Base):
     input_tokens: Mapped[int | None] = mapped_column(Integer)
     output_tokens: Mapped[int | None] = mapped_column(Integer)
     cost_usd: Mapped[float | None] = mapped_column(Float)
+
+
+class AlertRuleRow(Base):
+    __tablename__ = "alert_rules"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    owner_id: Mapped[str] = mapped_column(String(64), index=True)
+    name: Mapped[str] = mapped_column(String(100))
+    kind: Mapped[str] = mapped_column(String(30))
+    params: Mapped[dict[str, Any]] = mapped_column(JSON)
+    channels: Mapped[list[str]] = mapped_column(JSON)
+    enabled: Mapped[bool] = mapped_column(Boolean)
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    last_fired_at: Mapped[datetime | None] = mapped_column()
+
+
+class AlertChannelRow(Base):
+    """Where alerts go. `config` holds the channel's secret (webhook URL, bot token)."""
+
+    __tablename__ = "alert_channels"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    owner_id: Mapped[str] = mapped_column(String(64), index=True)
+    name: Mapped[str] = mapped_column(String(60))
+    kind: Mapped[str] = mapped_column(String(20))
+    config: Mapped[dict[str, str]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+
+
+class AlertRow(Base):
+    """A fired alert. One per (owner, rule, dedupe key): the same fact fires once."""
+
+    __tablename__ = "alerts"
+    __table_args__ = (
+        UniqueConstraint("owner_id", "rule_id", "dedupe_key"),
+        Index("ix_alerts_owner_at", "owner_id", "at"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    owner_id: Mapped[str] = mapped_column(String(64))
+    rule_id: Mapped[str] = mapped_column(String(32))
+    rule_name: Mapped[str] = mapped_column(String(100))
+    dedupe_key: Mapped[str] = mapped_column(String(300))
+    at: Mapped[datetime] = mapped_column()
+    title: Mapped[str] = mapped_column(String(300))
+    detail: Mapped[str] = mapped_column(Text, default="")
+    severity: Mapped[str] = mapped_column(String(10))
+    source: Mapped[str] = mapped_column(String(200))
+    url: Mapped[str | None] = mapped_column(String(1000))
+    lat: Mapped[float | None] = mapped_column(Float)
+    lon: Mapped[float | None] = mapped_column(Float)
+    layer: Mapped[str | None] = mapped_column(String(40))
+    unverified: Mapped[bool] = mapped_column(Boolean, default=False)
+    read: Mapped[bool] = mapped_column(Boolean, default=False)
+    deliveries: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list)

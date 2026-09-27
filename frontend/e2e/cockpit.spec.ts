@@ -1,4 +1,4 @@
-import { expect, test } from "./fixtures";
+import { expect, QUAKE_ALERT, test } from "./fixtures";
 
 test("the command palette runs commands by typing", async ({ page }) => {
   await page.goto("/");
@@ -16,11 +16,6 @@ test("the command palette runs commands by typing", async ({ page }) => {
   await expect(palette.getByRole("option").first()).toContainText("Ukraine");
   await page.keyboard.press("Escape");
   await expect(palette).toHaveCount(0);
-});
-
-test("planned features are shown as such, not faked", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByRole("button", { name: /Alerts/ })).toBeDisabled();
 });
 
 test("without a model, Ask Argus leads to the model settings", async ({ page }) => {
@@ -192,4 +187,63 @@ test("settings show usage, the embedding model and how to connect over MCP", asy
   await expect(card).toContainText(
     "claude mcp add --transport http argus http://localhost:8000/mcp",
   );
+});
+
+test("rules are created from the Watch space, with a channel", async ({ page, api }) => {
+  await page.goto("/#watch");
+  const panel = page.getByRole("region", { name: "Rules and activity" });
+  await expect(panel).toContainText("Nothing has fired yet");
+
+  const channel = panel.getByRole("form", { name: "New channel" });
+  await channel.getByLabel("Channel kind").selectOption("discord");
+  await channel.getByLabel("Channel name").fill("ops");
+  await channel.getByLabel("Discord webhook URL").fill("https://discord.com/api/webhooks/1/secret");
+  await channel.getByRole("button", { name: "Add channel" }).click();
+  await expect(panel).toContainText("ops · discord · discord.com");
+  await expect(channel.getByLabel("Channel kind").locator("option[value=email]")).toBeDisabled();
+
+  await panel.getByRole("button", { name: "New rule" }).click();
+  const form = panel.getByRole("form", { name: "New rule" });
+  await form.getByLabel("When").selectOption("earthquake");
+  await form.getByLabel("Minimum magnitude").fill("6.5");
+  await form.getByLabel(/Countries/).fill("TW, JP");
+  await form.getByLabel("ops").check();
+  const created = page.waitForRequest(
+    (r) => r.method() === "POST" && r.url().endsWith("/alerts/rules"),
+  );
+  await form.getByRole("button", { name: "Create rule" }).click();
+  expect((await created).postDataJSON()).toEqual({
+    name: "Earthquake",
+    kind: "earthquake",
+    params: { min_magnitude: 6.5, countries: ["TW", "JP"] },
+    channels: ["c1"],
+    enabled: true,
+  });
+  await expect(panel).toContainText("Earthquake ≥ M 6.5 in TW, JP → ops");
+  await panel.getByRole("button", { name: "Pause Earthquake" }).click();
+  await expect(panel).toContainText("paused");
+  expect(api.rules[0]?.enabled).toBe(false);
+
+  await panel.getByRole("button", { name: "Check now" }).click();
+  await expect(panel).toContainText("0 new alerts · not checked (source down): earthquakes");
+});
+
+test("fired alerts show in the header and open on the map", async ({ page, api }) => {
+  api.alertItems = [QUAKE_ALERT];
+  await page.goto("/");
+  await page.waitForFunction(() => window.__argusMap?.loaded());
+  await expect(page.getByRole("button", { name: "Alerts 1 unread" })).toBeVisible();
+  await page.getByRole("button", { name: /^Alerts/ }).click();
+  const panel = page.getByRole("complementary", { name: "Right now" });
+  await expect(panel.getByRole("tab", { name: "Alerts · 1" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await expect(panel).toContainText("not delivered to ops");
+  await panel.getByRole("button", { name: /M 6.4 · Hualien/ }).click();
+  await page.waitForFunction(() => {
+    const c = window.__argusMap?.getCenter();
+    return c !== undefined && Math.abs(c.lat - 23.9) < 0.5 && Math.abs(c.lng - 121.6) < 0.5;
+  });
+  await expect.poll(() => api.alertItems[0]?.read).toBe(true);
 });
