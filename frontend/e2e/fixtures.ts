@@ -1,6 +1,7 @@
 import { test as base, expect, type Page, type Request } from "@playwright/test";
 import type {
   Aircraft,
+  Camera,
   GeoEvent,
   Health,
   Preferences,
@@ -24,6 +25,7 @@ const CAPABILITY_DISABLED = (capability: string) => ({
 export interface ApiScenario {
   aircraft?: Aircraft[];
   military?: Aircraft[];
+  cameras?: Camera[];
   satellites?: SatellitePosition[];
   earthquakes?: GeoEvent[];
   preferences?: Preferences | "error";
@@ -72,6 +74,12 @@ export class FakeApi {
 
       if (path === "/aviation/aircraft") {
         return route.fulfill({ json: { count: s.aircraft?.length ?? 0, items: s.aircraft ?? [] } });
+      }
+      if (path === "/cameras") {
+        const items = s.cameras ?? [];
+        return route.fulfill({
+          json: { count: items.length, items, networks: ["drivebc"], unavailable: [] },
+        });
       }
       if (path === "/aviation/military") {
         return route.fulfill({ json: { count: s.military?.length ?? 0, items: s.military ?? [] } });

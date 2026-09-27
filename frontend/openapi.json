@@ -912,6 +912,136 @@
         "title": "CalendarEvent",
         "type": "object"
       },
+      "Camera": {
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "feed": {
+            "$ref": "#/components/schemas/FeedKind"
+          },
+          "heading_deg": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 360.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Compass facing as stated by the operator",
+            "title": "Heading Deg"
+          },
+          "id": {
+            "description": "'tfl:00002.00865'",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "network": {
+            "$ref": "#/components/schemas/CameraNetwork"
+          },
+          "position": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "still_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A still for previews, if any",
+            "title": "Still Url"
+          },
+          "url": {
+            "description": "Live stream, clip or still, straight from the operator",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "network",
+          "name",
+          "position",
+          "heading_deg",
+          "feed",
+          "url",
+          "still_url",
+          "description",
+          "source"
+        ],
+        "title": "Camera",
+        "type": "object"
+      },
+      "CameraCollection": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Camera"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "networks": {
+            "items": {
+              "$ref": "#/components/schemas/CameraNetwork"
+            },
+            "title": "Networks",
+            "type": "array"
+          },
+          "unavailable": {
+            "items": {
+              "$ref": "#/components/schemas/CameraNetwork"
+            },
+            "title": "Unavailable",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "items",
+          "networks",
+          "unavailable"
+        ],
+        "title": "CameraCollection",
+        "type": "object"
+      },
+      "CameraNetwork": {
+        "enum": [
+          "tfl",
+          "fintraffic",
+          "drivebc",
+          "nsw",
+          "deldot"
+        ],
+        "title": "CameraNetwork",
+        "type": "string"
+      },
       "Candle": {
         "properties": {
           "close": {
@@ -2260,6 +2390,15 @@
         "title": "FeedInfo",
         "type": "object"
       },
+      "FeedKind": {
+        "enum": [
+          "image",
+          "video",
+          "hls"
+        ],
+        "title": "FeedKind",
+        "type": "string"
+      },
       "FeedOut": {
         "properties": {
           "items": {
@@ -3048,6 +3187,38 @@
           "calls_without_cost"
         ],
         "title": "ModelUsage",
+        "type": "object"
+      },
+      "NetworkInfo": {
+        "properties": {
+          "coverage": {
+            "$ref": "#/components/schemas/BoundingBox",
+            "description": "Where this network's cameras are"
+          },
+          "license": {
+            "title": "License",
+            "type": "string"
+          },
+          "network": {
+            "$ref": "#/components/schemas/CameraNetwork"
+          },
+          "operator": {
+            "title": "Operator",
+            "type": "string"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "required": [
+          "network",
+          "operator",
+          "region",
+          "coverage",
+          "license"
+        ],
+        "title": "NetworkInfo",
         "type": "object"
       },
       "NewsCategory": {
@@ -6576,6 +6747,106 @@
         "summary": "List Military",
         "tags": [
           "aviation"
+        ]
+      }
+    },
+    "/api/v1/cameras": {
+      "get": {
+        "description": "Open road cameras in a box, from the networks whose area it overlaps.",
+        "operationId": "list_cameras_api_v1_cameras_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "network",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/CameraNetwork"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Network"
+            }
+          },
+          {
+            "description": "west,south,east,north",
+            "in": "query",
+            "name": "bbox",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "west,south,east,north",
+              "examples": [
+                "2.0,48.5,2.8,49.1"
+              ],
+              "title": "Bbox"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CameraCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Cameras",
+        "tags": [
+          "cameras"
+        ]
+      }
+    },
+    "/api/v1/cameras/networks": {
+      "get": {
+        "description": "The camera networks Argus reads, their area and licence.",
+        "operationId": "list_networks_api_v1_cameras_networks_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NetworkInfo"
+                  },
+                  "title": "Response List Networks Api V1 Cameras Networks Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Networks",
+        "tags": [
+          "cameras"
         ]
       }
     },

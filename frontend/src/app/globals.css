@@ -850,6 +850,15 @@ fieldset.strip {
   margin-top: 8px;
   word-break: break-word;
 }
+.live-media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #000;
+  border-radius: 6px;
+  margin: 8px 0;
+}
 .inspector-sub {
   margin: 4px 0 0;
   color: var(--text-2);

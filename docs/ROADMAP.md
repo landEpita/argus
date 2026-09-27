@@ -50,6 +50,8 @@ sur fixture, son endpoint et sa couche ou son panneau.
 - [x] Globe 3D (projection globe de MapLibre v5) avec les mêmes couches, mémorisé dans les préférences
 - [x] Disjoncteur par fournisseur : un 429 est respecté (Retry-After), et les échecs répétés ouvrent le circuit
 - [x] OAuth OpenSky optionnel (quota ×10)
+- [x] Avions sur les vues larges : instantané mondial partagé, dernière valeur connue datée, repli régional adsb.lol étiqueté
+- [x] Caméras ouvertes (Londres, Finlande, Colombie-Britannique, Nouvelle-Galles du Sud, Delaware) : cône d'orientation quand l'opérateur la donne, image, clip ou flux HLS en direct dans l'inspecteur (GEV). Ontario 511 exige désormais une clé : non branché
 
 ## Reporté (bloqué par un accès)
 - [ ] Israël (OREF) : l'API est géo-bloquée hors d'Israël (403)

@@ -18,6 +18,7 @@ ALL_ON = {
     "overpass_enabled": True,
     "telegeography_enabled": True,
     "rainviewer_enabled": True,
+    "cameras_enabled": True,
 }
 
 
@@ -37,6 +38,7 @@ async def test_keyless_providers_are_registered_in_fallback_order() -> None:
         "infrastructure.facilities": ["overpass-de", "overpass-kumi", "overpass-coffee"],
         "infrastructure.submarine_cables": ["telegeography"],
         "imagery.weather_radar": ["rainviewer"],
+        **{f"cameras.{n}": [n] for n in ("tfl", "fintraffic", "drivebc", "nsw", "deldot")},
     }
     assert [s.name for s in container.background] == ["signal-snapshotter"]
     assert isinstance(container.cache, InMemoryTTLCache)

@@ -18,6 +18,7 @@ from argus.api.routers import (
     analysis,
     assistant,
     aviation,
+    cameras,
     events,
     finance,
     imagery,
@@ -79,6 +80,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
     api.include_router(space.router)
     api.include_router(events.router)
     api.include_router(infrastructure.router)
+    api.include_router(cameras.router)
     api.include_router(imagery.router)
     api.include_router(intel.router)
     api.include_router(intel.countries_router)

@@ -1,0 +1,63 @@
+{
+ "timestamp": "2026-09-27T21:35:50Z",
+ "timestampMS": "1790544950011",
+ "version": "1.1",
+ "uid": "-8569684966613574390",
+ "status": "normal",
+ "message": "",
+ "cameraCount": 360,
+ "cameraHash": "1400592905",
+ "videoCameras": [
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM001.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM001.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM001.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM001.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM001.stream/Manifest"
+   },
+   "id": "KCAM001",
+   "title": "DE 1 @ MILFORD NECK ROAD (NORTH OFF)",
+   "county": "Kent",
+   "lat": 38.990931,
+   "lon": -75.448625,
+   "hash": "1760142867",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM003.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM003.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM003.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM003.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM003.stream/Manifest"
+   },
+   "id": "KCAM003",
+   "title": "US 13 SB @ WEST DOVER CONNECTOR",
+   "county": "Kent",
+   "lat": 39.124642,
+   "lon": -75.532336,
+   "hash": "-1824221177",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/NCAM339.stream",
+    "f4m": "http://video.deldot.gov:1935/live/NCAM339.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/NCAM339.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/NCAM339.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/NCAM339.stream/Manifest"
+   },
+   "id": "NCAM339",
+   "title": "DE 2 @ DE 72 (POSSUM PARK RD)",
+   "county": "New Castle",
+   "lat": 39.694584,
+   "lon": -75.719284,
+   "hash": "-211246587",
+   "enabled": true,
+   "status": "Unavailable"
+  }
+ ]
+}

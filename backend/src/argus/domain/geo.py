@@ -57,6 +57,14 @@ class BoundingBox(DomainModel):
     def contains(self, point: GeoPoint) -> bool:
         return self.south <= point.lat <= self.north and self.west <= point.lon <= self.east
 
+    def intersects(self, other: BoundingBox) -> bool:
+        return not (
+            other.west > self.east
+            or other.east < self.west
+            or other.south > self.north
+            or other.north < self.south
+        )
+
     def cache_key(self, precision: int = 1) -> str:
         """
         A key that is stable across tiny viewport moves.

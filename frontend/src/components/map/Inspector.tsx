@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LiveMedia, type MediaKind } from "@/components/media/LiveMedia";
 import { popupRows } from "@/features/map/format";
 import type { Selection } from "@/features/map/MapCanvas";
 import type { LayerUpdate } from "@/features/map/scheduler";
@@ -40,6 +41,7 @@ export function Inspector({ selection, update, now, actions, onClose, right = 12
   const rows = popupRows(properties).filter((r) => r.label !== "Source");
   const coords = coordinates(selection.lat, selection.lon);
   const source = typeof properties.source === "string" ? properties.source : null;
+  const media = typeof properties.media_url === "string" ? properties.media_url : null;
 
   const copy = () => {
     void navigator.clipboard?.writeText(coords).catch(() => {});
@@ -61,6 +63,15 @@ export function Inspector({ selection, update, now, actions, onClose, right = 12
       <div className="card-body">
         <h2>{String(properties.title ?? "")}</h2>
         <p className="inspector-sub mono">{coords}</p>
+        {media && (
+          <LiveMedia
+            key={media}
+            kind={(properties.feed as MediaKind | undefined) ?? "image"}
+            url={media}
+            still={typeof properties.still_url === "string" ? properties.still_url : null}
+            title={String(properties.title ?? "")}
+          />
+        )}
         <div className="inspector-actions">
           <button
             type="button"

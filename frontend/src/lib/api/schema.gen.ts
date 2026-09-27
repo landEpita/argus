@@ -502,6 +502,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cameras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Cameras
+         * @description Open road cameras in a box, from the networks whose area it overlaps.
+         */
+        get: operations["list_cameras_api_v1_cameras_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cameras/networks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Networks
+         * @description The camera networks Argus reads, their area and licence.
+         */
+        get: operations["list_networks_api_v1_cameras_networks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/countries": {
         parameters: {
             query?: never;
@@ -1422,6 +1462,54 @@ export interface components {
             /** Title */
             title: string;
         };
+        /** Camera */
+        Camera: {
+            /** Description */
+            description: string | null;
+            feed: components["schemas"]["FeedKind"];
+            /**
+             * Heading Deg
+             * @description Compass facing as stated by the operator
+             */
+            heading_deg: number | null;
+            /**
+             * Id
+             * @description 'tfl:00002.00865'
+             */
+            id: string;
+            /** Name */
+            name: string;
+            network: components["schemas"]["CameraNetwork"];
+            position: components["schemas"]["GeoPoint"];
+            /** Source */
+            source: string;
+            /**
+             * Still Url
+             * @description A still for previews, if any
+             */
+            still_url: string | null;
+            /**
+             * Url
+             * @description Live stream, clip or still, straight from the operator
+             */
+            url: string;
+        };
+        /** CameraCollection */
+        CameraCollection: {
+            /** Count */
+            count: number;
+            /** Items */
+            items: components["schemas"]["Camera"][];
+            /** Networks */
+            networks: components["schemas"]["CameraNetwork"][];
+            /** Unavailable */
+            unavailable: components["schemas"]["CameraNetwork"][];
+        };
+        /**
+         * CameraNetwork
+         * @enum {string}
+         */
+        CameraNetwork: "tfl" | "fintraffic" | "drivebc" | "nsw" | "deldot";
         /** Candle */
         Candle: {
             /** Close */
@@ -1901,6 +1989,11 @@ export interface components {
             /** Providers */
             providers: string[];
         };
+        /**
+         * FeedKind
+         * @enum {string}
+         */
+        FeedKind: "image" | "video" | "hls";
         /** FeedOut */
         FeedOut: {
             /** Items */
@@ -2205,6 +2298,18 @@ export interface components {
             model: string;
             /** Output Tokens */
             output_tokens: number;
+        };
+        /** NetworkInfo */
+        NetworkInfo: {
+            /** @description Where this network's cameras are */
+            coverage: components["schemas"]["BoundingBox"];
+            /** License */
+            license: string;
+            network: components["schemas"]["CameraNetwork"];
+            /** Operator */
+            operator: string;
+            /** Region */
+            region: string;
         };
         /**
          * NewsCategory
@@ -3942,6 +4047,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_cameras_api_v1_cameras_get: {
+        parameters: {
+            query?: {
+                network?: components["schemas"]["CameraNetwork"][] | null;
+                /** @description west,south,east,north */
+                bbox?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CameraCollection"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_networks_api_v1_cameras_networks_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NetworkInfo"][];
                 };
             };
         };

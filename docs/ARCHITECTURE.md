@@ -50,7 +50,7 @@
 
 | Capability | Fournisseurs (ordre de repli) | Clé | Cache | Particularité |
 |---|---|---|---|---|
-| `aviation.aircraft_states` | OpenSky → adsb.lol | — | 15 s | adsb.lol est limité à un rayon de 250 NM : il lève `UnsupportedQueryError`, ce qui passe au suivant sans compter comme une panne |
+| `aviation.aircraft_states` | adsb.lol → OpenSky | — | 15 s ; vue large : un instantané mondial partagé (5 min) + 3 h de dernière valeur connue | une vue de moins de 250 NM va à adsb.lol ; au-delà, l'instantané mondial OpenSky, sinon adsb.lol autour du centre de la vue. La réponse dit laquelle (`coverage`) |
 | `aviation.military_aircraft` | adsb.lol | — | 30 s | une seule entrée mondiale, filtrée par zone ensuite |
 | `maritime.vessel_positions` | aisstream | oui | — | relais WebSocket en tâche de fond (`BackgroundService`) → `VesselStore` en mémoire |
 | `space.orbital_elements` | CelesTrak | — | 2 h + 3 j de « dernière valeur connue » | CelesTrak renvoie 403 si l'on retélécharge avant 2 h ; les positions sont propagées en SGP4 à chaque requête |
@@ -64,6 +64,7 @@
 | `aviation.aircraft_track` | adsb.lol → OpenSky | — | 30 s | un 404 des deux fournisseurs donne une réponse 404, pas 503 |
 | `infrastructure.facilities` | 3 miroirs Overpass | — | 24 h par tuile de 5° + 7 j de dernière valeur connue | au-delà de 16 tuiles, 422 `zoom_in` |
 | `infrastructure.submarine_cables` | TeleGeography | — | 24 h + 7 j | CC BY-NC-SA : attribution affichée |
+| `cameras.<réseau>` | TfL, Fintraffic, DriveBC, Transport for NSW, DelDOT | — | 6 h + 7 j par réseau | seuls les réseaux qui recoupent la vue sont lus ; un réseau injoignable est listé dans `unavailable`. L'orientation n'est affichée que si l'opérateur la donne (jamais devinée) ; images et flux sont chargés par le navigateur chez l'opérateur, URL épinglées à son domaine |
 | `imagery.weather_radar` | RainViewer | — | 5 min | les couches NASA GIBS sont calculées localement (URL déterministes) |
 | `events.internet-outages` | IODA | — | 10 min | chute de signal au niveau d'un pays, placée au centroïde ; la cause n'est pas connue |
 | `cyber.exploited_vulnerabilities` | CISA KEV | — | 6 h + 7 j | |

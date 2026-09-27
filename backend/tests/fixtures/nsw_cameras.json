@@ -1,0 +1,45 @@
+{
+ "type": "FeatureCollection",
+ "rights": {
+  "copyright": "Transport for NSW",
+  "licence": "https://opendata.transport.nsw.gov.au/dataset/live-traffic-cameras"
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "id": "023651ee-389c-4677-978e-d39b6c24c1e7",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.10533,
+     -34.02977
+    ]
+   },
+   "properties": {
+    "region": "SYD_SOUTH",
+    "title": "5 Ways (Miranda)",
+    "view": "5 Ways at The Boulevarde looking west towards Sutherland.",
+    "direction": "W",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/5_ways_miranda.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "95054500-072d-4c07-8509-1025b1160131",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.171829,
+     -33.87175
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "City West Link",
+    "view": "City West Link at Lilyfield looking east towards Victoria Road intersection.",
+    "direction": "N-E",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/city_west_link.jpeg"
+   }
+  }
+ ]
+}

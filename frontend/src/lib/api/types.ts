@@ -48,6 +48,8 @@ export type FacilityCollection = Schemas["FacilityCollection"];
 export type Cable = Schemas["Cable"];
 export type LandingPoint = Schemas["LandingPoint"];
 export type CableNetwork = Schemas["CableNetwork"];
+export type Camera = Schemas["Camera"];
+export type CameraCollection = Schemas["CameraCollection"];
 
 export type RasterLayer = Schemas["RasterLayer"];
 

@@ -1,4 +1,4 @@
-import { isRasterData } from "@/features/map/layers/types";
+import { formatCount, isRasterData } from "@/features/map/layers/types";
 import type { LayerUpdate } from "@/features/map/scheduler";
 import { ApiError } from "@/lib/api/client";
 import { formatRelative } from "@/lib/time/relative";
@@ -33,9 +33,7 @@ export function layerStatus(
   if (!on) return { text: "Off", tone: "dim", count: "" };
   switch (update?.status) {
     case "ready": {
-      const count = isRasterData(update.data)
-        ? ""
-        : update.data.features.length.toLocaleString("en").replaceAll(",", " ");
+      const count = isRasterData(update.data) ? "" : formatCount(update.data);
       const age = formatRelative(new Date(update.loadedAt).toISOString(), now);
       const valid =
         isRasterData(update.data) && update.data.validAt

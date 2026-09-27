@@ -11,6 +11,10 @@ const HIDDEN = new Set([
   "watch_key",
   "heading_deg",
   "kinds",
+  "camera",
+  "feed",
+  "media_url",
+  "still_url",
 ]);
 
 const LABELS: Record<string, string> = {

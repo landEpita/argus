@@ -20,7 +20,14 @@ export interface LayerContext {
 export type LayerFeatures = FeatureCollection<Geometry, Record<string, unknown>> & {
   /** How complete or fresh the data is, when the source says it is partial. */
   meta?: { note: string; warn?: boolean };
+  /** Objects on screen, when features are not one per object (a camera and its cone). */
+  count?: number;
 };
+
+/** How many objects a layer shows, formatted with a narrow space ("12\u202f345"). */
+export function formatCount(data: LayerFeatures): string {
+  return (data.count ?? data.features.length).toLocaleString("en").replaceAll(",", "\u202f");
+}
 
 /** Tile overlay description, renderer-neutral. */
 export interface RasterData {
@@ -46,9 +53,10 @@ export interface LayerStyle {
   radius: number;
   /**
    * "mixed" draws lines and points from one source (cables + landing points);
-   * "polygon" fills areas (a choropleth) and is drawn beneath every other layer.
+   * "polygon" fills areas (a choropleth) and is drawn beneath every other layer;
+   * "cones" draws points with a translucent sector for where each one looks.
    */
-  geometry?: "point" | "line" | "mixed" | "polygon";
+  geometry?: "point" | "line" | "mixed" | "polygon" | "cones";
   /** Polygon fill from a numeric property: [value, colour] stops, linearly interpolated. */
   fillScale?: {
     property: string;

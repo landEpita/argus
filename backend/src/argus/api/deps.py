@@ -18,6 +18,7 @@ from argus.services.assistant.prediction import PredictionAnalyst
 from argus.services.assistant.search import SearchService
 from argus.services.assistant.settings import AssistantSettingsService
 from argus.services.aviation import AviationService
+from argus.services.cameras import CameraService
 from argus.services.cyber import CyberService
 from argus.services.events import EventsService
 from argus.services.finance import FinanceService
@@ -66,6 +67,10 @@ def get_space_service(container: ContainerDep) -> SpaceService:
 
 def get_maritime_service(container: ContainerDep) -> MaritimeService:
     return container.maritime
+
+
+def get_camera_service(container: ContainerDep) -> CameraService:
+    return container.cameras
 
 
 def get_infrastructure_service(container: ContainerDep) -> InfrastructureService:
@@ -145,6 +150,7 @@ AviationServiceDep = Annotated[AviationService, Depends(get_aviation_service)]
 EventsServiceDep = Annotated[EventsService, Depends(get_events_service)]
 SpaceServiceDep = Annotated[SpaceService, Depends(get_space_service)]
 MaritimeServiceDep = Annotated[MaritimeService, Depends(get_maritime_service)]
+CameraServiceDep = Annotated[CameraService, Depends(get_camera_service)]
 InfrastructureServiceDep = Annotated[InfrastructureService, Depends(get_infrastructure_service)]
 ImageryServiceDep = Annotated[ImageryService, Depends(get_imagery_service)]
 NewsServiceDep = Annotated[NewsService, Depends(get_news_service)]

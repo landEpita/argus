@@ -43,6 +43,7 @@ PROVIDER_SWITCHES = (
     "overpass_enabled",
     "telegeography_enabled",
     "rainviewer_enabled",
+    "cameras_enabled",
     "news_enabled",
     "cisa_kev_enabled",
     "ioda_enabled",

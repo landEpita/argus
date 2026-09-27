@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { binEvents, HISTOGRAM_HOURS } from "@/features/map/histogram";
 import type { LayerRegistry } from "@/features/map/layers/registry";
-import { isRasterData, type LayerFeatures } from "@/features/map/layers/types";
+import { formatCount, isRasterData, type LayerFeatures } from "@/features/map/layers/types";
 import type { LayerUpdate } from "@/features/map/scheduler";
 import { UNVERIFIED_LAYERS } from "./LayersDrawer";
 import { Swatch } from "./Swatch";
@@ -49,7 +49,7 @@ export function MapFooter(props: Props) {
           const s = states[layer.id];
           const count =
             s?.status === "ready" && !isRasterData(s.data)
-              ? s.data.features.length.toLocaleString("en").replaceAll(",", " ")
+              ? formatCount(s.data)
               : s?.status === "error"
                 ? "▲"
                 : "";

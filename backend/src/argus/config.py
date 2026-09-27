@@ -39,6 +39,7 @@ class Settings(BaseSettings):
 
     # ── Events (no key needed unless noted) ──
     usgs_enabled: bool = True
+    cameras_enabled: bool = True
     eonet_enabled: bool = True
     gdacs_enabled: bool = True
     gdelt_enabled: bool = True

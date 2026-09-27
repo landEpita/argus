@@ -17,6 +17,7 @@ import type {
   AssistantTest,
   CableNetwork,
   CalendarEvent,
+  CameraCollection,
   Capabilities,
   ChannelKindInfo,
   ChokepointTraffic,
@@ -94,6 +95,7 @@ export interface ApiClient {
   track(icao24: string, signal?: AbortSignal): Promise<AircraftTrack>;
   facilities(kind: FacilityKind, bbox: BBox, signal?: AbortSignal): Promise<FacilityCollection>;
   cables(signal?: AbortSignal): Promise<CableNetwork>;
+  cameras(bbox: BBox, signal?: AbortSignal): Promise<CameraCollection>;
   rasters(signal?: AbortSignal): Promise<RasterLayer[]>;
   news(params: NewsParams, signal?: AbortSignal): Promise<StoryCollection>;
   telegram(channels: readonly string[], signal?: AbortSignal): Promise<TelegramCollection>;
@@ -210,6 +212,8 @@ export function createApiClient(baseUrl = "", fetchImpl: FetchLike = fetch): Api
       }),
     cables: (signal) =>
       request<CableNetwork>("GET", "/infrastructure/submarine-cables", { signal }),
+    cameras: (bbox, signal) =>
+      request<CameraCollection>("GET", "/cameras", { query: { bbox: bboxToParam(bbox) }, signal }),
     rasters: (signal) => request<RasterLayer[]>("GET", "/imagery/rasters", { signal }),
     news({ sinceHours, limit, category, country, q }, signal) {
       const query: Record<string, string> = {};

@@ -21,6 +21,7 @@ from argus.adapters.adsblol import (
     AdsbLolTraceFetcher,
 )
 from argus.adapters.aisstream import AisStreamRelay, VesselStore, VesselStoreFetcher
+from argus.adapters.cameras import FETCHERS as CAMERA_FETCHERS
 from argus.adapters.celestrak import CelestrakElementsFetcher
 from argus.adapters.cisa_kev import CisaKevFetcher
 from argus.adapters.eonet import EonetEventFetcher
@@ -65,6 +66,7 @@ from argus.domain.aviation import (
     AircraftQuery,
     AircraftTrack,
 )
+from argus.domain.cameras import CAMERAS
 from argus.domain.chokepoints import CHOKEPOINT_TRAFFIC
 from argus.domain.convergence import Convergence, SignalKind, SignalPoint
 from argus.domain.cyber import EXPLOITED_VULNERABILITIES
@@ -127,6 +129,7 @@ from argus.services.assistant.search import SearchService
 from argus.services.assistant.settings import AssistantSettingsService
 from argus.services.assistant.tools import Toolbox
 from argus.services.aviation import AviationService
+from argus.services.cameras import CameraService
 from argus.services.cyber import CyberService
 from argus.services.events import EventsService
 from argus.services.finance import FinanceService
@@ -169,6 +172,7 @@ class Container:
     space: SpaceService
     maritime: MaritimeService
     infrastructure: InfrastructureService
+    cameras: CameraService
     imagery: ImageryService
     news: NewsService
     telegram: TelegramService
@@ -235,6 +239,10 @@ def _register_providers(
         )
         # Full-day traces with speeds: richer than OpenSky's, so tried first.
         registry.register(AIRCRAFT_TRACK, AdsbLolTraceFetcher(http), priority=10)
+
+    if settings.cameras_enabled:
+        for network, fetcher in CAMERA_FETCHERS.items():
+            registry.register(CAMERAS[network], fetcher(http), priority=10)
 
     if settings.usgs_enabled:
         registry.register(EARTHQUAKES, UsgsEarthquakeFetcher(http), priority=10)
@@ -602,6 +610,7 @@ def build_container(
         space=SpaceService(registry, cache),
         maritime=maritime,
         infrastructure=InfrastructureService(registry, cache),
+        cameras=CameraService(registry, cache),
         imagery=ImageryService(registry, cache),
         news=news,
         telegram=telegram,

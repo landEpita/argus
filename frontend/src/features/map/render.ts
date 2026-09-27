@@ -14,10 +14,11 @@ const pointsLayerId = (layerId: string) => `argus-lyr-${layerId}-points`;
 
 /** Every MapLibre style layer a map layer produces (a "mixed" layer makes two). */
 export function styleLayerIds(layer: { id: string; kind?: string; style?: LayerStyle }): string[] {
-  if (layer.kind !== "raster" && layer.style?.geometry === "mixed") {
+  const geometry = layer.kind !== "raster" ? layer.style?.geometry : undefined;
+  if (geometry === "mixed" || geometry === "cones") {
     return [styleLayerId(layer.id), pointsLayerId(layer.id)];
   }
-  if (layer.kind !== "raster" && layer.style?.geometry === "polygon") {
+  if (geometry === "polygon") {
     return [styleLayerId(layer.id), `${styleLayerId(layer.id)}-outline`];
   }
   return [styleLayerId(layer.id)];
@@ -88,6 +89,7 @@ export function colorPaintProperty(layer: FeatureLayer): "icon-color" | "circle-
 }
 
 const POINTS_ONLY: ExpressionSpecification = ["==", ["geometry-type"], "Point"];
+const POLYGONS_ONLY: ExpressionSpecification = ["==", ["geometry-type"], "Polygon"];
 const LINES_ONLY: ExpressionSpecification = [
   "in",
   ["geometry-type"],
@@ -141,6 +143,23 @@ export function toMapLibreLayers(
   const layout = { visibility: visible ? "visible" : "none" } as const;
   const geometry = layer.style.geometry ?? "point";
   if (geometry === "point") return [pointSpec(layer, styleLayerId(layer.id), layout, watched)];
+  if (geometry === "cones") {
+    return [
+      {
+        id: styleLayerId(layer.id),
+        source: sourceId(layer.id),
+        type: "fill",
+        filter: POLYGONS_ONLY,
+        layout,
+        paint: {
+          "fill-color": colorExpression(layer.style, watched),
+          "fill-opacity": 0.22,
+          "fill-outline-color": colorExpression(layer.style, watched),
+        },
+      },
+      pointSpec(layer, pointsLayerId(layer.id), layout, watched, POINTS_ONLY),
+    ];
+  }
   if (geometry === "polygon") {
     const fill = fillExpressions(layer.style);
     return [
