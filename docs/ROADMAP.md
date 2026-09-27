@@ -104,13 +104,14 @@ sur fixture, son endpoint et sa couche ou son panneau.
 - [x] Assistant avec planner d'outils (protocole JSON, marche avec tout modèle) : 8 outils sur les services d'Argus, étapes et sources affichées, vérification des chiffres, deux relances (lire d'abord, retirer les chiffres inventés), « pas de conclusion » comme réponse normale (OX)
 - [x] « Ask » depuis l'inspecteur (avec le contexte de l'objet) et depuis la palette ⌘K
 
-## Phase 5b : IA, suite
-- [ ] RAG hybride sur les histoires et les posts (OX)
-- [ ] Analyse ancrée d'un pari Polymarket (pouvant refuser de conclure)
-- [ ] L'assistant pilote la carte (centrer, activer des couches)
-- [ ] Suivi du coût et de l'usage des modèles
-- [ ] Serveur MCP exposant les capabilities (OX, WM, OBB)
-- [ ] Agent vocal (GEV)
+## Phase 5b : IA, suite ✅
+- [x] Recherche hybride sur les histoires et les posts Telegram : BM25 toujours, embeddings (LiteLLM) quand un modèle est choisi, fusion par rang réciproque ; outil `search` de l'assistant (OX)
+- [x] Analyse ancrée d'un pari Polymarket : penche oui / penche non / pas de conclusion, jamais de penchant sans données ni avec un chiffre inventé
+- [x] L'assistant pilote la carte : « Show on map » centre et active les couches d'après les outils appelés, jamais d'après le texte du modèle
+- [x] Suivi du coût et de l'usage : chaque appel (tokens, coût estimé par LiteLLM, 0 pour les modèles locaux), résumé sur 30 jours
+- [x] Serveur MCP (streamable HTTP, `/mcp`, lecture seule, localhost) exposant les outils de l'assistant (OX, WM, OBB)
+- [x] Voix : dictée et lecture des réponses par le navigateur (GEV)
+- [ ] Notes ancrées pour les pays et les régions ; brief du matin (avec la phase 6)
 
 ## Phase 6 : alertes et diffusion
 - [ ] Règles d'alerte et canaux (Telegram, Discord, e-mail, webhook, Web Push) (WM, OX)

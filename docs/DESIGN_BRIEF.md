@@ -285,12 +285,13 @@ design doit le rendre clair. Prévu 🔜 : extraction de personnes et d'organisa
   Afficher l'heure de génération et les sources.
 - **Brief du matin** 🔜 : un résumé quotidien de ce qui a changé.
 - **Lien carte ↔ IA** : « Demander à l'IA » depuis n'importe quel objet ✅ ; l'IA qui centre
-  la carte et active des couches 🔜.
-- **Agent vocal** (idée à plus long terme) : piloter la carte à la voix.
+  la carte et active des couches ✅ (« Show on map »).
+- **Voix** ✅ : dicter la question et écouter la réponse (navigateur) ; piloter la carte à la
+  voix 🔜.
 - **Réglages de l'IA** :
   - modèle local ou fournisseur en ligne, avec la clé propre à l'utilisateur ✅ (LiteLLM,
     Sources → Assistant model) ;
-  - suivi du coût et de l'usage 🔜.
+  - suivi du coût et de l'usage ✅.
 
 ---
 

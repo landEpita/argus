@@ -8,7 +8,15 @@ Argus réunit en un seul endroit les fonctionnalités de cinq projets open sourc
 projets est dans [`../rapport.md`](../rapport.md) ; ce qui a été repris et dans quel ordre
 est décrit dans [docs/ROADMAP.md](docs/ROADMAP.md).
 
-> **État : phase 5a terminée (assistant IA).**
+> **État : phase 5b terminée (IA).**
+>
+> - Recherche hybride (mots et sens) sur les news et vos chaînes Telegram ;
+> - « Show on map » après une réponse, analyse d'un pari Polymarket, dictée et lecture à voix
+>   haute ;
+> - coût et usage des modèles ; serveur MCP pour Claude Desktop / Claude Code
+>   (`claude mcp add --transport http argus http://localhost:8000/mcp`).
+>
+> Phase 5a :
 >
 > - Assistant « Ask Argus » : n'importe quel modèle via LiteLLM (local avec Ollama, ou
 >   Anthropic, OpenAI, Groq…), choisi dans l'app avec sa clé ;
@@ -99,7 +107,9 @@ puis cliquez sur **Test**. Exemples :
 | `anthropic/claude-sonnet-5` | clé Anthropic | — |
 | `openai/…`, `groq/…`, `openrouter/…`, `mistral/…`, `gemini/…` | clé du fournisseur | — |
 
-Pour Ollama : `ollama serve`, puis `ollama pull mistral`. On peut aussi tout mettre dans `.env`
+Pour Ollama : `ollama serve`, puis `ollama pull mistral`. Pour la recherche par le sens, ajoutez
+un modèle d'embeddings (`ollama pull nomic-embed-text`, puis `ollama/nomic-embed-text` dans les
+réglages). On peut aussi tout mettre dans `.env`
 (`ARGUS_LLM_MODEL`, `ARGUS_LLM_API_KEY`, `ARGUS_LLM_API_BASE`). Ce qui est enregistré dans l'app
 prend le pas sur `.env`.
 

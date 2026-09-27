@@ -93,6 +93,15 @@
   Chaque chiffre de la réponse est comparé aux résultats des outils (`domain/grounding.py`) ;
   un chiffre absent vaut une relance, puis un signalement dans l'interface. Une réponse sans
   aucune donnée lue n'est jamais « concluante ».
+- `search.py` + `domain/search.py` : recherche hybride (BM25 sur mots sans accents, cosinus sur
+  embeddings LiteLLM si un modèle est choisi, fusion par rang réciproque) sur les news et les
+  chaînes Telegram du propriétaire ; les vecteurs des documents sont mis en cache.
+- `focus.py` : où mener la carte après une réponse, déduit des outils appelés.
+- `prediction.py` : lecture d'un pari ; le « penchant » n'est retenu que si la réponse est
+  concluante et entièrement ancrée.
+- `api/mcp.py` : les mêmes outils en serveur MCP (streamable HTTP sans état, JSON), protégé contre
+  le DNS rebinding (hôtes locaux seulement).
+- Chaque appel de modèle est enregistré (`llm_usage`) avec tokens et coût estimé.
 - `notes.py` : note de marché. Les faits sont calculés en Python ; le modèle rédige, et si son
   texte contient un chiffre absent des faits, on affiche un gabarit construit à partir des faits.
 
