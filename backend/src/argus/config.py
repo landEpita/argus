@@ -37,6 +37,12 @@ class Settings(BaseSettings):
     aircraft_world_ttl_s: float = Field(default=300.0, ge=10)
     military_cache_ttl_s: float = Field(default=30.0, ge=0)
 
+    # ── 3D globe ──
+    # Optional Cesium ion token: adds terrain and Google photorealistic 3D tiles.
+    # It is a *browser* token (the globe loads tiles with it): create one with
+    # only the assets you need and restrict it to your domain in the ion dashboard.
+    cesium_ion_token: str | None = None
+
     # ── Events (no key needed unless noted) ──
     usgs_enabled: bool = True
     cameras_enabled: bool = True

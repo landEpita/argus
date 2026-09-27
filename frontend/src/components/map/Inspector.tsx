@@ -14,6 +14,9 @@ export interface InspectorActions {
   onWatch(): void;
   tracked: boolean | null;
   onTrack(): void;
+  /** null: not an aircraft. */
+  cockpit?: boolean | null;
+  onCockpit?(): void;
   onAsk(): void;
 }
 
@@ -97,6 +100,18 @@ export function Inspector({ selection, update, now, actions, onClose, right = 12
             </span>
             {actions.tracked ? "Hide track" : "Show track"}
           </button>
+          {actions.cockpit != null && (
+            <button
+              type="button"
+              onClick={actions.onCockpit}
+              title="Ride this aircraft on the 3D globe"
+            >
+              <span className="glyph" aria-hidden="true">
+                ✈
+              </span>
+              Cockpit
+            </button>
+          )}
           <button type="button" onClick={actions.onAsk}>
             <span className="glyph" aria-hidden="true">
               ✦

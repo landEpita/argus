@@ -103,3 +103,14 @@ async def test_unknown_urls_share_one_metric_series(client: httpx.AsyncClient) -
     await client.get("/.env")
     text = (await client.get("/metrics")).text
     assert 'argus_http_requests_total{method="GET",route="unmatched",status="404"} 2.0' in text
+
+
+async def test_map_config_exposes_only_the_browser_token(make_client: ClientFactory) -> None:
+    def with_token(container: Container) -> None:
+        container.settings = container.settings.model_copy(update={"cesium_ion_token": "pub"})
+
+    assert (await (await make_client()).get("/api/v1/system/map-config")).json() == {
+        "cesium_ion_token": None
+    }
+    client = await make_client(configure=with_token)
+    assert (await client.get("/api/v1/system/map-config")).json() == {"cesium_ion_token": "pub"}

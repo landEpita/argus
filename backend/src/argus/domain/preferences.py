@@ -30,7 +30,8 @@ class Preferences(DomainModel):
     enabled_layers: tuple[LayerId, ...] | None = Field(default=None, max_length=100)
     viewport: Viewport | None = None
     # Added after v1 shipped; optional, so stored v1 documents stay valid.
-    projection: Literal["mercator", "globe"] | None = None
+    # "realistic" is the Cesium globe (satellite imagery, real altitudes, cockpit view).
+    projection: Literal["mercator", "globe", "realistic"] | None = None
     telegram_channels: tuple[ChannelHandle, ...] | None = Field(default=None, max_length=20)
 
 

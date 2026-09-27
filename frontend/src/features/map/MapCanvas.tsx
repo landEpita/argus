@@ -29,6 +29,9 @@ export interface MapController {
   fitBounds(bounds: readonly [number, number, number, number]): void;
   showTrack(features: LayerFeatures | null): void;
   setWatched(keys: readonly string[]): void;
+  /** Ride a tracked aircraft (3D globe only). False if it is not on the map. */
+  enterCockpit?(layerId: string, id: string): boolean;
+  exitCockpit?(): void;
 }
 
 declare global {

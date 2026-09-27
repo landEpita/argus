@@ -10,6 +10,7 @@ const HIDDEN = new Set([
   "watch_value",
   "watch_key",
   "heading_deg",
+  "heading_stated",
   "kinds",
   "camera",
   "feed",

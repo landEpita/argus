@@ -53,6 +53,12 @@ sur fixture, son endpoint et sa couche ou son panneau.
 - [x] Avions sur les vues larges : instantané mondial partagé, dernière valeur connue datée, repli régional adsb.lol étiqueté
 - [x] Caméras ouvertes (Londres, Finlande, Colombie-Britannique, Nouvelle-Galles du Sud, Delaware) : cône d'orientation quand l'opérateur la donne, image, clip ou flux HLS en direct dans l'inspecteur (GEV). Ontario 511 exige désormais une clé : non branché
 
+## Globe Cesium et vue cockpit ✅
+- [x] Second renderer (Cesium) : imagerie satellite Esri sans clé, avions à leur altitude déclarée, mêmes couches (points et lignes) via le même scheduler (GEV)
+- [x] Vue cockpit : la caméra suit un avion, HUD (cap, altitude, vitesse, âge du dernier report, position extrapolée signalée), trafic à 250 km (distance, heure, écart d'altitude) (GEV)
+- [x] Jeton Cesium ion optionnel (`ARGUS_CESIUM_ION_TOKEN`) : relief et 3D photoréaliste Google ; c'est un jeton navigateur, documenté comme tel
+- [ ] Sur le globe Cesium : pas encore d'aplats (choroplèthe, cônes de caméras) ni de tuiles raster
+
 ## Direct et presse élargie ✅
 - [x] Espace « Live » : mur de 4 lecteurs, 32 chaînes d'info (flux HLS du diffuseur d'abord, puis YouTube), passage automatique au flux suivant si un HLS échoue (WM)
 - [x] Webcams urbaines (YouTube), aussi placées sur la carte (couche « City webcams ») (WM)
@@ -62,7 +68,6 @@ sur fixture, son endpoint et sa couche ou son panneau.
 ## Reporté (bloqué par un accès)
 - [ ] Israël (OREF) : l'API est géo-bloquée hors d'Israël (403)
 - [ ] UCDP et ACLED : les API exigent un jeton ; à brancher avec une réponse réelle enregistrée
-- [ ] Globe photoréaliste Cesium + Google 3D Tiles : clé Google payante ; à faire comme second `Renderer`
 - [ ] Vent GFS (GRIB2), pipelines (pas de jeu de données global libre et fiable)
 
 ## Phase 3a : renseignement et flux ✅

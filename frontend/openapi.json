@@ -3172,6 +3172,27 @@
         "title": "LiquidationSummary",
         "type": "object"
       },
+      "MapConfigOut": {
+        "properties": {
+          "cesium_ion_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Browser token for Cesium ion (terrain, 3D tiles); None = keyless globe",
+            "title": "Cesium Ion Token"
+          }
+        },
+        "required": [
+          "cesium_ion_token"
+        ],
+        "title": "MapConfigOut",
+        "type": "object"
+      },
       "Match": {
         "enum": [
           "lexical",
@@ -3574,7 +3595,8 @@
               {
                 "enum": [
                   "mercator",
-                  "globe"
+                  "globe",
+                  "realistic"
                 ],
                 "type": "string"
               },
@@ -3644,7 +3666,8 @@
               {
                 "enum": [
                   "mercator",
-                  "globe"
+                  "globe",
+                  "realistic"
                 ],
                 "type": "string"
               },
@@ -8176,6 +8199,28 @@
           }
         },
         "summary": "Health",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/system/map-config": {
+      "get": {
+        "description": "What the 3D globe may load. The ion token is meant to be public (browser-side).",
+        "operationId": "map_config_api_v1_system_map_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapConfigOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Map Config",
         "tags": [
           "system"
         ]

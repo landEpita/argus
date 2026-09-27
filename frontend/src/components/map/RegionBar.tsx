@@ -41,6 +41,14 @@ export function RegionBar({ region, projection, onRegion, onProjection }: Props)
         >
           3D
         </button>
+        <button
+          type="button"
+          aria-pressed={projection === "realistic"}
+          title="Satellite globe with aircraft at their altitude, and the cockpit view"
+          onClick={() => onProjection("realistic")}
+        >
+          Globe
+        </button>
       </Segmented>
     </div>
   );

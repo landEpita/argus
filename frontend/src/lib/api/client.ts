@@ -39,6 +39,7 @@ import type {
   HistoryRange,
   LiquidationBoard,
   LiveChannel,
+  MapConfig,
   MarketNote,
   NewsCategory,
   PredictionMarket,
@@ -100,6 +101,7 @@ export interface ApiClient {
   cameras(bbox: BBox, signal?: AbortSignal): Promise<CameraCollection>;
   liveChannels(signal?: AbortSignal): Promise<LiveChannel[]>;
   webcams(signal?: AbortSignal): Promise<Webcam[]>;
+  mapConfig(signal?: AbortSignal): Promise<MapConfig>;
   rasters(signal?: AbortSignal): Promise<RasterLayer[]>;
   news(params: NewsParams, signal?: AbortSignal): Promise<StoryCollection>;
   telegram(channels: readonly string[], signal?: AbortSignal): Promise<TelegramCollection>;
@@ -220,6 +222,7 @@ export function createApiClient(baseUrl = "", fetchImpl: FetchLike = fetch): Api
       request<CameraCollection>("GET", "/cameras", { query: { bbox: bboxToParam(bbox) }, signal }),
     liveChannels: (signal) => request<LiveChannel[]>("GET", "/live/channels", { signal }),
     webcams: (signal) => request<Webcam[]>("GET", "/live/webcams", { signal }),
+    mapConfig: (signal) => request<MapConfig>("GET", "/system/map-config", { signal }),
     rasters: (signal) => request<RasterLayer[]>("GET", "/imagery/rasters", { signal }),
     news({ sinceHours, limit, category, country, q }, signal) {
       const query: Record<string, string> = {};

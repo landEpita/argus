@@ -28,3 +28,6 @@ backend/*.db
 # Playwright
 frontend/test-results/
 frontend/playwright-report/
+
+# Cesium runtime assets, copied at build time (scripts/copy-cesium.mjs)
+frontend/public/cesium/

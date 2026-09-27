@@ -38,6 +38,7 @@ export function aircraftToFeatures(aircraft: readonly Aircraft[]): LayerFeatures
         altitude_m: a.altitude_m,
         velocity_ms: a.velocity_ms,
         heading_deg: a.heading_deg ?? 0,
+        heading_stated: a.heading_deg != null,
         squawk: a.squawk,
         source: a.source,
       }),

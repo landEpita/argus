@@ -53,6 +53,7 @@ export type CameraCollection = Schemas["CameraCollection"];
 export type LiveChannel = Schemas["Channel"];
 export type Stream = Schemas["Stream"];
 export type Webcam = Schemas["Webcam"];
+export type MapConfig = Schemas["MapConfigOut"];
 
 export type RasterLayer = Schemas["RasterLayer"];
 

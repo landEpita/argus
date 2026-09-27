@@ -1088,6 +1088,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/system/map-config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Map Config
+         * @description What the 3D globe may load. The ion token is meant to be public (browser-side).
+         */
+        get: operations["map_config_api_v1_system_map_config_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/system/ready": {
         parameters: {
             query?: never;
@@ -2329,6 +2349,14 @@ export interface components {
             /** Until */
             until: string | null;
         };
+        /** MapConfigOut */
+        MapConfigOut: {
+            /**
+             * Cesium Ion Token
+             * @description Browser token for Cesium ion (terrain, 3D tiles); None = keyless globe
+             */
+            cesium_ion_token: string | null;
+        };
         /**
          * Match
          * @enum {string}
@@ -2479,7 +2507,7 @@ export interface components {
             /** Enabled Layers */
             enabled_layers?: string[] | null;
             /** Projection */
-            projection?: ("mercator" | "globe") | null;
+            projection?: ("mercator" | "globe" | "realistic") | null;
             /**
              * Schema Version
              * @default 1
@@ -2499,7 +2527,7 @@ export interface components {
             /** Enabled Layers */
             enabled_layers: string[] | null;
             /** Projection */
-            projection: ("mercator" | "globe") | null;
+            projection: ("mercator" | "globe" | "realistic") | null;
             /**
              * Schema Version
              * @default 1
@@ -4949,6 +4977,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthOut"];
+                };
+            };
+        };
+    };
+    map_config_api_v1_system_map_config_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MapConfigOut"];
                 };
             };
         };

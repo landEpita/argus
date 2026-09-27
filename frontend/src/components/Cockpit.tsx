@@ -1,7 +1,9 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AssistantPanel, type Question } from "@/components/assistant/AssistantPanel";
+import { CockpitHud } from "@/components/cockpit/CockpitHud";
 import { Inspector } from "@/components/map/Inspector";
 import { LayersDrawer } from "@/components/map/LayersDrawer";
 import { MapFooter } from "@/components/map/MapFooter";
@@ -21,6 +23,7 @@ import { contextOf } from "@/features/assistant/chat";
 import { CountryDirectory, EMPTY_DIRECTORY } from "@/features/intel/countries";
 import { PollingResource } from "@/features/intel/resource";
 import { useResource } from "@/features/intel/useResource";
+import type { CockpitState } from "@/features/map/cesium/renderer";
 import { layerRegistry } from "@/features/map/layers";
 import { trackToFeatures } from "@/features/map/layers/aircraft";
 import { watchKey } from "@/features/map/layers/features";
@@ -45,6 +48,11 @@ import type {
 } from "@/lib/api/types";
 
 const DEFAULT_POSITION = { center: { lat: 30, lon: 20 }, zoom: 2 };
+// Cesium is several megabytes: loaded only when the globe is chosen.
+const CesiumCanvas = dynamic(
+  () => import("@/features/map/cesium/CesiumCanvas").then((m) => m.CesiumCanvas),
+  { ssr: false, loading: () => <p className="map-status">Loading the 3D globe…</p> },
+);
 const KNOWN_LAYERS = new Set(layerRegistry.all().map((l) => l.id));
 const PRESENCE_LAYERS: Record<string, readonly string[]> = {
   aircraft: ["aircraft", "military"],
@@ -82,6 +90,9 @@ export function Cockpit({ api, store, watch, initial }: Props) {
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [question, setQuestion] = useState<Question | null>(null);
   const [leftTab, setLeftTab] = useState<RightNowTab>("situations");
+  const [cockpit, setCockpit] = useState<CockpitState | null>(null);
+  /** An aircraft to ride once the globe has loaded its layer. */
+  const pendingCockpit = useRef<{ layerId: string; id: string } | null>(null);
 
   // Unread alerts: the header count, and browser notifications for new ones.
   const alertsResource = useMemo(
@@ -105,10 +116,8 @@ export function Cockpit({ api, store, watch, initial }: Props) {
       }
     }
   }, [unreadFeed.data]);
-  const initialEnabled = useRef(enabled);
-  const initialProjection = useRef(projection);
-  const initialPosition = useRef(initial.viewport ?? DEFAULT_POSITION);
-  const initialWatched = useRef([...watch.watched()]);
+  // Where the map is now: a renderer switch starts the new one from here.
+  const position = useRef(initial.viewport ?? DEFAULT_POSITION);
 
   const loadHealth = useMemo(() => (s: AbortSignal) => api.health(s), [api]);
   const health = useFeed<Health>(loadHealth, 30_000);
@@ -200,12 +209,34 @@ export function Cockpit({ api, store, watch, initial }: Props) {
 
   const changeProjection = useCallback(
     (next: Projection) => {
-      setProjection(next);
+      setProjection((previous) => {
+        // Between MapLibre and Cesium the canvas is replaced; its controller comes with it.
+        if ((previous === "realistic") !== (next === "realistic")) {
+          controller.current = null;
+          setSelection(null);
+        }
+        return next;
+      });
       store.update({ projection: next });
       controller.current?.setProjection(next);
     },
     [store],
   );
+
+  const enterCockpit = useCallback(
+    (layerId: string, id: string) => {
+      setSelection(null);
+      setLeftOpen(false);
+      if (projection !== "realistic") {
+        pendingCockpit.current = { layerId, id };
+        changeProjection("realistic");
+      } else if (!controller.current?.enterCockpit?.(layerId, id)) {
+        pendingCockpit.current = { layerId, id };
+      }
+    },
+    [projection, changeProjection],
+  );
+  const exitCockpit = useCallback(() => controller.current?.exitCockpit?.(), []);
 
   const focusPoint = useCallback(
     (lat: number, lon: number, layer?: string, zoom = 6) => {
@@ -369,20 +400,52 @@ export function Cockpit({ api, store, watch, initial }: Props) {
 
   return (
     <div className="cockpit">
-      <MapCanvas
-        api={api}
-        registry={layerRegistry}
-        initialEnabled={initialEnabled.current}
-        initialProjection={initialProjection.current}
-        initialPosition={initialPosition.current}
-        initialWatched={initialWatched.current}
-        onReady={(c) => {
-          controller.current = c;
-        }}
-        onUpdate={(update) => setStates((prev) => ({ ...prev, [update.layerId]: update }))}
-        onSelect={setSelection}
-        onMove={(position) => store.update({ viewport: position })}
-      />
+      {projection === "realistic" ? (
+        <CesiumCanvas
+          api={api}
+          registry={layerRegistry}
+          initialEnabled={enabled}
+          initialPosition={position.current}
+          initialWatched={[...watched]}
+          onReady={(c) => {
+            controller.current = c;
+          }}
+          onUpdate={(update) => {
+            setStates((prev) => ({ ...prev, [update.layerId]: update }));
+            const pending = pendingCockpit.current;
+            if (pending?.layerId === update.layerId && update.status === "ready") {
+              if (controller.current?.enterCockpit?.(pending.layerId, pending.id)) {
+                pendingCockpit.current = null;
+              }
+            }
+          }}
+          onSelect={setSelection}
+          onMove={(p) => {
+            position.current = p;
+            store.update({ viewport: p });
+          }}
+          onCockpit={setCockpit}
+        />
+      ) : (
+        <MapCanvas
+          api={api}
+          registry={layerRegistry}
+          initialEnabled={enabled}
+          initialProjection={projection}
+          initialPosition={position.current}
+          initialWatched={[...watched]}
+          onReady={(c) => {
+            controller.current = c;
+          }}
+          onUpdate={(update) => setStates((prev) => ({ ...prev, [update.layerId]: update }))}
+          onSelect={setSelection}
+          onMove={(p) => {
+            position.current = p;
+            store.update({ viewport: p });
+          }}
+        />
+      )}
+      {cockpit && route.space === "map" && <CockpitHud state={cockpit} onExit={exitCockpit} />}
       <TopBar
         space={route.space}
         onSpace={(s) => route.go(s)}
@@ -434,15 +497,17 @@ export function Cockpit({ api, store, watch, initial }: Props) {
               onKeys={() => route.go("sources")}
             />
           )}
-          <RegionBar
-            region={region}
-            projection={projection}
-            onRegion={(r) => {
-              setRegion(r.id);
-              controller.current?.fitBounds(r.bounds);
-            }}
-            onProjection={changeProjection}
-          />
+          {!cockpit && (
+            <RegionBar
+              region={region}
+              projection={projection}
+              onRegion={(r) => {
+                setRegion(r.id);
+                controller.current?.fitBounds(r.bounds);
+              }}
+              onProjection={changeProjection}
+            />
+          )}
           <MapFooter
             registry={layerRegistry}
             enabled={enabled}
@@ -475,6 +540,11 @@ export function Cockpit({ api, store, watch, initial }: Props) {
                   ? tracked !== null && tracked === selection.properties.icao24
                   : null,
                 onTrack: () => void toggleTrack(),
+                cockpit: selection.layer.watchable === "aircraft" ? false : null,
+                onCockpit: () => {
+                  const id = selection.properties.watch_value;
+                  if (typeof id === "string") enterCockpit(selection.layer.id, id);
+                },
                 onAsk: () =>
                   ask(
                     `Tell me about ${String(selection.properties.title ?? "this")}.`,

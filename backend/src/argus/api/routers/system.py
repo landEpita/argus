@@ -5,7 +5,7 @@ import logging
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse, Response
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from argus import __version__
 from argus.api.deps import ContainerDep, HealthDep, RegistryDep
@@ -80,3 +80,15 @@ metrics_router = APIRouter()
 @metrics_router.get("/metrics", include_in_schema=False)
 def metrics(container: ContainerDep) -> Response:
     return Response(container.metrics.render(), media_type=container.metrics.content_type)
+
+
+class MapConfigOut(BaseModel):
+    cesium_ion_token: str | None = Field(
+        description="Browser token for Cesium ion (terrain, 3D tiles); None = keyless globe"
+    )
+
+
+@router.get("/map-config", response_model=MapConfigOut)
+async def map_config(container: ContainerDep) -> MapConfigOut:
+    """What the 3D globe may load. The ion token is meant to be public (browser-side)."""
+    return MapConfigOut(cesium_ion_token=container.settings.cesium_ion_token or None)

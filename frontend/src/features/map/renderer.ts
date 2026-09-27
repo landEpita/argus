@@ -28,7 +28,8 @@ import {
 } from "./render";
 import type { LayerUpdate } from "./scheduler";
 
-export type Projection = "mercator" | "globe";
+/** "realistic" is drawn by the Cesium renderer, not by this one. */
+export type Projection = "mercator" | "globe" | "realistic";
 
 export const TRACK_SOURCE = "argus-track";
 const EMPTY: LayerFeatures = { type: "FeatureCollection", features: [] };
@@ -85,7 +86,7 @@ export class MapLibreRenderer {
       paint: { "circle-color": "#f472b6", "circle-radius": 4 },
     });
     this.installed = true;
-    this.map.setProjection({ type: this.projection });
+    this.map.setProjection({ type: this.maplibreProjection() });
   }
 
   onFeatureClick(handler: FeatureClickHandler): void {
@@ -156,7 +157,11 @@ export class MapLibreRenderer {
   /** Safe before the style has loaded: the choice is applied by `install`. */
   setProjection(projection: Projection): void {
     this.projection = projection;
-    if (this.installed) this.map.setProjection({ type: projection });
+    if (this.installed) this.map.setProjection({ type: this.maplibreProjection() });
+  }
+
+  private maplibreProjection(): "mercator" | "globe" {
+    return this.projection === "mercator" ? "mercator" : "globe";
   }
 
   private setFeatures(layerId: string, data: LayerFeatures): void {
