@@ -1,0 +1,235 @@
+{
+ "count": 367,
+ "results": [
+  {
+   "id": "7d1afb26-6f9c-429b-9ccf-29012fd1e519",
+   "url": "https://ll.thespacedevs.com/2.3.0/launches/7d1afb26-6f9c-429b-9ccf-29012fd1e519/",
+   "name": "Starship | Starlink Group 31-1 (Starship Flight 14)",
+   "net": "2026-09-28T12:15:00Z",
+   "window_start": "2026-09-28T12:15:00Z",
+   "window_end": "2026-09-28T13:30:00Z",
+   "webcast_live": false,
+   "status": {
+    "id": 1,
+    "name": "Go for Launch",
+    "abbrev": "Go"
+   },
+   "pad": {
+    "id": 235,
+    "name": "Orbital Launch Pad 2",
+    "latitude": 25.99677,
+    "longitude": -97.15799,
+    "country": {
+     "id": 2,
+     "name": "United States of America",
+     "alpha_2_code": "US",
+     "alpha_3_code": "USA",
+     "nationality_name": "American",
+     "nationality_name_composed": "Americano"
+    },
+    "location": {
+     "name": "SpaceX Starbase, TX, USA"
+    }
+   },
+   "launch_service_provider": {
+    "name": "SpaceX"
+   },
+   "mission": {
+    "name": "Starlink Group 31-1 (Starship Flight 14)",
+    "type": "Communications",
+    "orbit": {
+     "name": "Low Earth Orbit"
+    }
+   },
+   "rocket": {
+    "configuration": {
+     "full_name": "Starship V3"
+    }
+   }
+  },
+  {
+   "id": "18441371-8b2e-457c-afb5-1ec1b11ab630",
+   "url": "https://ll.thespacedevs.com/2.3.0/launches/18441371-8b2e-457c-afb5-1ec1b11ab630/",
+   "name": "Falcon 9 Block 5 | Crew-13",
+   "net": "2026-10-01T15:10:06Z",
+   "window_start": "2026-10-01T15:10:06Z",
+   "window_end": "2026-10-01T15:10:06Z",
+   "webcast_live": false,
+   "status": {
+    "id": 1,
+    "name": "Go for Launch",
+    "abbrev": "Go"
+   },
+   "pad": {
+    "id": 80,
+    "name": "Space Launch Complex 40",
+    "latitude": 28.56194122,
+    "longitude": -80.57735736,
+    "country": {
+     "id": 2,
+     "name": "United States of America",
+     "alpha_2_code": "US",
+     "alpha_3_code": "USA",
+     "nationality_name": "American",
+     "nationality_name_composed": "Americano"
+    },
+    "location": {
+     "name": "Cape Canaveral SFS, FL, USA"
+    }
+   },
+   "launch_service_provider": {
+    "name": "SpaceX"
+   },
+   "mission": {
+    "name": "Crew-13",
+    "type": "Human Exploration",
+    "orbit": {
+     "name": "Low Earth Orbit"
+    }
+   },
+   "rocket": {
+    "configuration": {
+     "full_name": "Falcon 9 Block 5"
+    }
+   }
+  },
+  {
+   "id": "67213393-7983-4c06-8b44-b8c785a5ed79",
+   "url": "https://ll.thespacedevs.com/2.3.0/launches/67213393-7983-4c06-8b44-b8c785a5ed79/",
+   "name": "Falcon 9 Block 5 | Transporter 18 (Dedicated SSO Rideshare)",
+   "net": "2026-10-01T18:18:00Z",
+   "window_start": "2026-10-01T18:18:00Z",
+   "window_end": "2026-10-01T19:16:00Z",
+   "webcast_live": false,
+   "status": {
+    "id": 1,
+    "name": "Go for Launch",
+    "abbrev": "Go"
+   },
+   "pad": {
+    "id": 16,
+    "name": "Space Launch Complex 4E",
+    "latitude": 34.632,
+    "longitude": -120.611,
+    "country": {
+     "id": 2,
+     "name": "United States of America",
+     "alpha_2_code": "US",
+     "alpha_3_code": "USA",
+     "nationality_name": "American",
+     "nationality_name_composed": "Americano"
+    },
+    "location": {
+     "name": "Vandenberg SFB, CA, USA"
+    }
+   },
+   "launch_service_provider": {
+    "name": "SpaceX"
+   },
+   "mission": {
+    "name": "Transporter 18 (Dedicated SSO Rideshare)",
+    "type": "Dedicated Rideshare",
+    "orbit": {
+     "name": "Sun-Synchronous Orbit"
+    }
+   },
+   "rocket": {
+    "configuration": {
+     "full_name": "Falcon 9 Block 5"
+    }
+   }
+  },
+  {
+   "id": "4651fd8a-43de-4166-bf8f-c168b3bd1d2c",
+   "url": "https://ll.thespacedevs.com/2.3.0/launches/4651fd8a-43de-4166-bf8f-c168b3bd1d2c/",
+   "name": "Falcon Heavy | NROL-97",
+   "net": "2026-10-02T03:53:00Z",
+   "window_start": "2026-10-02T03:53:00Z",
+   "window_end": "2026-10-02T04:42:00Z",
+   "webcast_live": false,
+   "status": {
+    "id": 1,
+    "name": "Go for Launch",
+    "abbrev": "Go"
+   },
+   "pad": {
+    "id": 87,
+    "name": "Launch Complex 39A",
+    "latitude": 28.60822681,
+    "longitude": -80.60428186,
+    "country": {
+     "id": 2,
+     "name": "United States of America",
+     "alpha_2_code": "US",
+     "alpha_3_code": "USA",
+     "nationality_name": "American",
+     "nationality_name_composed": "Americano"
+    },
+    "location": {
+     "name": "Kennedy Space Center, FL, USA"
+    }
+   },
+   "launch_service_provider": {
+    "name": "SpaceX"
+   },
+   "mission": {
+    "name": "NROL-97",
+    "type": "Government/Top Secret",
+    "orbit": {
+     "name": "Unknown"
+    }
+   },
+   "rocket": {
+    "configuration": {
+     "full_name": "Falcon Heavy"
+    }
+   }
+  },
+  {
+   "id": "nopad",
+   "url": "https://ll.thespacedevs.com/2.3.0/launches/7d1afb26-6f9c-429b-9ccf-29012fd1e519/",
+   "name": "Starship | Starlink Group 31-1 (Starship Flight 14)",
+   "net": "2026-09-28T12:15:00Z",
+   "window_start": "2026-09-28T12:15:00Z",
+   "window_end": "2026-09-28T13:30:00Z",
+   "webcast_live": false,
+   "status": {
+    "id": 1,
+    "name": "Go for Launch",
+    "abbrev": "Go"
+   },
+   "pad": {
+    "id": 235,
+    "name": "Orbital Launch Pad 2",
+    "latitude": null,
+    "longitude": -97.15799,
+    "country": {
+     "id": 2,
+     "name": "United States of America",
+     "alpha_2_code": "US",
+     "alpha_3_code": "USA",
+     "nationality_name": "American",
+     "nationality_name_composed": "Americano"
+    },
+    "location": {
+     "name": "SpaceX Starbase, TX, USA"
+    }
+   },
+   "launch_service_provider": {
+    "name": "SpaceX"
+   },
+   "mission": {
+    "name": "Starlink Group 31-1 (Starship Flight 14)",
+    "type": "Communications",
+    "orbit": {
+     "name": "Low Earth Orbit"
+    }
+   },
+   "rocket": {
+    "configuration": {
+     "full_name": "Starship V3"
+    }
+   }
+  }
+ ]
+}

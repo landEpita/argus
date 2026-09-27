@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Env / local
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# Local SQLite database
+backend/*.db
+
+# Playwright
+frontend/test-results/
+frontend/playwright-report/

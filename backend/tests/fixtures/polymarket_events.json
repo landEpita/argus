@@ -1,0 +1,200 @@
+[
+ {
+  "id": "1038648",
+  "slug": "us-iran-ceasefire-continues-throughptptpt",
+  "title": "US-Iran ceasefire continues through...?",
+  "endDate": "2026-10-31T23:59:00Z",
+  "volume": 4196433.790189001,
+  "volume24hr": 588954.725367,
+  "liquidity": 329579.7399,
+  "active": true,
+  "closed": false,
+  "tags": [
+   {
+    "label": "Iran",
+    "slug": "iran"
+   },
+   {
+    "label": "Trump",
+    "slug": "trump"
+   },
+   {
+    "label": "Israel",
+    "slug": "israel"
+   },
+   {
+    "label": "Military",
+    "slug": "military"
+   }
+  ],
+  "markets": [
+   {
+    "id": "4641062",
+    "question": "US x Iran ceasefire continues through September 20?",
+    "slug": "us-x-iran-ceasefire-continues-through-september-20-20260917",
+    "outcomes": "[\"Yes\", \"No\"]",
+    "outcomePrices": "[\"1\", \"0\"]",
+    "volume": "556624.42371",
+    "volume24hr": null,
+    "oneDayPriceChange": 0.03,
+    "endDate": "2026-09-20T23:59:00Z",
+    "active": true,
+    "closed": true,
+    "lastTradePrice": 0.999,
+    "groupItemTitle": "September 20"
+   },
+   {
+    "id": "4641063",
+    "question": "US x Iran ceasefire continues through September 25?",
+    "slug": "us-x-iran-ceasefire-continues-through-september-25-20260917",
+    "outcomes": "[\"Yes\", \"No\"]",
+    "outcomePrices": "[\"1\", \"0\"]",
+    "volume": "734156.6500520002",
+    "volume24hr": 7337.952407,
+    "oneDayPriceChange": 0.0065,
+    "endDate": "2026-09-25T23:59:00Z",
+    "active": true,
+    "closed": true,
+    "lastTradePrice": 0.999,
+    "groupItemTitle": "September 25"
+   },
+   {
+    "id": "4641064",
+    "question": "US x Iran ceasefire continues through September 30?",
+    "slug": "us-x-iran-ceasefire-continues-through-september-30-20260917",
+    "outcomes": "[\"Yes\", \"No\"]",
+    "outcomePrices": "[\"0.935\", \"0.065\"]",
+    "volume": "1804881.7411619998",
+    "volume24hr": 461619.997003,
+    "oneDayPriceChange": null,
+    "endDate": "2026-09-30T23:59:00Z",
+    "active": true,
+    "closed": false,
+    "lastTradePrice": 0.93,
+    "groupItemTitle": "September 30"
+   }
+  ]
+ },
+ {
+  "id": "660109",
+  "slug": "strait-of-hormuz-traffic-returns-to-normal-by-september-30-20260702154339440",
+  "title": "Strait of Hormuz traffic returns to normal by September 30?",
+  "endDate": "2026-10-01T03:59:00Z",
+  "volume": 11422045.399037996,
+  "volume24hr": 258496.81417100003,
+  "liquidity": 499042.67954,
+  "active": true,
+  "closed": false,
+  "tags": [
+   {
+    "label": "Oil",
+    "slug": "oil"
+   },
+   {
+    "label": "Iran",
+    "slug": "iran"
+   },
+   {
+    "label": "Politics",
+    "slug": "politics"
+   },
+   {
+    "label": "Geopolitics",
+    "slug": "geopolitics"
+   }
+  ],
+  "markets": [
+   {
+    "id": "2774057",
+    "question": "Strait of Hormuz traffic returns to normal by September 30?",
+    "slug": "strait-of-hormuz-traffic-returns-to-normal-by-september-30-20260702154339440",
+    "outcomes": "[\"Yes\", \"No\"]",
+    "outcomePrices": "[\"0.0025\", \"0.9975\"]",
+    "volume": "11422045.399037996",
+    "volume24hr": 258496.81417100003,
+    "oneDayPriceChange": -0.002,
+    "endDate": "2026-10-01T03:59:00Z",
+    "active": true,
+    "closed": false,
+    "lastTradePrice": 0.002,
+    "groupItemTitle": null
+   }
+  ]
+ },
+ {
+  "id": "699735",
+  "slug": "us-announces-end-of-iranian-blockade-byptptpt-20260713152715080",
+  "title": "US announces end of Iranian blockade by...?",
+  "endDate": "2027-01-01T04:59:00Z",
+  "volume": 32654930.489441,
+  "volume24hr": 186825.33608699997,
+  "liquidity": 585349.49218,
+  "active": true,
+  "closed": false,
+  "tags": [
+   {
+    "label": "Iran",
+    "slug": "iran"
+   },
+   {
+    "label": "Trump",
+    "slug": "trump"
+   },
+   {
+    "label": "Blockade",
+    "slug": "blockade"
+   },
+   {
+    "label": "Politics",
+    "slug": "politics"
+   }
+  ],
+  "markets": [
+   {
+    "id": "2910435",
+    "question": "US announces end of Iranian blockade by July 24, 2026?",
+    "slug": "us-announces-end-of-iranian-blockade-by-july-24-2026-20260713152715081-211",
+    "outcomes": "[\"Yes\", \"No\"]",
+    "outcomePrices": "[\"0\", \"1\"]",
+    "volume": "351768.86279800045",
+    "volume24hr": null,
+    "oneDayPriceChange": -0.019,
+    "endDate": "2026-07-25T03:59:00Z",
+    "active": true,
+    "closed": true,
+    "lastTradePrice": 0.001,
+    "groupItemTitle": "July 24"
+   },
+   {
+    "id": "2910436",
+    "question": "US announces end of Iranian blockade by July 31, 2026?",
+    "slug": "us-announces-end-of-iranian-blockade-by-july-31-2026-20260713152715082-212",
+    "outcomes": "[\"Yes\", \"No\"]",
+    "outcomePrices": "[\"0\", \"1\"]",
+    "volume": "1106597.1373619998",
+    "volume24hr": null,
+    "oneDayPriceChange": -0.0145,
+    "endDate": "2026-08-01T03:59:00Z",
+    "active": true,
+    "closed": true,
+    "lastTradePrice": 0.003,
+    "groupItemTitle": "July 31"
+   },
+   {
+    "id": "2910437",
+    "question": "US announces end of Iranian blockade by August 15, 2026?",
+    "slug": "us-announces-end-of-iranian-blockade-by-august-15-2026-20260713152715083-347-987-697-628-574-676",
+    "outcomes": "[\"Yes\", \"No\"]",
+    "outcomePrices": "[\"0\", \"1\"]",
+    "volume": "3291960.571075001",
+    "volume24hr": null,
+    "oneDayPriceChange": -0.008,
+    "endDate": "2026-08-16T03:59:00Z",
+    "active": true,
+    "closed": true,
+    "lastTradePrice": 0.001,
+    "groupItemTitle": "August 15"
+   }
+  ]
+ }
+]

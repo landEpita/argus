@@ -1,0 +1,158 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "bbox": [
+    -158.3,
+    16.2,
+    -158.3,
+    16.2
+   ],
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -158.3,
+     16.2
+    ]
+   },
+   "properties": {
+    "eventtype": "TC",
+    "eventid": 1001321,
+    "episodeid": 28,
+    "name": "Tropical Cyclone NOLO-26",
+    "alertlevel": "Green",
+    "alertscore": 1,
+    "country": "United States",
+    "fromdate": "2026-09-13T21:00:00",
+    "todate": "2026-09-27T15:00:00",
+    "url": {
+     "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001321&episodeid=28",
+     "report": "https://www.gdacs.org/report.aspx?eventid=1001321&episodeid=28&eventtype=TC",
+     "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=TC&eventid=1001321"
+    },
+    "severitydata": {
+     "severity": 212.9616,
+     "severitytext": "Hurricane/Typhoon > 74 mph (maximum wind speed of 213 km/h)",
+     "severityunit": "km/h"
+    },
+    "iscurrent": "true"
+   }
+  },
+  {
+   "type": "Feature",
+   "bbox": [
+    179.3215,
+    50.9044,
+    179.3215,
+    50.9044
+   ],
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     179.3215,
+     50.9044
+    ]
+   },
+   "properties": {
+    "eventtype": "EQ",
+    "eventid": 1568275,
+    "episodeid": 1736313,
+    "name": "Earthquake in Rat Islands, Aleutian Islands",
+    "alertlevel": "Green",
+    "alertscore": 1,
+    "country": "Rat Islands, Aleutian Islands",
+    "fromdate": "2026-09-27T07:48:11",
+    "todate": "2026-09-27T07:48:11",
+    "url": {
+     "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=EQ&eventid=1568275&episodeid=1736313",
+     "report": "https://www.gdacs.org/report.aspx?eventid=1568275&episodeid=1736313&eventtype=EQ",
+     "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=EQ&eventid=1568275"
+    },
+    "severitydata": {
+     "severity": 4.6,
+     "severitytext": "Magnitude 4.6M, Depth:46.522km",
+     "severityunit": "M"
+    },
+    "iscurrent": "true"
+   }
+  },
+  {
+   "type": "Feature",
+   "bbox": [
+    -0.0892,
+    8.3062,
+    -0.0892,
+    8.3062
+   ],
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -0.0892,
+     8.3062
+    ]
+   },
+   "properties": {
+    "eventtype": "FL",
+    "eventid": 1104196,
+    "episodeid": 2,
+    "name": "Flood in Ghana",
+    "alertlevel": "Green",
+    "alertscore": 1,
+    "country": "Ghana",
+    "fromdate": "2026-09-23T01:00:00",
+    "todate": "2026-09-27T01:00:00",
+    "url": {
+     "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=FL&eventid=1104196&episodeid=2",
+     "report": "https://www.gdacs.org/report.aspx?eventid=1104196&episodeid=2&eventtype=FL",
+     "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=FL&eventid=1104196"
+    },
+    "severitydata": {
+     "severity": 0.0,
+     "severitytext": "Magnitude 0 ",
+     "severityunit": ""
+    },
+    "iscurrent": "true"
+   }
+  },
+  {
+   "type": "Feature",
+   "bbox": [
+    132.1621,
+    -12.8344,
+    132.1621,
+    -12.8344
+   ],
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     132.1621,
+     -12.8344
+    ]
+   },
+   "properties": {
+    "eventtype": "WF",
+    "eventid": 1031990,
+    "episodeid": 29,
+    "name": "Forest fires in Australia",
+    "alertlevel": "Green",
+    "alertscore": 1,
+    "country": "Australia",
+    "fromdate": "2026-09-13T00:00:00",
+    "todate": "2026-09-27T00:00:00",
+    "url": {
+     "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=WF&eventid=1031990&episodeid=29",
+     "report": "https://www.gdacs.org/report.aspx?eventid=1031990&episodeid=29&eventtype=WF",
+     "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=WF&eventid=1031990"
+    },
+    "severitydata": {
+     "severity": 34917.0,
+     "severitytext": "Green impact for forestfire in 34917 ha",
+     "severityunit": "ha"
+    },
+    "iscurrent": "true"
+   }
+  }
+ ],
+ "bbox": null
+}

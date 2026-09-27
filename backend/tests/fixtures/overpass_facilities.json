@@ -1,0 +1,91 @@
+{
+ "version": 0.6,
+ "generator": "Overpass API 0.7.62.11 87bfad18",
+ "osm3s": {
+  "timestamp_osm_base": "2026-09-27T16:25:40Z",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+ },
+ "elements": [
+  {
+   "type": "node",
+   "id": 2556825308,
+   "lat": 48.9037523,
+   "lon": 2.2577867,
+   "tags": {
+    "access": "private",
+    "addr:city": "Courbevoie",
+    "addr:housenumber": "124",
+    "addr:postcode": "92400",
+    "addr:street": "Boulevard de Verdun",
+    "barrier": "gate",
+    "name": "SFR Netcenter Courbevoie",
+    "operator": "SFR",
+    "operator:wikidata": "Q218765",
+    "telecom": "data_center"
+   }
+  },
+  {
+   "type": "node",
+   "id": 6015635281,
+   "lat": 48.8561326,
+   "lon": 2.3833044,
+   "tags": {
+    "addr:city": "Paris",
+    "addr:housenumber": "137",
+    "addr:postcode": "75011",
+    "addr:street": "Boulevard Voltaire",
+    "check_date": "2024-09-22",
+    "description": "data center",
+    "name": "Telehouse Paris Voltaire",
+    "telecom": "data_center"
+   }
+  },
+  {
+   "type": "node",
+   "id": 6016440346,
+   "lat": 48.9046324,
+   "lon": 2.2579494,
+   "tags": {
+    "addr:city": "Courbevoie",
+    "addr:housenumber": "130",
+    "addr:postcode": "92400",
+    "addr:street": "Boulevard de Verdun",
+    "description": "data center",
+    "name": "TelecityGroup Paris Courbevoie",
+    "telecom": "data_center"
+   }
+  },
+  {
+   "type": "node",
+   "id": 6102483146,
+   "lat": 48.8697319,
+   "lon": 2.3441419,
+   "tags": {
+    "contact:city": "Paris",
+    "contact:housenumber": "38",
+    "contact:postcode": "75002",
+    "contact:street": "Rue des Je\u00fbneurs",
+    "description": "data center",
+    "name": "Telehouse 1",
+    "telecom": "data_center"
+   }
+  },
+  {
+   "type": "node",
+   "id": 6102606448,
+   "lat": 48.8152095,
+   "lon": 2.4030379,
+   "tags": {
+    "addr:city": "Ivry-sur-Seine",
+    "addr:housenumber": "11;15",
+    "addr:postcode": "94200",
+    "addr:street": "Rue Galil\u00e9e",
+    "description": "data center",
+    "name": "Interxion PAR6",
+    "operator": "Digital Realty",
+    "operator:wikidata": "Q5275969",
+    "telecom": "data_center"
+   }
+  }
+ ]
+}

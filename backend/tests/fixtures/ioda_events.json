@@ -1,0 +1,91 @@
+{
+ "type": "outages.events",
+ "metadata": {
+  "requestTime": "2026-09-27T17:00:56+00:00",
+  "responseTime": "2026-09-27T17:00:57+00:00"
+ },
+ "requestParameters": {
+  "from": "1790269255",
+  "until": "1790528455",
+  "datasource": null,
+  "includeAlerts": false,
+  "format": "codf",
+  "limit": 100,
+  "page": null,
+  "relatedTo": null,
+  "entityType": "country",
+  "entityCode": null,
+  "orderBy": null,
+  "overall": false,
+  "ignoreMethods": null,
+  "extendWindow": 1209600
+ },
+ "error": null,
+ "perf": null,
+ "data": [
+  {
+   "location": "country/PY",
+   "start": 1789497000,
+   "duration": 1031455,
+   "uncertainty": null,
+   "method": "median",
+   "datasource": "bgp",
+   "status": 0,
+   "fraction": null,
+   "score": 23418.87327940968,
+   "location_name": "Paraguay",
+   "overlaps_window": true
+  },
+  {
+   "location": "country/BM",
+   "start": 1789673100,
+   "duration": 855355,
+   "uncertainty": null,
+   "method": "median",
+   "datasource": "bgp",
+   "status": 0,
+   "fraction": null,
+   "score": 14584.057971014494,
+   "location_name": "Bermuda",
+   "overlaps_window": true
+  },
+  {
+   "location": "country/PM",
+   "start": 1789683300,
+   "duration": 845155,
+   "uncertainty": null,
+   "method": "median",
+   "datasource": "bgp",
+   "status": 0,
+   "fraction": null,
+   "score": 26085.030864197528,
+   "location_name": "St. Pierre And Miquelon",
+   "overlaps_window": true
+  },
+  {
+   "location": "country/TC",
+   "start": 1789683300,
+   "duration": 653400,
+   "uncertainty": null,
+   "method": "median",
+   "datasource": "bgp",
+   "status": 0,
+   "fraction": null,
+   "score": 12235.955056179777,
+   "location_name": "Turks And Caicos Islands",
+   "overlaps_window": true
+  },
+  {
+   "location": "asn/123",
+   "start": 1,
+   "duration": 1,
+   "score": 5
+  },
+  {
+   "location": "country/ZZ",
+   "start": 1,
+   "duration": 1
+  }
+ ],
+ "copyright": "This data is Copyright (c) 2021-2025 Georgia Tech Research Corporation. All Rights Reserved."
+}

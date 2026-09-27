@@ -1,0 +1,11 @@
+{
+  "time": 1790510400,
+  "states": [
+    ["3c6444", "DLH9LF  ", "Germany", 1790510399, 1790510400, 2.5471, 49.0097, 10972.8, false, 231.4, 87.2, 0.0, null, 11277.6, "1000", false, 0],
+    ["39de4f", "AFR1234 ", "France", 1790510398, 1790510400, 2.3522, 48.8566, null, false, 120.1, 359.9, -5.2, null, null, null, false, 0],
+    ["3950c1", "", "France", 1790510395, 1790510399, 2.5500, 49.0000, null, true, 0.0, 180.0, null, null, null, null, false, 0],
+    ["4ca7b5", "RYR55AB ", "Ireland", null, 1790510300, null, null, 11887.2, false, 240.0, 45.0, 0.0, null, 12100.0, null, false, 0],
+    ["badrow"],
+    ["zzzzzzzz", "BAD", "Nowhere", 1790510400, 1790510400, 2.0, 48.0, 100.0, false, 10.0, 10.0, 0.0, null, 100.0, null, false, 0]
+  ]
+}

@@ -1,0 +1,50 @@
+[
+ {
+  "title": "Cash Rate",
+  "country": "AUD",
+  "date": "2026-09-29T00:30:00-04:00",
+  "impact": "High",
+  "forecast": "4.60%",
+  "previous": "4.35%"
+ },
+ {
+  "title": "RBA Rate Statement",
+  "country": "AUD",
+  "date": "2026-09-29T00:30:00-04:00",
+  "impact": "High",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "title": "CPI m/m",
+  "country": "AUD",
+  "date": "2026-09-29T21:30:00-04:00",
+  "impact": "High",
+  "forecast": "0.5%",
+  "previous": "1.0%"
+ },
+ {
+  "title": "Monetary Policy Meeting Minutes",
+  "country": "JPY",
+  "date": "2026-09-27T19:50:00-04:00",
+  "impact": "Low",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "title": "SPPI y/y",
+  "country": "JPY",
+  "date": "2026-09-27T19:50:00-04:00",
+  "impact": "Low",
+  "forecast": "3.6%",
+  "previous": "3.6%"
+ },
+ {
+  "title": "Bank Holiday",
+  "country": "CAD",
+  "date": "2026-09-30T08:00:00-04:00",
+  "impact": "Holiday",
+  "forecast": "",
+  "previous": ""
+ }
+]

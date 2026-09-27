@@ -1,0 +1,96 @@
+[project]
+name = "argus-backend"
+version = "0.1.0"
+description = "Argus — unified OSINT, geospatial and financial intelligence platform (API)"
+license = "AGPL-3.0-only"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "httpx>=0.28",
+    "sqlalchemy[asyncio]>=2.0.36",
+    "alembic>=1.14",
+    "asyncpg>=0.30",
+    "aiosqlite>=0.20",
+    "redis>=5.2",
+    "prometheus-client>=0.21",
+    "sgp4>=2.24",
+    "websockets>=14",
+    "feedparser>=6.0",
+    "beautifulsoup4>=4.12",
+    "litellm>=1.60",
+    "mcp>=1.9",
+]
+
+[project.optional-dependencies]
+# OpenBB as a fallback quote provider (large: several hundred MB).
+openbb = ["openbb>=4.4"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "fakeredis>=2.26",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/argus"]
+
+# ── Tests ────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "--strict-markers --cov=argus --cov-report=term-missing --cov-fail-under=90"
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+
+# ── Lint / format ────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F",  # pycodestyle, pyflakes
+    "I",            # isort
+    "B",            # bugbear
+    "UP",           # pyupgrade
+    "SIM",          # simplify
+    "N",            # naming
+    "S",            # bandit
+    "ASYNC",        # async pitfalls
+    "RUF",
+    "PT",           # pytest style
+    "TC",           # type-checking imports
+]
+ignore = ["TC001", "TC002", "TC003"]  # FastAPI/pydantic need runtime annotations
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S106", "RUF001"]
+# Ukrainian region names are the upstream's keys; Cyrillic is intended.
+"src/argus/adapters/ukraine_alerts.py" = ["RUF001"]
+
+# ── Types ────────────────────────────────────────────────────────────────────
+[tool.mypy]
+strict = true
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+mypy_path = "src"
+packages = ["argus"]
+
+[[tool.mypy.overrides]]
+module = ["sgp4.*", "feedparser.*"]
+ignore_missing_imports = true

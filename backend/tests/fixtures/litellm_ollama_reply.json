@@ -1,0 +1,26 @@
+{
+ "id": "chatcmpl-a2c14e0f-a164-49af-a862-4f591e4e75bf",
+ "created": 1790538177,
+ "model": "ollama/mistral",
+ "object": "chat.completion",
+ "system_fingerprint": null,
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "content": "{\"answer\": \"ok\", \"conclusive\": true}",
+    "role": "assistant",
+    "tool_calls": null,
+    "function_call": null
+   }
+  }
+ ],
+ "usage": {
+  "completion_tokens": 13,
+  "prompt_tokens": 35,
+  "total_tokens": 48,
+  "completion_tokens_details": null,
+  "prompt_tokens_details": null
+ }
+}

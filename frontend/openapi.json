@@ -1,0 +1,6794 @@
+{
+  "components": {
+    "schemas": {
+      "Aircraft": {
+        "description": "One aircraft state vector, normalised across providers.\n\nUnits are SI throughout (metres, metres per second). Conversion to feet or\nknots is a presentation concern and belongs to the client.",
+        "properties": {
+          "altitude_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Geometric, else barometric",
+            "title": "Altitude M"
+          },
+          "callsign": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Callsign"
+          },
+          "heading_deg": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 360.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heading Deg"
+          },
+          "icao24": {
+            "description": "ICAO 24-bit address, hex",
+            "maxLength": 6,
+            "minLength": 6,
+            "title": "Icao24",
+            "type": "string"
+          },
+          "last_contact": {
+            "format": "date-time",
+            "title": "Last Contact",
+            "type": "string"
+          },
+          "on_ground": {
+            "default": false,
+            "title": "On Ground",
+            "type": "boolean"
+          },
+          "origin_country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Country"
+          },
+          "position": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "registration": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registration"
+          },
+          "source": {
+            "description": "Provider that produced this state",
+            "title": "Source",
+            "type": "string"
+          },
+          "squawk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Squawk"
+          },
+          "type_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ICAO aircraft type designator",
+            "title": "Type Code"
+          },
+          "velocity_ms": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Velocity Ms"
+          },
+          "vertical_rate_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vertical Rate Ms"
+          }
+        },
+        "required": [
+          "icao24",
+          "callsign",
+          "registration",
+          "type_code",
+          "squawk",
+          "origin_country",
+          "position",
+          "altitude_m",
+          "velocity_ms",
+          "heading_deg",
+          "vertical_rate_ms",
+          "on_ground",
+          "last_contact",
+          "source"
+        ],
+        "title": "Aircraft",
+        "type": "object"
+      },
+      "AircraftCollection": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Aircraft"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "items"
+        ],
+        "title": "AircraftCollection",
+        "type": "object"
+      },
+      "AircraftTrack": {
+        "properties": {
+          "callsign": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Callsign"
+          },
+          "icao24": {
+            "title": "Icao24",
+            "type": "string"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/TrackPoint"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "icao24",
+          "callsign",
+          "points",
+          "source"
+        ],
+        "title": "AircraftTrack",
+        "type": "object"
+      },
+      "AnswerOut": {
+        "properties": {
+          "conclusive": {
+            "title": "Conclusive",
+            "type": "boolean"
+          },
+          "elapsed_s": {
+            "title": "Elapsed S",
+            "type": "number"
+          },
+          "focus": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FocusOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "From the tools called, never from the model"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "sources": {
+            "description": "Tools actually read, not what the model claims",
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "stance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stance"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/StepOut"
+            },
+            "title": "Steps",
+            "type": "array"
+          },
+          "structured": {
+            "title": "Structured",
+            "type": "boolean"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "ungrounded": {
+            "description": "Figures in the text that no tool returned",
+            "items": {
+              "type": "string"
+            },
+            "title": "Ungrounded",
+            "type": "array"
+          }
+        },
+        "required": [
+          "text",
+          "conclusive",
+          "steps",
+          "sources",
+          "ungrounded",
+          "provider",
+          "model",
+          "elapsed_s",
+          "structured",
+          "focus"
+        ],
+        "title": "AnswerOut",
+        "type": "object"
+      },
+      "Article": {
+        "properties": {
+          "countries": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Countries",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "published_at": {
+            "format": "date-time",
+            "title": "Published At",
+            "type": "string"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source_id",
+          "title",
+          "url",
+          "summary",
+          "published_at",
+          "countries"
+        ],
+        "title": "Article",
+        "type": "object"
+      },
+      "AskIn": {
+        "properties": {
+          "context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ContextIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/TurnIn"
+            },
+            "maxItems": 12,
+            "title": "History",
+            "type": "array"
+          },
+          "question": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question"
+        ],
+        "title": "AskIn",
+        "type": "object"
+      },
+      "AssetClass": {
+        "enum": [
+          "index",
+          "commodity",
+          "fx",
+          "rate",
+          "volatility",
+          "equity",
+          "fund",
+          "crypto"
+        ],
+        "title": "AssetClass",
+        "type": "string"
+      },
+      "AssetOut": {
+        "properties": {
+          "candles": {
+            "items": {
+              "$ref": "#/components/schemas/Candle"
+            },
+            "title": "Candles",
+            "type": "array"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "delayed": {
+            "default": true,
+            "title": "Delayed",
+            "type": "boolean"
+          },
+          "exchange": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange"
+          },
+          "instrument": {
+            "$ref": "#/components/schemas/Instrument"
+          },
+          "range": {
+            "$ref": "#/components/schemas/HistoryRange"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "technicals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Technicals"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "instrument",
+          "currency",
+          "exchange",
+          "range",
+          "candles",
+          "technicals",
+          "source"
+        ],
+        "title": "AssetOut",
+        "type": "object"
+      },
+      "BoundingBox": {
+        "description": "An axis-aligned WGS84 box.\n\nBoxes crossing the antimeridian are not supported yet: callers must split\nthem in two. Rejecting them here is safer than silently returning the\ncomplement of what the user is looking at.",
+        "properties": {
+          "east": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "East",
+            "type": "number"
+          },
+          "north": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "North",
+            "type": "number"
+          },
+          "south": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "South",
+            "type": "number"
+          },
+          "west": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "West",
+            "type": "number"
+          }
+        },
+        "required": [
+          "west",
+          "south",
+          "east",
+          "north"
+        ],
+        "title": "BoundingBox",
+        "type": "object"
+      },
+      "Cable": {
+        "properties": {
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "lines": {
+            "description": "MultiLineString, lon/lat pairs",
+            "items": {
+              "items": {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              "type": "array"
+            },
+            "title": "Lines",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "color",
+          "lines"
+        ],
+        "title": "Cable",
+        "type": "object"
+      },
+      "CableNetwork": {
+        "properties": {
+          "attribution": {
+            "title": "Attribution",
+            "type": "string"
+          },
+          "cables": {
+            "items": {
+              "$ref": "#/components/schemas/Cable"
+            },
+            "title": "Cables",
+            "type": "array"
+          },
+          "landing_points": {
+            "items": {
+              "$ref": "#/components/schemas/LandingPoint"
+            },
+            "title": "Landing Points",
+            "type": "array"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cables",
+          "landing_points",
+          "source",
+          "attribution"
+        ],
+        "title": "CableNetwork",
+        "type": "object"
+      },
+      "CalendarEvent": {
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "currency": {
+            "description": "Currency the release concerns (FX-desk convention)",
+            "title": "Currency",
+            "type": "string"
+          },
+          "forecast": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast"
+          },
+          "impact": {
+            "$ref": "#/components/schemas/Impact"
+          },
+          "previous": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "currency",
+          "at",
+          "impact",
+          "forecast",
+          "previous"
+        ],
+        "title": "CalendarEvent",
+        "type": "object"
+      },
+      "Candle": {
+        "properties": {
+          "close": {
+            "title": "Close",
+            "type": "number"
+          },
+          "day": {
+            "description": "Trading day, in the exchange's time zone",
+            "format": "date",
+            "title": "Day",
+            "type": "string"
+          },
+          "high": {
+            "title": "High",
+            "type": "number"
+          },
+          "low": {
+            "title": "Low",
+            "type": "number"
+          },
+          "open": {
+            "title": "Open",
+            "type": "number"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None when the feed has none (FX)",
+            "title": "Volume"
+          }
+        },
+        "required": [
+          "day",
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume"
+        ],
+        "title": "Candle",
+        "type": "object"
+      },
+      "ChannelStatusOut": {
+        "properties": {
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "posts": {
+            "title": "Posts",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "channel",
+          "posts",
+          "error"
+        ],
+        "title": "ChannelStatusOut",
+        "type": "object"
+      },
+      "ChokepointTraffic": {
+        "properties": {
+          "change_vs_90d_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Vs 90D Pct"
+          },
+          "change_vs_last_year_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Vs Last Year Pct"
+          },
+          "daily": {
+            "description": "Last 90 days, oldest first",
+            "items": {
+              "$ref": "#/components/schemas/DailyTransits"
+            },
+            "title": "Daily",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "last_7d_avg": {
+            "title": "Last 7D Avg",
+            "type": "number"
+          },
+          "last_year_avg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Same 7 days, one year earlier",
+            "title": "Last Year Avg"
+          },
+          "latest_date": {
+            "description": "PortWatch publishes with a delay of several days",
+            "format": "date",
+            "title": "Latest Date",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "position": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "prior_90d_avg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prior 90D Avg"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "tanker_share_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tanker Share Pct"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "position",
+          "latest_date",
+          "last_7d_avg",
+          "prior_90d_avg",
+          "last_year_avg",
+          "change_vs_90d_pct",
+          "change_vs_last_year_pct",
+          "tanker_share_pct",
+          "daily",
+          "source"
+        ],
+        "title": "ChokepointTraffic",
+        "type": "object"
+      },
+      "Component": {
+        "enum": [
+          "reported_violence",
+          "news_attention",
+          "air_alerts",
+          "internet_outages",
+          "natural_hazards"
+        ],
+        "title": "Component",
+        "type": "string"
+      },
+      "ComponentRuleOut": {
+        "properties": {
+          "component": {
+            "$ref": "#/components/schemas/Component"
+          },
+          "max_points": {
+            "title": "Max Points",
+            "type": "number"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          }
+        },
+        "required": [
+          "component",
+          "max_points",
+          "rule"
+        ],
+        "title": "ComponentRuleOut",
+        "type": "object"
+      },
+      "ComponentScore": {
+        "properties": {
+          "baseline_mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Usual raw value (relative mode)",
+            "title": "Baseline Mean"
+          },
+          "component": {
+            "$ref": "#/components/schemas/Component"
+          },
+          "evidence": {
+            "default": [],
+            "description": "Ids of the items counted",
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "max_points": {
+            "title": "Max Points",
+            "type": "number"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ScoreMode",
+            "default": "absolute"
+          },
+          "points": {
+            "minimum": 0.0,
+            "title": "Points",
+            "type": "number"
+          },
+          "raw": {
+            "description": "The input count or level, before scaling",
+            "title": "Raw",
+            "type": "number"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          }
+        },
+        "required": [
+          "component",
+          "raw",
+          "points",
+          "max_points",
+          "rule",
+          "mode",
+          "baseline_mean",
+          "evidence"
+        ],
+        "title": "ComponentScore",
+        "type": "object"
+      },
+      "ContextIn": {
+        "properties": {
+          "details": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "maxProperties": 20,
+            "title": "Details",
+            "type": "object"
+          },
+          "kind": {
+            "maxLength": 60,
+            "title": "Kind",
+            "type": "string"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
+          },
+          "title": {
+            "maxLength": 200,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "title"
+        ],
+        "title": "ContextIn",
+        "type": "object"
+      },
+      "Convergence": {
+        "properties": {
+          "cell": {
+            "$ref": "#/components/schemas/BoundingBox"
+          },
+          "center": {
+            "$ref": "#/components/schemas/GeoPoint",
+            "description": "Mean position of the signals, not the cell centre"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Most cited by the signals themselves; None if none say",
+            "title": "Country"
+          },
+          "id": {
+            "description": "Grid cell id, stable across refreshes",
+            "title": "Id",
+            "type": "string"
+          },
+          "kinds": {
+            "items": {
+              "$ref": "#/components/schemas/KindCount"
+            },
+            "title": "Kinds",
+            "type": "array"
+          },
+          "latest": {
+            "format": "date-time",
+            "title": "Latest",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "cell",
+          "center",
+          "kinds",
+          "score",
+          "latest",
+          "country"
+        ],
+        "title": "Convergence",
+        "type": "object"
+      },
+      "ConvergenceCollection": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "inputs": {
+            "items": {
+              "$ref": "#/components/schemas/InputStatusOut"
+            },
+            "title": "Inputs",
+            "type": "array"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Convergence"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "items",
+          "inputs"
+        ],
+        "title": "ConvergenceCollection",
+        "type": "object"
+      },
+      "CountryDetailOut": {
+        "properties": {
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryPoint"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "inputs": {
+            "items": {
+              "$ref": "#/components/schemas/InputStatusOut"
+            },
+            "title": "Inputs",
+            "type": "array"
+          },
+          "iso2": {
+            "title": "Iso2",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "signal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CountrySignal"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stories": {
+            "items": {
+              "$ref": "#/components/schemas/Story"
+            },
+            "title": "Stories",
+            "type": "array"
+          }
+        },
+        "required": [
+          "iso2",
+          "name",
+          "signal",
+          "history",
+          "stories",
+          "inputs"
+        ],
+        "title": "CountryDetailOut",
+        "type": "object"
+      },
+      "CountryOut": {
+        "properties": {
+          "centroid": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "iso2": {
+            "title": "Iso2",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          }
+        },
+        "required": [
+          "iso2",
+          "name",
+          "centroid",
+          "region"
+        ],
+        "title": "CountryOut",
+        "type": "object"
+      },
+      "CountrySignal": {
+        "properties": {
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentScore"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "computed_at": {
+            "format": "date-time",
+            "title": "Computed At",
+            "type": "string"
+          },
+          "has_baseline": {
+            "default": false,
+            "description": "Volume-biased components are relative to the usual level",
+            "title": "Has Baseline",
+            "type": "boolean"
+          },
+          "iso2": {
+            "title": "Iso2",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "score": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "iso2",
+          "name",
+          "score",
+          "components",
+          "computed_at",
+          "has_baseline"
+        ],
+        "title": "CountrySignal",
+        "type": "object"
+      },
+      "CountrySignalCollection": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "inputs": {
+            "items": {
+              "$ref": "#/components/schemas/InputStatusOut"
+            },
+            "title": "Inputs",
+            "type": "array"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CountrySignal"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "method": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentRuleOut"
+            },
+            "title": "Method",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "items",
+          "inputs",
+          "method"
+        ],
+        "title": "CountrySignalCollection",
+        "type": "object"
+      },
+      "CryptoAsset": {
+        "properties": {
+          "change_24h_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change 24H Pct"
+          },
+          "change_7d_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change 7D Pct"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "market_cap_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Cap Usd"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "price_usd": {
+            "title": "Price Usd",
+            "type": "number"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "symbol": {
+            "title": "Symbol",
+            "type": "string"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "volume_24h_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume 24H Usd"
+          }
+        },
+        "required": [
+          "id",
+          "symbol",
+          "name",
+          "price_usd",
+          "change_24h_pct",
+          "change_7d_pct",
+          "market_cap_usd",
+          "volume_24h_usd",
+          "updated_at",
+          "source"
+        ],
+        "title": "CryptoAsset",
+        "type": "object"
+      },
+      "DailyTransits": {
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "tankers": {
+            "minimum": 0.0,
+            "title": "Tankers",
+            "type": "integer"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "date",
+          "total",
+          "tankers"
+        ],
+        "title": "DailyTransits",
+        "type": "object"
+      },
+      "DocKind": {
+        "enum": [
+          "story",
+          "post"
+        ],
+        "title": "DocKind",
+        "type": "string"
+      },
+      "Document": {
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DocKind"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "unverified": {
+            "description": "Telegram posts and state-media-only stories",
+            "title": "Unverified",
+            "type": "boolean"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "text",
+          "source",
+          "url",
+          "at",
+          "unverified"
+        ],
+        "title": "Document",
+        "type": "object"
+      },
+      "EnergyBoard": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EnergyStock"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "missing": {
+            "items": {
+              "$ref": "#/components/schemas/MissingOut"
+            },
+            "title": "Missing",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "items",
+          "missing"
+        ],
+        "title": "EnergyBoard",
+        "type": "object"
+      },
+      "EnergyStock": {
+        "properties": {
+          "five_year_avg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Same week of the 5 previous years",
+            "title": "Five Year Avg"
+          },
+          "five_year_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Five Year Max"
+          },
+          "five_year_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Five Year Min"
+          },
+          "history": {
+            "description": "Last 52 weeks, oldest first",
+            "items": {
+              "$ref": "#/components/schemas/Reading"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "latest": {
+            "$ref": "#/components/schemas/Reading"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "vs_five_year_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vs Five Year Pct"
+          },
+          "week_change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week Change"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "unit",
+          "latest",
+          "week_change",
+          "five_year_avg",
+          "vs_five_year_pct",
+          "five_year_min",
+          "five_year_max",
+          "history",
+          "source"
+        ],
+        "title": "EnergyStock",
+        "type": "object"
+      },
+      "EventCategory": {
+        "enum": [
+          "earthquake",
+          "tsunami",
+          "volcano",
+          "wildfire",
+          "fire_hotspot",
+          "tropical_cyclone",
+          "severe_storm",
+          "flood",
+          "drought",
+          "landslide",
+          "sea_ice",
+          "dust_haze",
+          "extreme_temperature",
+          "armed_conflict",
+          "air_raid_alert",
+          "launch",
+          "internet_outage",
+          "other"
+        ],
+        "title": "EventCategory",
+        "type": "string"
+      },
+      "EventCollection": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "feed": {
+            "$ref": "#/components/schemas/EventFeed"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/GeoEvent"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "truncated": {
+            "title": "Truncated",
+            "type": "boolean"
+          },
+          "window_start": {
+            "format": "date-time",
+            "title": "Window Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "feed",
+          "count",
+          "truncated",
+          "window_start",
+          "items"
+        ],
+        "title": "EventCollection",
+        "type": "object"
+      },
+      "EventFeed": {
+        "enum": [
+          "earthquakes",
+          "natural-events",
+          "disaster-alerts",
+          "fires",
+          "conflict",
+          "air-alerts",
+          "launches",
+          "internet-outages"
+        ],
+        "title": "EventFeed",
+        "type": "string"
+      },
+      "ExploitedVulnerability": {
+        "properties": {
+          "cve": {
+            "pattern": "^CVE-\\d{4}-\\d{4,}$",
+            "title": "Cve",
+            "type": "string"
+          },
+          "date_added": {
+            "format": "date",
+            "title": "Date Added",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "product": {
+            "title": "Product",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "used_in_ransomware": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None = unknown",
+            "title": "Used In Ransomware"
+          },
+          "vendor": {
+            "title": "Vendor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cve",
+          "vendor",
+          "product",
+          "name",
+          "description",
+          "date_added",
+          "due_date",
+          "used_in_ransomware",
+          "url"
+        ],
+        "title": "ExploitedVulnerability",
+        "type": "object"
+      },
+      "Facility": {
+        "properties": {
+          "id": {
+            "description": "'osm:node/123'",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/FacilityKind"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "operator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operator"
+          },
+          "position": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "subtype": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. airfield, naval_base",
+            "title": "Subtype"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "position",
+          "operator",
+          "subtype",
+          "url",
+          "source"
+        ],
+        "title": "Facility",
+        "type": "object"
+      },
+      "FacilityCollection": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Facility"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/FacilityKind"
+          }
+        },
+        "required": [
+          "kind",
+          "count",
+          "items"
+        ],
+        "title": "FacilityCollection",
+        "type": "object"
+      },
+      "FacilityKind": {
+        "enum": [
+          "military",
+          "data-center",
+          "nuclear-plant"
+        ],
+        "title": "FacilityKind",
+        "type": "string"
+      },
+      "FeedInfo": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "feed": {
+            "$ref": "#/components/schemas/EventFeed"
+          },
+          "providers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Providers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "feed",
+          "providers",
+          "available"
+        ],
+        "title": "FeedInfo",
+        "type": "object"
+      },
+      "FocusOut": {
+        "properties": {
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          },
+          "layers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Layers",
+            "type": "array"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
+          },
+          "zoom": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zoom"
+          }
+        },
+        "required": [
+          "lat",
+          "lon",
+          "zoom",
+          "country",
+          "layers"
+        ],
+        "title": "FocusOut",
+        "type": "object"
+      },
+      "FundingBoard": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FundingRate"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "missing": {
+            "items": {
+              "$ref": "#/components/schemas/MissingOut"
+            },
+            "title": "Missing",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "items",
+          "missing"
+        ],
+        "title": "FundingBoard",
+        "type": "object"
+      },
+      "FundingRate": {
+        "properties": {
+          "annualized_pct": {
+            "title": "Annualized Pct",
+            "type": "number"
+          },
+          "exchange": {
+            "title": "Exchange",
+            "type": "string"
+          },
+          "mark_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mark Price"
+          },
+          "next_funding_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Funding At"
+          },
+          "rate": {
+            "description": "Per funding interval (8 h), as a fraction",
+            "title": "Rate",
+            "type": "number"
+          },
+          "symbol": {
+            "description": "'BTC', 'ETH'",
+            "title": "Symbol",
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "exchange",
+          "rate",
+          "annualized_pct",
+          "mark_price",
+          "next_funding_at"
+        ],
+        "title": "FundingRate",
+        "type": "object"
+      },
+      "GeoEvent": {
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/EventCategory"
+          },
+          "details": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Details",
+            "type": "object"
+          },
+          "id": {
+            "description": "Stable id, prefixed by source: 'usgs:us7000abcd'",
+            "title": "Id",
+            "type": "string"
+          },
+          "magnitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Magnitude"
+          },
+          "magnitude_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Magnitude Unit"
+          },
+          "occurred_at": {
+            "description": "When it happened, or last update if ongoing",
+            "format": "date-time",
+            "title": "Occurred At",
+            "type": "string"
+          },
+          "position": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Normalised 0..1 for styling; each feed documents how it is derived",
+            "title": "Severity"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "title",
+          "position",
+          "occurred_at",
+          "severity",
+          "magnitude",
+          "magnitude_unit",
+          "url",
+          "source",
+          "details"
+        ],
+        "title": "GeoEvent",
+        "type": "object"
+      },
+      "GeoPoint": {
+        "description": "A WGS84 position.",
+        "properties": {
+          "lat": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "GeoPoint",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthOut": {
+        "properties": {
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceHealthOut"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HealthStatus"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "version",
+          "sources"
+        ],
+        "title": "HealthOut",
+        "type": "object"
+      },
+      "HealthStatus": {
+        "enum": [
+          "ok",
+          "failing",
+          "stale",
+          "idle"
+        ],
+        "title": "HealthStatus",
+        "type": "string"
+      },
+      "HistoryPoint": {
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/Component"
+            },
+            "title": "Raw",
+            "type": "object"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "at",
+          "score",
+          "raw"
+        ],
+        "title": "HistoryPoint",
+        "type": "object"
+      },
+      "HistoryRange": {
+        "enum": [
+          "1mo",
+          "3mo",
+          "6mo",
+          "1y",
+          "2y",
+          "5y"
+        ],
+        "title": "HistoryRange",
+        "type": "string"
+      },
+      "Hit": {
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/Document"
+          },
+          "match": {
+            "$ref": "#/components/schemas/Match"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "document",
+          "score",
+          "match"
+        ],
+        "title": "Hit",
+        "type": "object"
+      },
+      "Impact": {
+        "enum": [
+          "high",
+          "medium",
+          "low",
+          "holiday"
+        ],
+        "title": "Impact",
+        "type": "string"
+      },
+      "InputStatusOut": {
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "ok",
+          "error"
+        ],
+        "title": "InputStatusOut",
+        "type": "object"
+      },
+      "Instrument": {
+        "properties": {
+          "asset_class": {
+            "$ref": "#/components/schemas/AssetClass"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "symbol": {
+            "description": "Provider-neutral symbol (Yahoo notation: ^GSPC, CL=F\u2026)",
+            "title": "Symbol",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "'USD/bbl', '%', 'pts'\u2026",
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "symbol",
+          "name",
+          "asset_class",
+          "unit"
+        ],
+        "title": "Instrument",
+        "type": "object"
+      },
+      "KindCount": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "examples": {
+            "description": "Up to three labels",
+            "items": {
+              "type": "string"
+            },
+            "title": "Examples",
+            "type": "array"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SignalKind"
+          }
+        },
+        "required": [
+          "kind",
+          "count",
+          "examples"
+        ],
+        "title": "KindCount",
+        "type": "object"
+      },
+      "LandingPoint": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "position": {
+            "$ref": "#/components/schemas/GeoPoint"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "position"
+        ],
+        "title": "LandingPoint",
+        "type": "object"
+      },
+      "Level": {
+        "properties": {
+          "distance_pct": {
+            "description": "From the last close; negative = below",
+            "title": "Distance Pct",
+            "type": "number"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/LevelKind"
+          },
+          "last_touch": {
+            "format": "date",
+            "title": "Last Touch",
+            "type": "string"
+          },
+          "price": {
+            "title": "Price",
+            "type": "number"
+          },
+          "touches": {
+            "title": "Touches",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "kind",
+          "price",
+          "touches",
+          "last_touch",
+          "distance_pct"
+        ],
+        "title": "Level",
+        "type": "object"
+      },
+      "LevelKind": {
+        "enum": [
+          "support",
+          "resistance"
+        ],
+        "title": "LevelKind",
+        "type": "string"
+      },
+      "Liquidation": {
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "notional_usd": {
+            "title": "Notional Usd",
+            "type": "number"
+          },
+          "position": {
+            "$ref": "#/components/schemas/Side",
+            "description": "The side that was liquidated"
+          },
+          "price": {
+            "description": "Bankruptcy price",
+            "title": "Price",
+            "type": "number"
+          },
+          "size": {
+            "description": "In the base asset (BTC\u2026)",
+            "title": "Size",
+            "type": "number"
+          }
+        },
+        "required": [
+          "position",
+          "price",
+          "size",
+          "notional_usd",
+          "at"
+        ],
+        "title": "Liquidation",
+        "type": "object"
+      },
+      "LiquidationBoard": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LiquidationSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "missing": {
+            "items": {
+              "$ref": "#/components/schemas/MissingOut"
+            },
+            "title": "Missing",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "items",
+          "missing"
+        ],
+        "title": "LiquidationBoard",
+        "type": "object"
+      },
+      "LiquidationSummary": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "exchange": {
+            "title": "Exchange",
+            "type": "string"
+          },
+          "largest": {
+            "items": {
+              "$ref": "#/components/schemas/Liquidation"
+            },
+            "title": "Largest",
+            "type": "array"
+          },
+          "long_usd": {
+            "description": "Longs liquidated (forced sells)",
+            "title": "Long Usd",
+            "type": "number"
+          },
+          "note": {
+            "description": "What the sample covers; one exchange is not the market",
+            "title": "Note",
+            "type": "string"
+          },
+          "short_usd": {
+            "description": "Shorts liquidated (forced buys)",
+            "title": "Short Usd",
+            "type": "number"
+          },
+          "since": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Oldest liquidation in the sample",
+            "title": "Since"
+          },
+          "symbol": {
+            "title": "Symbol",
+            "type": "string"
+          },
+          "until": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Until"
+          }
+        },
+        "required": [
+          "symbol",
+          "exchange",
+          "count",
+          "since",
+          "until",
+          "long_usd",
+          "short_usd",
+          "largest",
+          "note"
+        ],
+        "title": "LiquidationSummary",
+        "type": "object"
+      },
+      "Match": {
+        "enum": [
+          "lexical",
+          "semantic",
+          "both"
+        ],
+        "title": "Match",
+        "type": "string"
+      },
+      "MissingOut": {
+        "properties": {
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "error"
+        ],
+        "title": "MissingOut",
+        "type": "object"
+      },
+      "ModelUsage": {
+        "properties": {
+          "calls": {
+            "title": "Calls",
+            "type": "integer"
+          },
+          "calls_without_cost": {
+            "description": "Calls whose price LiteLLM does not know",
+            "title": "Calls Without Cost",
+            "type": "integer"
+          },
+          "cost_usd": {
+            "title": "Cost Usd",
+            "type": "number"
+          },
+          "input_tokens": {
+            "title": "Input Tokens",
+            "type": "integer"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "output_tokens": {
+            "title": "Output Tokens",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "model",
+          "calls",
+          "input_tokens",
+          "output_tokens",
+          "cost_usd",
+          "calls_without_cost"
+        ],
+        "title": "ModelUsage",
+        "type": "object"
+      },
+      "NewsCategory": {
+        "enum": [
+          "world",
+          "defense",
+          "cyber",
+          "regional"
+        ],
+        "title": "NewsCategory",
+        "type": "string"
+      },
+      "NewsSource": {
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/NewsCategory"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ISO2 of the owning state or HQ",
+            "title": "Country"
+          },
+          "feed_url": {
+            "title": "Feed Url",
+            "type": "string"
+          },
+          "homepage": {
+            "title": "Homepage",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ownership": {
+            "$ref": "#/components/schemas/Ownership"
+          },
+          "tier": {
+            "maximum": 3.0,
+            "minimum": 1.0,
+            "title": "Tier",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "feed_url",
+          "homepage",
+          "category",
+          "tier",
+          "ownership",
+          "country"
+        ],
+        "title": "NewsSource",
+        "type": "object"
+      },
+      "NoteOut": {
+        "properties": {
+          "facts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Facts",
+            "type": "array"
+          },
+          "generated_at": {
+            "title": "Generated At",
+            "type": "string"
+          },
+          "rejected": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Rejected",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "written_by": {
+            "title": "Written By",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "facts",
+          "written_by",
+          "generated_at",
+          "rejected"
+        ],
+        "title": "NoteOut",
+        "type": "object"
+      },
+      "Outcome": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "probability": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Probability",
+            "type": "number"
+          }
+        },
+        "required": [
+          "label",
+          "probability"
+        ],
+        "title": "Outcome",
+        "type": "object"
+      },
+      "Ownership": {
+        "enum": [
+          "private",
+          "public",
+          "state",
+          "intergovernmental"
+        ],
+        "title": "Ownership",
+        "type": "string"
+      },
+      "PredictionIn": {
+        "properties": {
+          "market_id": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Market Id",
+            "type": "string"
+          },
+          "tag": {
+            "default": "geopolitics",
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Tag",
+            "type": "string"
+          }
+        },
+        "required": [
+          "market_id"
+        ],
+        "title": "PredictionIn",
+        "type": "object"
+      },
+      "PredictionMarket": {
+        "properties": {
+          "end_date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "event_title": {
+            "title": "Event Title",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "one_day_change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Change of the first outcome",
+            "title": "One Day Change"
+          },
+          "outcomes": {
+            "items": {
+              "$ref": "#/components/schemas/Outcome"
+            },
+            "title": "Outcomes",
+            "type": "array"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "volume_24h_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume 24H Usd"
+          },
+          "volume_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume Usd"
+          }
+        },
+        "required": [
+          "id",
+          "question",
+          "event_title",
+          "outcomes",
+          "one_day_change",
+          "volume_usd",
+          "volume_24h_usd",
+          "end_date",
+          "url",
+          "source"
+        ],
+        "title": "PredictionMarket",
+        "type": "object"
+      },
+      "PredictionReadingOut": {
+        "properties": {
+          "answer": {
+            "$ref": "#/components/schemas/AnswerOut"
+          },
+          "market_id": {
+            "title": "Market Id",
+            "type": "string"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "stance": {
+            "enum": [
+              "leans_yes",
+              "leans_no",
+              "no_conclusion"
+            ],
+            "title": "Stance",
+            "type": "string"
+          }
+        },
+        "required": [
+          "market_id",
+          "question",
+          "stance",
+          "answer"
+        ],
+        "title": "PredictionReadingOut",
+        "type": "object"
+      },
+      "Preferences-Input": {
+        "description": "Versioned so a future shape change can migrate stored documents instead of\nfailing to validate them.",
+        "properties": {
+          "enabled_layers": {
+            "anyOf": [
+              {
+                "items": {
+                  "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+                  "type": "string"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled Layers"
+          },
+          "projection": {
+            "anyOf": [
+              {
+                "enum": [
+                  "mercator",
+                  "globe"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Projection"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "telegram_channels": {
+            "anyOf": [
+              {
+                "items": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]{4,31}$",
+                  "type": "string"
+                },
+                "maxItems": 20,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Channels"
+          },
+          "viewport": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Viewport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "Preferences",
+        "type": "object"
+      },
+      "Preferences-Output": {
+        "description": "Versioned so a future shape change can migrate stored documents instead of\nfailing to validate them.",
+        "properties": {
+          "enabled_layers": {
+            "anyOf": [
+              {
+                "items": {
+                  "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+                  "type": "string"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled Layers"
+          },
+          "projection": {
+            "anyOf": [
+              {
+                "enum": [
+                  "mercator",
+                  "globe"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Projection"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "telegram_channels": {
+            "anyOf": [
+              {
+                "items": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]{4,31}$",
+                  "type": "string"
+                },
+                "maxItems": 20,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Channels"
+          },
+          "viewport": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Viewport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "schema_version",
+          "enabled_layers",
+          "viewport",
+          "projection",
+          "telegram_channels"
+        ],
+        "title": "Preferences",
+        "type": "object"
+      },
+      "Quote": {
+        "properties": {
+          "as_of": {
+            "description": "Exchange time of the price, not fetch time",
+            "format": "date-time",
+            "title": "As Of",
+            "type": "string"
+          },
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change"
+          },
+          "change_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Pct"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "day_high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Day High"
+          },
+          "day_low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Session range, when the feed has it",
+            "title": "Day Low"
+          },
+          "delayed": {
+            "default": true,
+            "description": "Free feeds are delayed ~15 min or more",
+            "title": "Delayed",
+            "type": "boolean"
+          },
+          "history": {
+            "default": [],
+            "description": "Recent daily closes, oldest first",
+            "items": {
+              "type": "number"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "instrument": {
+            "$ref": "#/components/schemas/Instrument"
+          },
+          "previous_close": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Close"
+          },
+          "price": {
+            "title": "Price",
+            "type": "number"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instrument",
+          "price",
+          "previous_close",
+          "change",
+          "change_pct",
+          "day_low",
+          "day_high",
+          "currency",
+          "as_of",
+          "history",
+          "source",
+          "delayed"
+        ],
+        "title": "Quote",
+        "type": "object"
+      },
+      "QuoteBoard": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Quote"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "missing": {
+            "items": {
+              "$ref": "#/components/schemas/MissingOut"
+            },
+            "title": "Missing",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "items",
+          "missing"
+        ],
+        "title": "QuoteBoard",
+        "type": "object"
+      },
+      "RasterLayer": {
+        "properties": {
+          "attribution": {
+            "title": "Attribution",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "max_zoom": {
+            "description": "Deepest zoom the source serves; the map overzooms beyond",
+            "title": "Max Zoom",
+            "type": "integer"
+          },
+          "min_zoom": {
+            "default": 0,
+            "title": "Min Zoom",
+            "type": "integer"
+          },
+          "opacity": {
+            "default": 1.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Opacity",
+            "type": "number"
+          },
+          "tile_size": {
+            "default": 256,
+            "title": "Tile Size",
+            "type": "integer"
+          },
+          "tiles": {
+            "description": "XYZ URL templates ({z}/{x}/{y})",
+            "items": {
+              "type": "string"
+            },
+            "title": "Tiles",
+            "type": "array"
+          },
+          "valid_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Observation time of the imagery",
+            "title": "Valid At"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "tiles",
+          "tile_size",
+          "min_zoom",
+          "max_zoom",
+          "attribution",
+          "valid_at",
+          "opacity"
+        ],
+        "title": "RasterLayer",
+        "type": "object"
+      },
+      "ReadinessOut": {
+        "properties": {
+          "checks": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Checks",
+            "type": "object"
+          },
+          "ready": {
+            "title": "Ready",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ready",
+          "checks"
+        ],
+        "title": "ReadinessOut",
+        "type": "object"
+      },
+      "Reading": {
+        "properties": {
+          "period": {
+            "description": "Week ending",
+            "format": "date",
+            "title": "Period",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "period",
+          "value"
+        ],
+        "title": "Reading",
+        "type": "object"
+      },
+      "SatelliteCollection": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "group": {
+            "$ref": "#/components/schemas/SatelliteGroup"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SatellitePosition"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "group",
+          "count",
+          "items"
+        ],
+        "title": "SatelliteCollection",
+        "type": "object"
+      },
+      "SatelliteGroup": {
+        "description": "CelesTrak group names; each is one layer on the map.",
+        "enum": [
+          "stations",
+          "visual",
+          "gps-ops",
+          "galileo",
+          "weather",
+          "military",
+          "starlink"
+        ],
+        "title": "SatelliteGroup",
+        "type": "string"
+      },
+      "SatellitePosition": {
+        "properties": {
+          "altitude_km": {
+            "title": "Altitude Km",
+            "type": "number"
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "elements_age_days": {
+            "description": "Accuracy degrades as elements age",
+            "title": "Elements Age Days",
+            "type": "number"
+          },
+          "group": {
+            "$ref": "#/components/schemas/SatelliteGroup"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "norad_id": {
+            "title": "Norad Id",
+            "type": "integer"
+          },
+          "position": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "speed_kms": {
+            "description": "Inertial speed",
+            "title": "Speed Kms",
+            "type": "number"
+          }
+        },
+        "required": [
+          "norad_id",
+          "name",
+          "group",
+          "position",
+          "altitude_km",
+          "speed_kms",
+          "at",
+          "elements_age_days"
+        ],
+        "title": "SatellitePosition",
+        "type": "object"
+      },
+      "ScoreMode": {
+        "enum": [
+          "absolute",
+          "relative"
+        ],
+        "title": "ScoreMode",
+        "type": "string"
+      },
+      "SearchOut": {
+        "properties": {
+          "hits": {
+            "items": {
+              "$ref": "#/components/schemas/Hit"
+            },
+            "title": "Hits",
+            "type": "array"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "searched": {
+            "title": "Searched",
+            "type": "integer"
+          },
+          "semantic": {
+            "description": "False: keywords only (no embedding model configured)",
+            "title": "Semantic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "query",
+          "hits",
+          "semantic",
+          "searched",
+          "note"
+        ],
+        "title": "SearchOut",
+        "type": "object"
+      },
+      "SentimentIndex": {
+        "properties": {
+          "history": {
+            "description": "Most recent first",
+            "items": {
+              "$ref": "#/components/schemas/SentimentReading"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "latest": {
+            "$ref": "#/components/schemas/SentimentReading"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "latest",
+          "history",
+          "source"
+        ],
+        "title": "SentimentIndex",
+        "type": "object"
+      },
+      "SentimentReading": {
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Value",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "value",
+          "label",
+          "at"
+        ],
+        "title": "SentimentReading",
+        "type": "object"
+      },
+      "SettingsIn": {
+        "properties": {
+          "api_base": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "pattern": "^https?://\\S+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Base"
+          },
+          "api_key": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Omit to keep the stored key; empty to remove it",
+            "title": "Api Key"
+          },
+          "embedding_model": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding Model"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          }
+        },
+        "title": "SettingsIn",
+        "type": "object"
+      },
+      "SettingsOut": {
+        "properties": {
+          "api_base": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Base"
+          },
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "embedding_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Semantic search; None = keywords only",
+            "title": "Embedding Model"
+          },
+          "fallbacks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Fallbacks",
+            "type": "array"
+          },
+          "key_hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Last characters only; the key is never returned",
+            "title": "Key Hint"
+          },
+          "key_set": {
+            "title": "Key Set",
+            "type": "boolean"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "source": {
+            "enum": [
+              "app",
+              "environment",
+              "none"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model",
+          "api_base",
+          "key_set",
+          "key_hint",
+          "source",
+          "fallbacks",
+          "available",
+          "embedding_model"
+        ],
+        "title": "SettingsOut",
+        "type": "object"
+      },
+      "ShipCategory": {
+        "enum": [
+          "cargo",
+          "tanker",
+          "passenger",
+          "fishing",
+          "military",
+          "law_enforcement",
+          "tug",
+          "high_speed",
+          "pleasure",
+          "other",
+          "unknown"
+        ],
+        "title": "ShipCategory",
+        "type": "string"
+      },
+      "Side": {
+        "enum": [
+          "long",
+          "short"
+        ],
+        "title": "Side",
+        "type": "string"
+      },
+      "SignalKind": {
+        "enum": [
+          "reported_violence",
+          "military_aircraft",
+          "air_alert",
+          "disaster",
+          "fire",
+          "military_vessel"
+        ],
+        "title": "SignalKind",
+        "type": "string"
+      },
+      "SourceHealthOut": {
+        "properties": {
+          "consecutive_failures": {
+            "title": "Consecutive Failures",
+            "type": "integer"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "last_success_age_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Success Age S"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HealthStatus"
+          }
+        },
+        "required": [
+          "source",
+          "status",
+          "last_success_age_s",
+          "last_error",
+          "consecutive_failures"
+        ],
+        "title": "SourceHealthOut",
+        "type": "object"
+      },
+      "SourceStatusOut": {
+        "properties": {
+          "articles": {
+            "title": "Articles",
+            "type": "integer"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "source": {
+            "$ref": "#/components/schemas/NewsSource"
+          }
+        },
+        "required": [
+          "source",
+          "articles",
+          "error"
+        ],
+        "title": "SourceStatusOut",
+        "type": "object"
+      },
+      "StepOut": {
+        "properties": {
+          "args": {
+            "additionalProperties": true,
+            "title": "Args",
+            "type": "object"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "tool": {
+            "title": "Tool",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tool",
+          "args",
+          "ok",
+          "summary"
+        ],
+        "title": "StepOut",
+        "type": "object"
+      },
+      "StoredPreferences": {
+        "properties": {
+          "preferences": {
+            "$ref": "#/components/schemas/Preferences-Output"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "required": [
+          "preferences",
+          "updated_at"
+        ],
+        "title": "StoredPreferences",
+        "type": "object"
+      },
+      "Story": {
+        "properties": {
+          "articles": {
+            "items": {
+              "$ref": "#/components/schemas/Article"
+            },
+            "title": "Articles",
+            "type": "array"
+          },
+          "category": {
+            "$ref": "#/components/schemas/NewsCategory"
+          },
+          "countries": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Countries",
+            "type": "array"
+          },
+          "first_seen": {
+            "format": "date-time",
+            "title": "First Seen",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "last_updated": {
+            "format": "date-time",
+            "title": "Last Updated",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/StorySource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "state_media_only": {
+            "description": "Only state-controlled outlets report this",
+            "title": "State Media Only",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "description": "Link of the article the title comes from",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "url",
+          "articles",
+          "sources",
+          "first_seen",
+          "last_updated",
+          "countries",
+          "category",
+          "state_media_only"
+        ],
+        "title": "Story",
+        "type": "object"
+      },
+      "StoryCollection": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Story"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceStatusOut"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "truncated": {
+            "title": "Truncated",
+            "type": "boolean"
+          },
+          "window_start": {
+            "format": "date-time",
+            "title": "Window Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "count",
+          "truncated",
+          "window_start",
+          "items",
+          "sources"
+        ],
+        "title": "StoryCollection",
+        "type": "object"
+      },
+      "StorySource": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ownership": {
+            "$ref": "#/components/schemas/Ownership"
+          },
+          "tier": {
+            "title": "Tier",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "tier",
+          "ownership"
+        ],
+        "title": "StorySource",
+        "type": "object"
+      },
+      "Technicals": {
+        "properties": {
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "close": {
+            "title": "Close",
+            "type": "number"
+          },
+          "high_52w": {
+            "title": "High 52W",
+            "type": "number"
+          },
+          "levels": {
+            "items": {
+              "$ref": "#/components/schemas/Level"
+            },
+            "title": "Levels",
+            "type": "array"
+          },
+          "low_52w": {
+            "title": "Low 52W",
+            "type": "number"
+          },
+          "method": {
+            "default": [
+              "Simple moving averages of daily closes.",
+              "RSI: Wilder's 14-session relative strength index.",
+              "52-week range: highest high and lowest low of the last 252 sessions.",
+              "Levels: pivot highs and lows (5 sessions each side), merged when within 1.5 % of each other, kept when touched at least 2 times; the nearest above and below the last close are shown."
+            ],
+            "items": {
+              "type": "string"
+            },
+            "title": "Method",
+            "type": "array"
+          },
+          "rsi_14": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rsi 14"
+          },
+          "sessions": {
+            "description": "Bars the reading is based on",
+            "title": "Sessions",
+            "type": "integer"
+          },
+          "sma_20": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sma 20"
+          },
+          "sma_200": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sma 200"
+          },
+          "sma_50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sma 50"
+          }
+        },
+        "required": [
+          "as_of",
+          "close",
+          "sma_20",
+          "sma_50",
+          "sma_200",
+          "rsi_14",
+          "high_52w",
+          "low_52w",
+          "sessions",
+          "levels",
+          "method"
+        ],
+        "title": "Technicals",
+        "type": "object"
+      },
+      "TelegramCollection": {
+        "properties": {
+          "channels": {
+            "items": {
+              "$ref": "#/components/schemas/ChannelStatusOut"
+            },
+            "title": "Channels",
+            "type": "array"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TelegramPost"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "items",
+          "channels"
+        ],
+        "title": "TelegramCollection",
+        "type": "object"
+      },
+      "TelegramPost": {
+        "properties": {
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "channel_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channel Title"
+          },
+          "countries": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Countries",
+            "type": "array"
+          },
+          "has_media": {
+            "default": false,
+            "title": "Has Media",
+            "type": "boolean"
+          },
+          "id": {
+            "description": "'channel/123'",
+            "title": "Id",
+            "type": "string"
+          },
+          "published_at": {
+            "format": "date-time",
+            "title": "Published At",
+            "type": "string"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "views": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "As Telegram shows it: '12.3K'",
+            "title": "Views"
+          }
+        },
+        "required": [
+          "id",
+          "channel",
+          "channel_title",
+          "text",
+          "published_at",
+          "url",
+          "views",
+          "has_media",
+          "countries"
+        ],
+        "title": "TelegramPost",
+        "type": "object"
+      },
+      "TestOut": {
+        "properties": {
+          "elapsed_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elapsed S"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "model",
+          "elapsed_s",
+          "error"
+        ],
+        "title": "TestOut",
+        "type": "object"
+      },
+      "TrackPoint": {
+        "properties": {
+          "altitude_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Altitude M"
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "heading_deg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heading Deg"
+          },
+          "on_ground": {
+            "default": false,
+            "title": "On Ground",
+            "type": "boolean"
+          },
+          "position": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "velocity_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Velocity Ms"
+          }
+        },
+        "required": [
+          "at",
+          "position",
+          "altitude_m",
+          "velocity_ms",
+          "heading_deg",
+          "on_ground"
+        ],
+        "title": "TrackPoint",
+        "type": "object"
+      },
+      "TurnIn": {
+        "properties": {
+          "content": {
+            "maxLength": 4000,
+            "title": "Content",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "content"
+        ],
+        "title": "TurnIn",
+        "type": "object"
+      },
+      "UsageOut": {
+        "properties": {
+          "by_model": {
+            "items": {
+              "$ref": "#/components/schemas/ModelUsage"
+            },
+            "title": "By Model",
+            "type": "array"
+          },
+          "calls": {
+            "title": "Calls",
+            "type": "integer"
+          },
+          "calls_without_cost": {
+            "title": "Calls Without Cost",
+            "type": "integer"
+          },
+          "cost_usd": {
+            "description": "LiteLLM's estimate; local models count as 0",
+            "title": "Cost Usd",
+            "type": "number"
+          },
+          "days": {
+            "title": "Days",
+            "type": "integer"
+          },
+          "input_tokens": {
+            "title": "Input Tokens",
+            "type": "integer"
+          },
+          "output_tokens": {
+            "title": "Output Tokens",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "days",
+          "calls",
+          "input_tokens",
+          "output_tokens",
+          "cost_usd",
+          "calls_without_cost",
+          "by_model"
+        ],
+        "title": "UsageOut",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "Vessel": {
+        "properties": {
+          "call_sign": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Call Sign"
+          },
+          "category": {
+            "$ref": "#/components/schemas/ShipCategory",
+            "default": "unknown"
+          },
+          "course_deg": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 360.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Course Deg"
+          },
+          "destination": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination"
+          },
+          "heading_deg": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 360.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heading Deg"
+          },
+          "imo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imo"
+          },
+          "last_seen": {
+            "format": "date-time",
+            "title": "Last Seen",
+            "type": "string"
+          },
+          "mmsi": {
+            "pattern": "^\\d{9}$",
+            "title": "Mmsi",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "position": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "ship_type": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ITU-R M.1371 type code",
+            "title": "Ship Type"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "speed_ms": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speed Ms"
+          }
+        },
+        "required": [
+          "mmsi",
+          "name",
+          "call_sign",
+          "imo",
+          "ship_type",
+          "category",
+          "position",
+          "speed_ms",
+          "course_deg",
+          "heading_deg",
+          "destination",
+          "last_seen",
+          "source"
+        ],
+        "title": "Vessel",
+        "type": "object"
+      },
+      "VesselCollection": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Vessel"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "truncated": {
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "count",
+          "truncated",
+          "items"
+        ],
+        "title": "VesselCollection",
+        "type": "object"
+      },
+      "Viewport": {
+        "properties": {
+          "center": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "zoom": {
+            "maximum": 22.0,
+            "minimum": 0.0,
+            "title": "Zoom",
+            "type": "number"
+          }
+        },
+        "required": [
+          "center",
+          "zoom"
+        ],
+        "title": "Viewport",
+        "type": "object"
+      },
+      "VulnerabilityCollection": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExploitedVulnerability"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "items"
+        ],
+        "title": "VulnerabilityCollection",
+        "type": "object"
+      },
+      "WatchItem-Input": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/WatchKind"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "value": {
+            "maxLength": 200,
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "value"
+        ],
+        "title": "WatchItem",
+        "type": "object"
+      },
+      "WatchItem-Output": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/WatchKind"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "value": {
+            "maxLength": 200,
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "value",
+          "label"
+        ],
+        "title": "WatchItem",
+        "type": "object"
+      },
+      "WatchKind": {
+        "enum": [
+          "aircraft",
+          "vessel",
+          "ticker",
+          "country",
+          "keyword"
+        ],
+        "title": "WatchKind",
+        "type": "string"
+      },
+      "Watchlist": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/WatchItem-Output"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "items",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "Watchlist",
+        "type": "object"
+      },
+      "WatchlistDraft": {
+        "description": "What a client submits to create or replace a watchlist.",
+        "properties": {
+          "items": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/WatchItem-Input"
+            },
+            "maxItems": 500,
+            "title": "Items",
+            "type": "array"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "WatchlistDraft",
+        "type": "object"
+      },
+      "YieldCurve": {
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "inverted_2y_10y": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inverted 2Y 10Y"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/YieldPoint"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "previous": {
+            "default": [],
+            "description": "Previous business day",
+            "items": {
+              "$ref": "#/components/schemas/YieldPoint"
+            },
+            "title": "Previous",
+            "type": "array"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date",
+          "points",
+          "previous",
+          "inverted_2y_10y",
+          "source"
+        ],
+        "title": "YieldCurve",
+        "type": "object"
+      },
+      "YieldPoint": {
+        "properties": {
+          "rate_pct": {
+            "title": "Rate Pct",
+            "type": "number"
+          },
+          "tenor": {
+            "description": "'3 Mo', '10 Yr'",
+            "title": "Tenor",
+            "type": "string"
+          },
+          "years": {
+            "title": "Years",
+            "type": "number"
+          }
+        },
+        "required": [
+          "tenor",
+          "years",
+          "rate_pct"
+        ],
+        "title": "YieldPoint",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Argus API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/analysis/convergence": {
+      "get": {
+        "description": "Places where several independent kinds of signal coincide. A lead, not a finding.",
+        "operationId": "convergence_api_v1_analysis_convergence_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConvergenceCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Convergence",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
+    "/api/v1/analysis/countries": {
+      "get": {
+        "description": "Country Signal Index: disruptive activity the feeds report now (not stability).",
+        "operationId": "country_signals_api_v1_analysis_countries_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountrySignalCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Country Signals",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
+    "/api/v1/analysis/countries/{iso2}": {
+      "get": {
+        "operationId": "country_detail_api_v1_analysis_countries__iso2__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "iso2",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Za-z]{2}$",
+              "title": "Iso2",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountryDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Country Detail",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
+    "/api/v1/assistant/analyse/prediction": {
+      "post": {
+        "description": "Whether Argus' own data leans the way a prediction market prices \u2014 or not at all.",
+        "operationId": "analyse_prediction_api_v1_assistant_analyse_prediction_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PredictionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionReadingOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Analyse Prediction",
+        "tags": [
+          "assistant"
+        ]
+      }
+    },
+    "/api/v1/assistant/ask": {
+      "post": {
+        "description": "Answer from Argus' own data: the steps, the sources read, and unbacked figures.",
+        "operationId": "ask_api_v1_assistant_ask_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnswerOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask",
+        "tags": [
+          "assistant"
+        ]
+      }
+    },
+    "/api/v1/assistant/models": {
+      "get": {
+        "description": "Models pulled on an Ollama server, to pick from.",
+        "operationId": "local_models_api_v1_assistant_models_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "api_base",
+            "required": true,
+            "schema": {
+              "maxLength": 500,
+              "pattern": "^https?://\\S+$",
+              "title": "Api Base",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Response Local Models Api V1 Assistant Models Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Local Models",
+        "tags": [
+          "assistant"
+        ]
+      }
+    },
+    "/api/v1/assistant/notes/markets": {
+      "get": {
+        "description": "Figures computed by Argus; the model writes the sentence, or a template does.",
+        "operationId": "market_note_api_v1_assistant_notes_markets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Market Note",
+        "tags": [
+          "assistant"
+        ]
+      }
+    },
+    "/api/v1/assistant/search": {
+      "get": {
+        "description": "Hybrid search over recent news stories and the owner's Telegram channels.",
+        "operationId": "search_api_v1_assistant_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 2,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "hours",
+            "required": false,
+            "schema": {
+              "default": 72,
+              "maximum": 168,
+              "minimum": 1,
+              "title": "Hours",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 12,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search",
+        "tags": [
+          "assistant"
+        ]
+      }
+    },
+    "/api/v1/assistant/settings": {
+      "get": {
+        "operationId": "get_settings_api_v1_assistant_settings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Settings",
+        "tags": [
+          "assistant"
+        ]
+      },
+      "put": {
+        "description": "Choose the model. The key is stored server side and never sent back.",
+        "operationId": "put_settings_api_v1_assistant_settings_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Settings",
+        "tags": [
+          "assistant"
+        ]
+      }
+    },
+    "/api/v1/assistant/settings/test": {
+      "post": {
+        "description": "A one-word completion, to check the model and key before relying on them.",
+        "operationId": "test_settings_api_v1_assistant_settings_test_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Test Settings",
+        "tags": [
+          "assistant"
+        ]
+      }
+    },
+    "/api/v1/assistant/usage": {
+      "get": {
+        "description": "Model calls, tokens and estimated cost over the last `days`.",
+        "operationId": "usage_api_v1_assistant_usage_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 365,
+              "minimum": 1,
+              "title": "Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Usage",
+        "tags": [
+          "assistant"
+        ]
+      }
+    },
+    "/api/v1/aviation/aircraft": {
+      "get": {
+        "operationId": "list_aircraft_api_v1_aviation_aircraft_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "include_on_ground",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include On Ground",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "west,south,east,north",
+            "in": "query",
+            "name": "bbox",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "west,south,east,north",
+              "examples": [
+                "2.0,48.5,2.8,49.1"
+              ],
+              "title": "Bbox"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircraftCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Aircraft",
+        "tags": [
+          "aviation"
+        ]
+      }
+    },
+    "/api/v1/aviation/aircraft/{icao24}/track": {
+      "get": {
+        "description": "Today's positions for one aircraft, oldest first (at most 2,000 points).",
+        "operationId": "aircraft_track_api_v1_aviation_aircraft__icao24__track_get",
+        "parameters": [
+          {
+            "description": "ICAO 24-bit address",
+            "in": "path",
+            "name": "icao24",
+            "required": true,
+            "schema": {
+              "description": "ICAO 24-bit address",
+              "pattern": "^[0-9a-fA-F]{6}$",
+              "title": "Icao24",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircraftTrack"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Aircraft Track",
+        "tags": [
+          "aviation"
+        ]
+      }
+    },
+    "/api/v1/aviation/military": {
+      "get": {
+        "description": "Aircraft flagged military by the aggregator's database. Worldwide unless `bbox`.",
+        "operationId": "list_military_api_v1_aviation_military_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "include_on_ground",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include On Ground",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "west,south,east,north",
+            "in": "query",
+            "name": "bbox",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "west,south,east,north",
+              "examples": [
+                "2.0,48.5,2.8,49.1"
+              ],
+              "title": "Bbox"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircraftCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Military",
+        "tags": [
+          "aviation"
+        ]
+      }
+    },
+    "/api/v1/countries": {
+      "get": {
+        "description": "Country codes, names and centroids (for chips and fly-to).",
+        "operationId": "countries_api_v1_countries_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CountryOut"
+                  },
+                  "title": "Response Countries Api V1 Countries Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Countries",
+        "tags": [
+          "countries"
+        ]
+      }
+    },
+    "/api/v1/events": {
+      "get": {
+        "description": "Every feed and whether a provider is configured for it (some need an API key).",
+        "operationId": "list_feeds_api_v1_events_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FeedInfo"
+                  },
+                  "title": "Response List Feeds Api V1 Events Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Feeds",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/api/v1/events/{feed}": {
+      "get": {
+        "description": "Events in the window, most severe first. Windows are capped per feed.",
+        "operationId": "list_events_api_v1_events__feed__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "feed",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EventFeed"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since_hours",
+            "required": false,
+            "schema": {
+              "default": 24,
+              "exclusiveMinimum": 0,
+              "maximum": 720,
+              "title": "Since Hours",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 2000,
+              "maximum": 10000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "west,south,east,north",
+            "in": "query",
+            "name": "bbox",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "west,south,east,north",
+              "examples": [
+                "2.0,48.5,2.8,49.1"
+              ],
+              "title": "Bbox"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Events",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/api/v1/imagery/rasters": {
+      "get": {
+        "description": "Tile overlays the map can show. The browser fetches tiles directly from the hosts.",
+        "operationId": "list_rasters_api_v1_imagery_rasters_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RasterLayer"
+                  },
+                  "title": "Response List Rasters Api V1 Imagery Rasters Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Rasters",
+        "tags": [
+          "imagery"
+        ]
+      }
+    },
+    "/api/v1/infrastructure/facilities/{kind}": {
+      "get": {
+        "description": "OpenStreetMap facilities in a box (at most 25 sq deg: zoom in for more).",
+        "operationId": "list_facilities_api_v1_infrastructure_facilities__kind__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "kind",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/FacilityKind"
+            }
+          },
+          {
+            "description": "west,south,east,north",
+            "in": "query",
+            "name": "bbox",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "west,south,east,north",
+              "examples": [
+                "2.0,48.5,2.8,49.1"
+              ],
+              "title": "Bbox"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacilityCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Facilities",
+        "tags": [
+          "infrastructure"
+        ]
+      }
+    },
+    "/api/v1/infrastructure/submarine-cables": {
+      "get": {
+        "description": "All submarine cables and landing points (TeleGeography, CC BY-NC-SA).",
+        "operationId": "submarine_cables_api_v1_infrastructure_submarine_cables_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CableNetwork"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Submarine Cables",
+        "tags": [
+          "infrastructure"
+        ]
+      }
+    },
+    "/api/v1/intel/cyber/exploited": {
+      "get": {
+        "description": "Vulnerabilities added to CISA's exploited catalog in the last `days`.",
+        "operationId": "exploited_api_v1_intel_cyber_exploited_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 365,
+              "minimum": 1,
+              "title": "Days",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VulnerabilityCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Exploited",
+        "tags": [
+          "intel"
+        ]
+      }
+    },
+    "/api/v1/intel/news": {
+      "get": {
+        "description": "Stories (grouped articles), newest first, with the status of every source.",
+        "operationId": "news_api_v1_intel_news_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "since_hours",
+            "required": false,
+            "schema": {
+              "default": 24,
+              "exclusiveMinimum": 0,
+              "maximum": 72,
+              "title": "Since Hours",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/NewsCategory"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "in": "query",
+            "name": "country",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z]{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Country"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "News",
+        "tags": [
+          "intel"
+        ]
+      }
+    },
+    "/api/v1/intel/news/sources": {
+      "get": {
+        "description": "Every source with its tier and ownership, as shown next to stories.",
+        "operationId": "news_sources_api_v1_intel_news_sources_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NewsSource"
+                  },
+                  "title": "Response News Sources Api V1 Intel News Sources Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "News Sources",
+        "tags": [
+          "intel"
+        ]
+      }
+    },
+    "/api/v1/intel/telegram": {
+      "get": {
+        "description": "Latest posts of public channels. Content is unverified by nature.",
+        "operationId": "telegram_api_v1_intel_telegram_get",
+        "parameters": [
+          {
+            "description": "Comma-separated public channel names",
+            "in": "query",
+            "name": "channels",
+            "required": true,
+            "schema": {
+              "description": "Comma-separated public channel names",
+              "title": "Channels",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Telegram",
+        "tags": [
+          "intel"
+        ]
+      }
+    },
+    "/api/v1/macro/calendar": {
+      "get": {
+        "operationId": "calendar_api_v1_macro_calendar_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "impact",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^(high|medium|low|holiday)$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Impact"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CalendarEvent"
+                  },
+                  "title": "Response Calendar Api V1 Macro Calendar Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Calendar",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/macro/energy-stocks": {
+      "get": {
+        "description": "Weekly US inventories vs the same week of the five previous years (EIA).",
+        "operationId": "energy_stocks_api_v1_macro_energy_stocks_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyBoard"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Energy Stocks",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/macro/sentiment": {
+      "get": {
+        "operationId": "sentiment_api_v1_macro_sentiment_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SentimentIndex"
+                  },
+                  "title": "Response Sentiment Api V1 Macro Sentiment Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Sentiment",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/macro/yield-curve": {
+      "get": {
+        "operationId": "yield_curve_api_v1_macro_yield_curve_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YieldCurve"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Yield Curve",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/maritime/chokepoints": {
+      "get": {
+        "description": "Daily transits vs the same week last year and vs the prior 90 days (PortWatch).",
+        "operationId": "chokepoints_api_v1_maritime_chokepoints_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChokepointTraffic"
+                  },
+                  "title": "Response Chokepoints Api V1 Maritime Chokepoints Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Chokepoints",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/maritime/vessels": {
+      "get": {
+        "description": "Latest position of vessels heard recently (needs an AISStream key).",
+        "operationId": "list_vessels_api_v1_maritime_vessels_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 5000,
+              "maximum": 20000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "west,south,east,north",
+            "in": "query",
+            "name": "bbox",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "west,south,east,north",
+              "examples": [
+                "2.0,48.5,2.8,49.1"
+              ],
+              "title": "Bbox"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VesselCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Vessels",
+        "tags": [
+          "maritime"
+        ]
+      }
+    },
+    "/api/v1/markets/assets/{symbol}": {
+      "get": {
+        "description": "Daily bars and a technical reading (descriptive, not advice) for any Yahoo symbol.",
+        "operationId": "asset_api_v1_markets_assets__symbol__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "symbol",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Za-z0-9^=.\\-]{1,20}$",
+              "title": "Symbol",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "range",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/HistoryRange",
+              "default": "1y"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Asset",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/markets/crypto": {
+      "get": {
+        "operationId": "crypto_api_v1_markets_crypto_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CryptoAsset"
+                  },
+                  "title": "Response Crypto Api V1 Markets Crypto Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Crypto",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/markets/funding": {
+      "get": {
+        "description": "Perpetual funding: positive = longs pay shorts (crowded long).",
+        "operationId": "funding_api_v1_markets_funding_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbols",
+            "required": false,
+            "schema": {
+              "default": "BTC,ETH,SOL",
+              "pattern": "^[A-Za-z]{2,10}(,[A-Za-z]{2,10}){0,9}$",
+              "title": "Symbols",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingBoard"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Funding",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/markets/liquidations": {
+      "get": {
+        "description": "Recent forced liquidations on one exchange: a sample, not the whole market.",
+        "operationId": "liquidations_api_v1_markets_liquidations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbols",
+            "required": false,
+            "schema": {
+              "default": "BTC,ETH,SOL",
+              "pattern": "^[A-Za-z]{2,10}(,[A-Za-z]{2,10}){0,9}$",
+              "title": "Symbols",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiquidationBoard"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Liquidations",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/markets/prediction": {
+      "get": {
+        "description": "Open prediction markets. Prices are crowd probabilities, not forecasts of record.",
+        "operationId": "prediction_api_v1_markets_prediction_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "tag",
+            "required": false,
+            "schema": {
+              "default": "geopolitics",
+              "pattern": "^[a-z0-9-]+$",
+              "title": "Tag",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PredictionMarket"
+                  },
+                  "title": "Response Prediction Api V1 Markets Prediction Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Prediction",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/markets/quotes": {
+      "get": {
+        "description": "The default watch set: indices, commodities, FX, rates. Delayed prices.",
+        "operationId": "quotes_api_v1_markets_quotes_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteBoard"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Quotes",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/preferences": {
+      "get": {
+        "operationId": "get_preferences_api_v1_preferences_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoredPreferences"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Preferences",
+        "tags": [
+          "preferences"
+        ]
+      },
+      "put": {
+        "operationId": "save_preferences_api_v1_preferences_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Preferences-Input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoredPreferences"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Preferences",
+        "tags": [
+          "preferences"
+        ]
+      }
+    },
+    "/api/v1/space/satellites": {
+      "get": {
+        "description": "Positions now, propagated with SGP4 from CelesTrak elements.",
+        "operationId": "list_satellites_api_v1_space_satellites_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "group",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/SatelliteGroup",
+              "default": "stations"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SatelliteCollection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Satellites",
+        "tags": [
+          "space"
+        ]
+      }
+    },
+    "/api/v1/system/capabilities": {
+      "get": {
+        "description": "Which provider serves each capability, in fallback order.",
+        "operationId": "capabilities_api_v1_system_capabilities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "title": "Response Capabilities Api V1 System Capabilities Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Capabilities",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/system/health": {
+      "get": {
+        "description": "Passive view: what recent real traffic says about each upstream.",
+        "operationId": "health_api_v1_system_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/system/ready": {
+      "get": {
+        "description": "Active probe of hard dependencies (database, cache). For orchestrators.",
+        "operationId": "ready_api_v1_system_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessOut"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Ready",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/watchlists": {
+      "get": {
+        "operationId": "list_watchlists_api_v1_watchlists_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Watchlist"
+                  },
+                  "title": "Response List Watchlists Api V1 Watchlists Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Watchlists",
+        "tags": [
+          "watchlists"
+        ]
+      },
+      "post": {
+        "operationId": "create_watchlist_api_v1_watchlists_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WatchlistDraft"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Watchlist"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Watchlist",
+        "tags": [
+          "watchlists"
+        ]
+      }
+    },
+    "/api/v1/watchlists/{watchlist_id}": {
+      "delete": {
+        "operationId": "delete_watchlist_api_v1_watchlists__watchlist_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "watchlist_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Watchlist Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Watchlist",
+        "tags": [
+          "watchlists"
+        ]
+      },
+      "get": {
+        "operationId": "get_watchlist_api_v1_watchlists__watchlist_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "watchlist_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Watchlist Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Watchlist"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Watchlist",
+        "tags": [
+          "watchlists"
+        ]
+      },
+      "put": {
+        "operationId": "replace_watchlist_api_v1_watchlists__watchlist_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "watchlist_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Watchlist Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WatchlistDraft"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Watchlist"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Replace Watchlist",
+        "tags": [
+          "watchlists"
+        ]
+      }
+    }
+  }
+}
